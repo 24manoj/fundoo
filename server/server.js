@@ -10,21 +10,27 @@
  *******************************************************************************************************************/
 
 try {
-     //importing 
+    //importing  modules
     const express = require('express');
     const expressvalidator = require('express-validator');
     const mongoose = require('mongoose');
     const bodyparser = require('body-parser');
     const routes = require('../server/router/router');
+
     require('dotenv').config();
+    //creating object of express
     const app = express();
+    //
     app.use(bodyparser.json());
     app.use(bodyparser.urlencoded({
         extended: true
     }))
+
     app.use(expressvalidator())
     app.use('/', routes)
+    //creating connection for mongodb
     mongoose.connect("mongodb://localhost:27017/fundoo", { useNewUrlParser: true })
+    //event Emiters
     mongoose.connection.on("connected", () => {
         console.log("Database connected sucessfully");
     })
@@ -37,9 +43,11 @@ try {
         console.log("database coudnt connected")
         process.exit(1)
     })
-    app.listen('3000', () => {
+    var server = app.listen('3000', () => {
         console.log("Running sucessfully on port 3000")
     })
+    module.exports = server
+
 } catch (e) {
     console.log(e);
 }

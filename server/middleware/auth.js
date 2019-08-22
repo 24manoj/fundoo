@@ -1,9 +1,14 @@
 var webtoken = require('../token')
 var response = {}
+/**
+ * @desc verifies whether given token is valid or invalid
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @param next if token is valid,pass control contoler
+ * @return return respose sucess or failure
+ */
 exports.verify = (req, res, next) => {
-    console.log(req.params.token)
     webtoken.verifyToken(req.params.token, (err, result) => {
-        console.log(result)
         if (err) {
             response.data = null
             response.errors = err

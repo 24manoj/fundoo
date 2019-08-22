@@ -1,0 +1,42 @@
+{
+    "login": {
+        "email": "manoj.ks.24.mk@gmail.com",
+        "password": "password"
+    },
+    "loginerr ": {
+        "email": "manoj.k@gmail.com",
+        "password": "password"
+    },
+    "register": {
+
+        "firstName": "yathin",
+        "lastName": "k",
+        "email": "yathink3@gmail.com",
+        "password": "password"
+
+    },
+    "registererr": {
+
+        "firstName": "ya",
+        "lastName": "k",
+        "email": "yathink3gml.com",
+        "password": "passd"
+
+    },
+    "forgotPassword": {
+
+        "email": "yathink3@gmail.com"
+    },
+    "forgotPassworderr": {
+
+        "email": "yathin@gmail.com"
+    },
+    "resetPassword": {
+        "password": "password",
+        "confirmPassword": "password"
+    },
+    "resetPassworderr": {
+        "password": "password",
+        "confirmPassword": "passbnbnword"
+    }
+}

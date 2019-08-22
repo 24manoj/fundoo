@@ -1,7 +1,12 @@
 var model = require('../app/modules/userModule')
+/**
+ * @desc gets validated request from controller,serves to modules
+ * @param req request contains all the requested data
+ * @param callback contains response from backend
+ * @return return respose sucess or failure
+ */
 exports.register = (req, callback) => {
     try {
-        console.log("in services")
         model.register(req, (err, data) => {
             if (err) {
                 callback(err);
@@ -17,6 +22,13 @@ exports.register = (req, callback) => {
     }
 }
 
+
+/**
+ * @desc gets validated request from controller,serves to modules
+ * @param req request contains all the requested data
+ * @param callback contains response from backend
+ * @return return respose sucess or failure
+ */
 exports.login = (req, callback) => {
     try {
         model.login(req, (err, data) => {
@@ -33,9 +45,15 @@ exports.login = (req, callback) => {
 }
 
 
+/**
+ * @desc gets validated request from controller,serves to modules
+ * @param req request contains all the requested data
+ * @param callback contains response from backend
+ * @return return respose sucess or failure
+ */
 exports.forgotPassword = (req, callback) => {
     try {
-        console.log("in service")
+
         model.forgotpassword(req, (err, data) => {
             if (err) {
                 console.log(err)
@@ -51,6 +69,12 @@ exports.forgotPassword = (req, callback) => {
     }
 }
 
+/**
+ * @desc gets validated request from controller,serves to modules
+ * @param req request contains all the requested data
+ * @param callback contains response from backend
+ * @return return respose sucess or failure
+ */
 exports.resetPassword = (req, callback) => {
     try {
         model.resetPassword(req, (err, data) => {

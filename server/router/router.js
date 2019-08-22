@@ -1,7 +1,9 @@
 try {
+    //importing express router
     var router = require('express').Router();
     var controller = require('../controler/userController')
     var auth = require('../middleware/auth')
+    //routes to specified fouction when mentioned endpoint hits
     router.route('/register').post(controller.register)
     router.route('/login').post(controller.login)
     router.route('/forgotPassword').post(controller.forgotPassword)

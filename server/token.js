@@ -20,11 +20,12 @@ exports.generateToken = (id, callback) => {
 exports.verifyToken = (token, callback) => {
     try {
         jsonToken.verify(token, process.env.key, (err, result) => {
-            if (err) {
-                callback(err)
+
+            if (result.id != undefined) {
+                callback(null, result);
             }
             else {
-                callback(null, result);
+                callback(`invalid Token ${err}`);
             }
         })
 

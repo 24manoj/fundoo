@@ -3,6 +3,12 @@ var mailchecker = require('email-existence')
 var token = require('../token')
 var mail = require('../middleware/userMailer')
 var response = {}
+/**
+ * @desc takes input ,error validation is done,passes request next services
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @return return respose sucess or failure
+ */
 exports.register = (req, res) => {
     try {
         req.checkBody('firstName', 'firstName invalid').isAlpha().isLength({
@@ -14,7 +20,7 @@ exports.register = (req, res) => {
         let errors = req.validationErrors();
 
         if (errors) {
-            response.error = errors
+            response.errors = errors
             response.sucess = false
             res.status(422).send(response)
         }
@@ -25,10 +31,9 @@ exports.register = (req, res) => {
                     response.errors = "Email is not valid"
                     response.sucess = false
                     res.status(404).send(response);
-
                 }
                 else {
-                    console.log("in controler");
+
                     services.register(req, (err, data) => {
                         if (err) {
                             response.data = null
@@ -41,7 +46,7 @@ exports.register = (req, res) => {
                             response.data = data
                             response.errors = null
                             response.sucess = true
-                            res.status(404).send(response);
+                            res.status(200).send(response);
 
                         }
                     })
@@ -54,7 +59,12 @@ exports.register = (req, res) => {
     }
 
 }
-
+/**
+ * @desc takes input ,error validation is done,passes request next services
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @return return respose sucess or failure
+ */
 exports.login = (req, res) => {
     try {
         req.checkBody('email', 'email invalid').isEmail()
@@ -78,6 +88,7 @@ exports.login = (req, res) => {
                     response.errors = null
                     response.data = data
                     response.sucess = true
+
                     res.status(200).send(response);
                 }
             })
@@ -87,6 +98,12 @@ exports.login = (req, res) => {
     }
 
 }
+/**
+ * @desc takes input ,error validation is done,passes request next services
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @return return respose sucess or failure
+ */
 
 exports.forgotPassword = (req, res) => {
     try {
@@ -144,7 +161,12 @@ exports.forgotPassword = (req, res) => {
         console.log(e)
     }
 }
-
+/**
+ * @desc takes input ,error validation is done,passes request next services
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @return return respose sucess or failure
+ */
 exports.resetPassword = (req, res) => {
     try {
 
@@ -152,7 +174,7 @@ exports.resetPassword = (req, res) => {
         req.checkBody('confirmPassword', 'confirmPassword is not valid').isLength({ min: 8 })
         let errors = req.validationErrors();
         if (errors) {
-            
+
             response.data = null
             response.errors = errors
             response.sucess = false

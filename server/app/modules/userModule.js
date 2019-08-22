@@ -1,6 +1,7 @@
 var bcrypt = require('bcrypt');
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt')
+//schema design for register
 let registration = new mongoose.Schema({
     "firstName": {
         type: String,
@@ -25,10 +26,16 @@ let registration = new mongoose.Schema({
 }, {
         timestamps: true
     })
+//creating model of schema
 var userRegistration = mongoose.model('userRegistration', registration);
 
+/**
+ * @desc gets validated request from services,performs database operations needed
+ * @param req request contains http request 
+ * @param callback contains response from backend
+ * @return return respose sucess or failure
+ */
 exports.register = (req, callback) => {
-
     userRegistration.find({
         "email": req.body.email
     }, (err, data) => {
@@ -55,12 +62,18 @@ exports.register = (req, callback) => {
             })
         }
         else {
-            console.log(data.length)
+
             callback("Data exist")
         }
     })
 }
 
+/**
+ * @desc gets validated request from services,performs database operations needed
+ * @param req request contains http request
+ * @param callback contains response from backend
+ * @return return respose sucess or failure
+ */
 exports.login = (req, callback) => {
     try {
         userRegistration.findOne({
@@ -90,7 +103,12 @@ exports.login = (req, callback) => {
         console.log(e)
     }
 }
-
+/**
+ * @desc gets validated request from services,performs database operations needed
+ * @param req request contains http request
+ * @param callback contains response from backend
+ * @return return respose sucess or failure
+ */
 exports.forgotpassword = (req, callback) => {
     try {
 
@@ -109,22 +127,36 @@ exports.forgotpassword = (req, callback) => {
         console.log(e)
     }
 }
-
+/**
+ * @desc gets validated request from services,performs database operations needed
+ * @param req request contains http request
+ * @param callback contains response from backend
+ * @return return respose sucess or failure
+ */
 exports.resetPassword = (req, callback) => {
 
-    console.log(req.decoded.id)
-    bcrypt.hash(req.password, 10, (err, hash) => {
-        userRegistration.updateOne({
-            "_id": req.decoded.id
-        }, {
-                "password": require.password
-            }, (err, data) => {
-                if (err) { callback(err) }
-                else {
-                    callback(null, data)
-                }
-            })
+    console.log("dfdfdf", req.decoded)
+    bcrypt.hash(req.body.password, 10, (err, hash) => {
+        if (err) {
+
+            callback(err)
+        } else {
+            userRegistration.updateOne({
+                "_id": req.decoded.id
+            }, {
+                    "password": hash
+                }, (err, data) => {
+                    if (err) {
+
+                        callback(err)
+                    }
+                    else {
+                        callback(null, data)
+                    }
+                })
+        }
     })
+
 
 
 }
