@@ -21,6 +21,8 @@ try {
     //creating object of express
     const app = express();
     //
+
+
     app.use(bodyparser.json());
     app.use(bodyparser.urlencoded({
         extended: true
@@ -29,7 +31,7 @@ try {
     app.use(expressvalidator())
     app.use('/', routes)
     //creating connection for mongodb
-    mongoose.connect("mongodb://localhost:27017/fundoo", { useNewUrlParser: true })
+    mongoose.connect("mongodb://localhost:27017/fundoo", { useCreateIndex: true, useNewUrlParser: true })
     //event Emiters
     mongoose.connection.on("connected", () => {
         console.log("Database connected sucessfully");
@@ -46,6 +48,8 @@ try {
     var server = app.listen('3000', () => {
         console.log("Running sucessfully on port 3000")
     })
+    // Try fetching the result from Redis first in case we have it cached
+
     module.exports = server
 
 } catch (e) {

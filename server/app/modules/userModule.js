@@ -2,6 +2,7 @@ var bcrypt = require('bcrypt');
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt')
 //schema design for register
+
 let registration = new mongoose.Schema({
     "firstName": {
         type: String,
@@ -135,7 +136,6 @@ exports.forgotpassword = (req, callback) => {
  */
 exports.resetPassword = (req, callback) => {
 
-    console.log("dfdfdf", req.decoded)
     bcrypt.hash(req.body.password, 10, (err, hash) => {
         if (err) {
 

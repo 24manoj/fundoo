@@ -3,6 +3,7 @@ try {
     var router = require('express').Router();
     var controller = require('../controler/userController')
     var auth = require('../middleware/auth')
+    var rediscache = require('../middleware/redisService')
     //routes to specified fouction when mentioned endpoint hits
     router.route('/register').post(controller.register)
     router.route('/login').post(controller.login)

@@ -1,6 +1,8 @@
 var services = require('../services/userServices')
 var mailchecker = require('email-existence')
 var token = require('../token')
+var rediscache = require('../middleware/redisService')
+
 var mail = require('../middleware/userMailer')
 var response = {}
 /**
@@ -47,7 +49,6 @@ exports.register = (req, res) => {
                             response.errors = null
                             response.sucess = true
                             res.status(200).send(response);
-
                         }
                     })
                 }
@@ -124,7 +125,7 @@ exports.forgotPassword = (req, res) => {
                     res.status(404).send(response);
                 }
                 else {
-                    console.log("in token peerson id", data._id)
+
                     token.generateToken(data._id, (err, token) => {
                         if (err) {
 
@@ -136,7 +137,7 @@ exports.forgotPassword = (req, res) => {
                         else {
                             mail.sendmail(data.email, (`${process.env.url}#!/resetPassword/?token=${token}`), (err, mail) => {
                                 if (err) {
-                                    console.log(err)
+
                                     response.data = null
                                     response.errors = err
                                     response.sucess = false
@@ -145,7 +146,16 @@ exports.forgotPassword = (req, res) => {
                                     response.data = mail
                                     response.errors = null
                                     response.sucess = true
-                                    res.status(200).send(response);
+                                    rediscache.setToken(token, (err, data) => {
+                                        if (err) {
+                                            console.log("token not instered to cache");
+                                        } else {
+
+                                            res.status(200).send(response);
+
+                                        }
+                                    })
+
                                 }
                             })
 
@@ -194,7 +204,7 @@ exports.resetPassword = (req, res) => {
                         response.data = data
                         response.errors = null
                         response.sucess = true
-                        res.status(200).send(response);
+
                     }
                 })
             }
