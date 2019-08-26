@@ -16,7 +16,6 @@ try {
     const mongoose = require('mongoose');
     const bodyparser = require('body-parser');
     const routes = require('../server/router/router');
-
     require('dotenv').config();
     //creating object of express
     const app = express();
@@ -27,8 +26,9 @@ try {
     app.use(bodyparser.urlencoded({
         extended: true
     }))
-
+    app.use(express.static('../client'))
     app.use(expressvalidator())
+
     app.use('/', routes)
     //creating connection for mongodb
     mongoose.connect("mongodb://localhost:27017/fundoo", { useCreateIndex: true, useNewUrlParser: true })
@@ -45,8 +45,8 @@ try {
         console.log("database coudnt connected")
         process.exit(1)
     })
-    var server = app.listen('3000', () => {
-        console.log("Running sucessfully on port 3000")
+    var server = app.listen(4000, () => {
+        console.log("Running sucessfully on port 4000")
     })
     // Try fetching the result from Redis first in case we have it cached
 
