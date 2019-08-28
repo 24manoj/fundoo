@@ -9,7 +9,7 @@ exports.sendmail = (mailReciver, value, callback) => {
         }
     });
     var mailoptions = {
-        from: 'manoj.mk.24.mk@gmail.com',
+        from: process.env.user,
         to: mailReciver,
         subject: "Reset passowrd",
         text: value

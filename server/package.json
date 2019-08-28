@@ -26,7 +26,9 @@
     "nodemon": "^1.19.1"
   },
   "dependencies": {
-    "aws-sdk": "^2.517.0",
+    "aws-sdk": "^2.518.0",
+    "multer": "^1.4.2",
+    "multer-s3": "^2.9.0",
     "node-fetch": "^2.6.0",
     "redis": "^2.8.0"
   }
