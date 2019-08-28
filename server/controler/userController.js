@@ -227,7 +227,7 @@ exports.resetPassword = (req, res) => {
  */
 exports.fileUpload = (req, res) => {
     try {
-
+        console.log(req.body.image);
         services.fileUpload(req, (err, data) => {
             if (err) {
                 response.data = null
@@ -238,8 +238,8 @@ exports.fileUpload = (req, res) => {
             else {
                 response.data = data
                 response.errors = null
-                response.sucess = false
-                res.status(404).send(response);
+                response.sucess = true
+                res.status(200).send(response);
             }
         })
     } catch (e) {

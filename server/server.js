@@ -9,7 +9,7 @@
  *
  *******************************************************************************************************************/
 
-// try {
+
 //importing  modules
 const express = require('express');
 const expressvalidator = require('express-validator');
@@ -51,7 +51,3 @@ app.listen(4000, () => {
 // Try fetching the result from Redis first in case we have it cached
 
 module.exports = app;
-
-// } catch (e) {
-//     console.log(e);
-// }

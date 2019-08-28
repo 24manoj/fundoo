@@ -101,7 +101,7 @@ exports.resetPassword = (req, callback) => {
  */
 exports.fileUpload = (req, callback) => {
     try {
-        model.resetPassword(req, (err, data) => {
+        model.fileUpload(req, (err, data) => {
 
             if (err) {
                 callback(err);

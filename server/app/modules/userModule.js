@@ -28,8 +28,24 @@ let registration = new mongoose.Schema({
         timestamps: true
     })
 //creating model of schema
-var userRegistration = mongoose.model('userRegistration', registration);
+const userRegistration = mongoose.model('userRegistration', registration);
+const s3Upload = new mongoose.Schema({
 
+    "user": {
+        type: String,
+        required: true
+    },
+    "url":
+    {
+        type: String,
+        required: true
+    }
+}, {
+
+        timestamps: true
+
+    })
+const fileUpload = mongoose.model("fileUploads", s3Upload);
 /**
  * @desc gets validated request from services,performs database operations needed
  * @param req request contains http request 
@@ -108,7 +124,7 @@ exports.login = (req, callback) => {
  * @desc gets validated request from services,performs database operations needed
  * @param req request contains http request
  * @param callback contains response from backend
- * @return return respose sucess or failure
+ * @return re5500turn respose sucess or failure
  */
 exports.forgotpassword = (req, callback) => {
     try {
@@ -159,4 +175,31 @@ exports.resetPassword = (req, callback) => {
 
 
 
+}
+
+
+/**
+ * @desc gets validated request from services,performs database operations needed
+ * @param req request contains http request
+ * @param callback contains response from backend
+ * @return return respose sucess or failure
+ */
+exports.fileUpload = (req, callback) => {
+    try {
+        let uploadDetails = new fileUpload
+            ({
+                "user": process.env.user,
+                "url": req.file.location
+            });
+        uploadDetails.save((err, data) => {
+            if (data) {
+                callback(null, data);
+            }
+            else {
+                callback("Details not Stored");
+            }
+        })
+    } catch (e) {
+        console.log(e)
+    }
 }

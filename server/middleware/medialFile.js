@@ -2,28 +2,35 @@ const aws = require('aws-sdk')
 const multer = require("multer");
 const multers3 = require('multer-s3')
 require('dotenv').config();
-// exports.upload = (req, next) => {
-// console.log('in')
-const s3 = new aws.s3({
-    acessKeyId: process.env.acessKeyId,
+
+const s3 = new aws.S3({
+    accessKeyId: process.env.accessKeyId,
     secretAccessKey: process.env.secretAccessKey,
     region: 'us-east-2'
 });
 
-// const fileFilter
+const fileFilter = (req, file, cb) => {
+
+    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+        cb(null, true)
+    } else {
+        cb(new Error("not a valid format"), false)
+    }
+}
+
 
 const upload = multer({
-    // fileFilter,
+    fileFilter,
     storage: multers3({
-        s3,
-        bucket: process.env.Bucket,
+        s3: s3,
+        bucket: 'fundoonotess3',
         acl: 'public-read',
         metadata: function (req, file, cb) {
             cb(null, { fieldName: 'TESTING_META_DATA' });
-            // console.log(file.fieldname)
         },
         key: function (req, file, cb) {
-            cb(null, Date.now().toString())
+
+            cb(null, file.originalname)
         }
     })
 })
