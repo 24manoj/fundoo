@@ -10,8 +10,7 @@ let registration = new mongoose.Schema({
     },
     "lastName":
     {
-        type: String,
-        required: true
+        type: String
     },
     "email":
     {
@@ -21,14 +20,19 @@ let registration = new mongoose.Schema({
     }
     , "password":
     {
-        type: String,
-        required: true
+        type: String
+
+    },
+
+    "provider": {
+        type: String
     }
+
 }, {
         timestamps: true
     })
 //creating model of schema
-const userRegistration = mongoose.model('userRegistration', registration);
+userRegistration = mongoose.model('userRegistration', registration);
 const s3Upload = new mongoose.Schema({
 
     "user": {
@@ -60,7 +64,6 @@ exports.register = (req, callback) => {
         if (data.length <= 0) {
 
             bcrypt.hash(req.body.password, 10, (err, hash) => {
-
                 var details = new userRegistration({
                     "firstName": req.body.firstName,
                     "lastName": req.body.lastName,
@@ -199,6 +202,48 @@ exports.fileUpload = (req, callback) => {
                 callback("Details not Stored");
             }
         })
+    } catch (e) {
+        console.log(e)
+    }
+}
+/**
+ * @desc gets validated request from services,performs database operations needed
+ * @param req request contains http request
+ * @param callback contains response from backend
+ * @return return respose sucess or failure
+ */
+exports.find = (req) => {
+    try {
+
+        return new Promise((resolve, reject) => {
+            userRegistration.find({
+                "email": req.email
+            }, (err, data) => {
+                if (err || data.length > 0) reject("data not exist")
+                else resolve(data)
+            })
+        })
+
+    } catch (e) {
+        console.log(e)
+    }
+}
+/**
+ * @desc gets validated request from services,performs database operations needed
+ * @param req request contains http request
+ * @param callback contains response from backend
+ * @return return respose sucess or failure
+ */
+exports.save = (req) => {
+    try {
+        return new Promise((resolve, reject) => {
+            const saveData = new userRegistration(req)
+            saveData.save((err, data) => {
+                if (data) resolve(data)
+                else reject(err)
+            })
+        })
+
     } catch (e) {
         console.log(e)
     }

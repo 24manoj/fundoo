@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import GoogleLogin from 'react-google-login';
+
 import Reg from '../services/userServices';
 export default class Register extends Component {
 
@@ -14,18 +14,20 @@ export default class Register extends Component {
         Reg.register(data);
 
     }
-    GoogleResponse = (response) => {
-        console.log("in GoogleResponse", response);
-        this.sign(response, 'google')
+    GoogleResponse = () => {
+        console.log("in GoogleResponse");
+        // this.sign(response, 'google')
     }
     render() {
+        let google = () => {
+            console.log("ddfdf")
+            Reg.register();
+
+        }
         return (
             <div>
                 <h1>Fundoo Registeration</h1>
-                <GoogleLogin
-                    clientId={process.env.REACT_APP_DOC_CLIENTID}
-                    buttonText="Google"
-                    onSuccess={this.GoogleResponse} />
+                <button onClick={google}>google</button>
             </div>
         )
     }
