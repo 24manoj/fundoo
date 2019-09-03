@@ -4,7 +4,7 @@ try {
     let controller = require('../controler/userController')
     let auth = require('../middleware/auth')
     let upload = require('../middleware/medialFile')
-    let rediscache = require('../middleware/redisService')
+
 
     //routes to specified fouction when mentioned endpoint hits
     router.route('/register').post(controller.register)
@@ -12,6 +12,7 @@ try {
     router.route('/forgotPassword').post(controller.forgotPassword)
     router.route('/resetPassword/:token').post(auth.verify, controller.resetPassword)
     router.route('/upload').post(upload.single('image'), controller.fileUpload)
+    
     module.exports = router
 } catch (e) {
     console.log(e);

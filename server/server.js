@@ -6,11 +6,8 @@
  * @author : manoj kumar k s<manoj.ks.24.mk@gmail.com>
  * @version : 1.0
  * @since : 21-aug-2019
- *
  *******************************************************************************************************************/
-
 //importing  modules
-var session = require('express-session');
 const express = require('express');
 const expressvalidator = require('express-validator');
 const mongoose = require('mongoose');
@@ -22,11 +19,12 @@ var auth = require('./router/auth');
 //creating object of express
 const cors = require('cors')
 const app = express();
-app.use(session({
-    secret: 's3cr3t',
-    resave: true,
-    saveUninitialized: true
-}));
+// app.use(session({
+//     secret: 's3cr3t',
+//     resave: true,
+//     saveUninitialized: true
+// }));
+
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({
     extended: true
@@ -35,6 +33,12 @@ app.use(express.static('../client'))
 app.use(expressvalidator())
 app.use(passport.initialize());
 app.use(passport.session());
+//allow OPTIONS on just one resource
+app.options('http://localhost:3000/*', cors())
+
+//allow OPTIONS on all resources
+app.options('*', cors())
+
 app.use('/auth', auth);
 app.use('/', routes)
 //creating connection for mongodb

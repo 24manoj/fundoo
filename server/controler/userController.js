@@ -236,6 +236,7 @@ exports.fileUpload = (req, res) => {
                 res.status(404).send(response);
             }
             else {
+                dgf
                 response.data = data
                 response.errors = null
                 response.sucess = true

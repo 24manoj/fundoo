@@ -84,13 +84,12 @@ describe('API testing forgotpassword', () => {
 })
 
 
-describe('API testing resetPassword', () => {
+describe.skip('API testing resetPassword', () => {
     it('with token generated', (done) => {
         app.request(server)
             .post(`/resetPassword/${token}`)
             .send(data.resetPassword)
             .end((err, res) => {
-                console.log(res.body)
                 res.should.have.status(200)
                 done()
             })

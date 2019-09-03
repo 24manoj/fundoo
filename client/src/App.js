@@ -1,8 +1,7 @@
 import React from 'react';
 
 import './App.css';
-import register from '../src/Register';
-import login from '../src/Login'
+import login from '../src/googleLogin'
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 
 
@@ -20,7 +19,7 @@ class App extends React.Component {
       <div className="App">
         <Router>
           <Route path="/" exact component={login} />
-          <Route path="/register" component={register} />
+
 
         </Router>
 

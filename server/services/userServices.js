@@ -81,7 +81,7 @@ exports.forgotPassword = (req, callback) => {
  */
 exports.resetPassword = (req, callback) => {
     try {
-        awss3.upload(req, (err, data) => {
+        model.resetPassword(req, (err, data) => {
             if (err) {
                 callback(err);
             }

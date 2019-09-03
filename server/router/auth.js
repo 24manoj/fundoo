@@ -1,16 +1,16 @@
-var express = require('express');
-var router = express.Router();
-var cors = require('cors')
-var passportGoogle = require('../auth/google');
+let express = require('express');
+let router = express.Router();
+let cors = require('cors')
+let passportGoogle = require('../auth/google');
 /* initates the coonection for login with google*/
-router.get('/google',
+router.get('/google', cors(),
     passportGoogle.authenticate('google', { scope: ['profile', 'email'] })
 );
 /**Handles callback from google accoutnts */
-router.get('/google/callback',
+router.get('/google/callback', cors(),
     passportGoogle.authenticate('google', { failureRedirect: "/", session: false }),
     function (req, res) {
-        var token = req.user.token;
+        res.json({ msg: "with corss" })
         res.redirect("http://localhost:3000/dashboard");
 
     });

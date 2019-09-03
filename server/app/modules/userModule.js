@@ -1,6 +1,5 @@
-var bcrypt = require('bcrypt');
-var mongoose = require('mongoose');
-var bcrypt = require('bcrypt')
+let mongoose = require('mongoose');
+let bcrypt = require('bcrypt');
 //schema design for register
 
 let registration = new mongoose.Schema({
@@ -32,7 +31,7 @@ let registration = new mongoose.Schema({
         timestamps: true
     })
 //creating model of schema
-userRegistration = mongoose.model('userRegistration', registration);
+let userRegistration = mongoose.model('userRegistration', registration);
 const s3Upload = new mongoose.Schema({
 
     "user": {
