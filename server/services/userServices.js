@@ -61,6 +61,7 @@ exports.forgotPassword = (req, callback) => {
                 callback(err)
             }
             else {
+            
                 callback(null, data)
             }
         })

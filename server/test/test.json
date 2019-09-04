@@ -38,5 +38,7 @@
     "resetPassworderr": {
         "password": "password",
         "confirmPassword": "passbnbnword"
-    }
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1Njc2MDU0NDksImV4cCI6MTU2NzYxNjI0OX0.HnwI972Hk_cuj3EWA3f3qxtTcHjUolwApFvtxCnKEPs"
+
 }

@@ -3,10 +3,9 @@ var should = require('chai').should()
 var chaihttp = require('chai-http');
 var server = require('../server')
 var data = require('./test.json')
-var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkNWQxNjU0NWIxMGQ5NjliNWNlMTMxOCIsImlhdCI6MTU2NjM5NDQzOX0.u0SxNiumEKsUJUzrrZyd-DScJpuwP78LGdYWnIgE_04"
 app.use(chaihttp)
 app.use(require('chai-json-schema'))
-describe('API testing Login', () => {
+describe.skip('API testing Login', () => {
     it('with right details', (done) => {
         app.request(server)
             .post('/login')
@@ -36,7 +35,7 @@ describe('API testing Login', () => {
     })
 })
 
-describe('API testing register', () => {
+describe.skip('API testing register', () => {
     it('with user data exist details', (done) => {
         app.request(server)
             .post('/register')
@@ -84,10 +83,10 @@ describe('API testing forgotpassword', () => {
 })
 
 
-describe.skip('API testing resetPassword', () => {
+describe('API testing resetPassword', () => {
     it('with token generated', (done) => {
         app.request(server)
-            .post(`/resetPassword/${token}`)
+            .post(`/resetPassword/${data.token}`)
             .send(data.resetPassword)
             .end((err, res) => {
                 res.should.have.status(200)
@@ -96,7 +95,7 @@ describe.skip('API testing resetPassword', () => {
     })
     it('with wrong details', (done) => {
         app.request(server)
-            .post(`/resetPassword/${token}`)
+            .post(`/resetPassword/`)
             .send(data.resetPassworderr)
             .end((err, res) => {
                 console.log(res.body)

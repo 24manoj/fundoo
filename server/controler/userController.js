@@ -135,9 +135,8 @@ exports.forgotPassword = (req, res) => {
                             res.status(404).send(response);
                         }
                         else {
-                            mail.sendmail(data.email, (`${process.env.url}#!/resetPassword/?token=${token}`), (err, mail) => {
+                            mail.sendmail(data[0].email, (`${process.env.url}#!/resetPassword/?token=${token}`), (err, mail) => {
                                 if (err) {
-
                                     response.data = null
                                     response.errors = err
                                     response.sucess = false
@@ -194,9 +193,10 @@ exports.resetPassword = (req, res) => {
             if (req.body.password == req.body.confirmPassword) {
 
                 services.resetPassword(req, (err, data) => {
-                    if (err) {
+                    console.log(data.id)
+                    if (err || data.id == undefined) {
                         response.data = null
-                        response.errors = err
+                        response.errors = err + " id mismatch"
                         response.sucess = false
                         res.status(404).send(response);
                     }

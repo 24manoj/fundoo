@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js",
-    "test": "mocha  test/test.js"
+    "start": " nodemon server.js",
+    "test": "mocha test/test.js --timeout 10000000"
+
   },
   "author": "manoj kumar",
   "license": "ISC",
@@ -25,7 +26,8 @@
     "mocha": "^6.2.0",
     "mongoose": "^5.6.10",
     "nodemailer": "^6.3.0",
-    "nodemon": "^1.19.1"
+    "nodemon": "^1.19.1",
+    "xunit-file": "^1.0.0"
   },
   "dependencies": {
     "cors": "^2.8.5",

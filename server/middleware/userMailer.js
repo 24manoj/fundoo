@@ -8,6 +8,7 @@ exports.sendmail = (mailReciver, value, callback) => {
             pass: process.env.pass
         }
     });
+
     var mailoptions = {
         from: process.env.user,
         to: mailReciver,

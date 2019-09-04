@@ -8,6 +8,7 @@ var response = {}
  * @return return respose sucess or failure
  */
 exports.verify = (req, res, next) => {
+    console.log("in token", req.params.token)
     webtoken.verifyToken(req.params.token, (err, result) => {
         if (err) {
             response.data = null
@@ -16,7 +17,7 @@ exports.verify = (req, res, next) => {
             res.status(422).send(response)
         }
         else {
-            
+        
             req.decoded = result
             next()
         }

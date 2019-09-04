@@ -1,0 +1,11 @@
+<testsuite name="Mocha Tests" tests="9" failures="0" errors="0" skipped="2" timestamp="2019-09-04T11:42:32" time="7.027">
+<testcase classname="API testing Login" name="with right details" time="0.082"/>
+<testcase classname="API testing Login" name="with wrong details" time="0.005"/>
+<testcase classname="API testing Login" name="with  null details" time="0.004"/>
+<testcase classname="API testing register" name="with user data exist details" time="2.334"/>
+<testcase classname="API testing register" name="with wrong details" time="0.005"/>
+<testcase classname="API testing forgotpassword" name="with Email exist in database details" time="4.537"/>
+<testcase classname="API testing forgotpassword" name="with wrong details" time="0.004"/>
+<testcase classname="API testing resetPassword" name="with token generated"><skipped/></testcase>
+<testcase classname="API testing resetPassword" name="with wrong details"><skipped/></testcase>
+</testsuite>

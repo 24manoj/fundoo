@@ -13,12 +13,14 @@ const expressvalidator = require('express-validator');
 const mongoose = require('mongoose');
 const bodyparser = require('body-parser');
 const routes = require('../server/router/router');
+const notesRoutes = require('../server/router/notesRouter')
 require('dotenv').config();
 const passport = require('passport')
-var auth = require('./router/auth');
+// let auth = require('./router/auth');
 //creating object of express
 const cors = require('cors')
 const app = express();
+
 // app.use(session({
 //     secret: 's3cr3t',
 //     resave: true,
@@ -34,13 +36,14 @@ app.use(expressvalidator())
 app.use(passport.initialize());
 app.use(passport.session());
 //allow OPTIONS on just one resource
-app.options('http://localhost:3000/*', cors())
+// app.options('http://localhost:3000/*', cors())
 
 //allow OPTIONS on all resources
-app.options('*', cors())
+// app.options('*', cors())
 
-app.use('/auth', auth);
+// app.use('/auth', auth);
 app.use('/', routes)
+app.use('/note', notesRoutes)
 //creating connection for mongodb
 mongoose.connect("mongodb://localhost:27017/fundoo", { useCreateIndex: true, useNewUrlParser: true })
 //event Emiters

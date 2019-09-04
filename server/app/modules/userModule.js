@@ -131,10 +131,11 @@ exports.login = (req, callback) => {
 exports.forgotpassword = (req, callback) => {
     try {
 
-        userRegistration.findOne({
+        userRegistration.find({
             "email": req.body.email
         }, (err, data) => {
-            if (data != null) {
+            if (data.length > 0) {
+
                 callback(null, data);
             }
             else {
@@ -156,7 +157,6 @@ exports.resetPassword = (req, callback) => {
 
     bcrypt.hash(req.body.password, 10, (err, hash) => {
         if (err) {
-
             callback(err)
         } else {
             userRegistration.updateOne({
@@ -164,6 +164,7 @@ exports.resetPassword = (req, callback) => {
             }, {
                     "password": hash
                 }, (err, data) => {
+            
                     if (err) {
 
                         callback(err)
@@ -180,31 +181,31 @@ exports.resetPassword = (req, callback) => {
 }
 
 
-/**
- * @desc gets validated request from services,performs database operations needed
- * @param req request contains http request
- * @param callback contains response from backend
- * @return return respose sucess or failure
- */
-exports.fileUpload = (req, callback) => {
-    try {
-        let uploadDetails = new fileUpload
-            ({
-                "user": process.env.user,
-                "url": req.file.location
-            });
-        uploadDetails.save((err, data) => {
-            if (data) {
-                callback(null, data);
-            }
-            else {
-                callback("Details not Stored");
-            }
-        })
-    } catch (e) {
-        console.log(e)
-    }
-}
+// /**
+//  * @desc gets validated request from services,performs database operations needed
+//  * @param req request contains http request
+//  * @param callback contains response from backend
+//  * @return return respose sucess or failure
+//  */
+// exports.fileUpload = (req, callback) => {
+//     try {
+//         let uploadDetails = new fileUpload
+//             ({
+//                 "user": process.env.user,
+//                 "url": req.file.location
+//             });
+//         uploadDetails.save((err, data) => {
+//             if (data) {
+//                 callback(null, data);
+//             }
+//             else {
+//                 callback("Details not Stored");
+//             }
+//         })
+//     } catch (e) {
+//         console.log(e)
+//     }
+// }
 /**
  * @desc gets validated request from services,performs database operations needed
  * @param req request contains http request

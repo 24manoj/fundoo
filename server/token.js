@@ -4,10 +4,11 @@ exports.generateToken = (id, callback) => {
         let payload = {
             "id": id
         }
-        jsonToken.sign(payload, process.env.key, (err, token) => {
+        jsonToken.sign(payload, process.env.key, { expiresIn: '3h' }, (err, token) => {
             if (err) {
                 callback(err);
             } else {
+
                 callback(null, token);
             }
 
@@ -20,8 +21,8 @@ exports.generateToken = (id, callback) => {
 exports.verifyToken = (token, callback) => {
     try {
         jsonToken.verify(token, process.env.key, (err, result) => {
-
-            if (result.id != undefined) {
+            console.log(result)
+            if (result != undefined) {
                 callback(null, result);
             }
             else {
