@@ -5,7 +5,7 @@ var server = require('../server')
 var data = require('./test.json')
 app.use(chaihttp)
 app.use(require('chai-json-schema'))
-describe.skip('API testing Login', () => {
+describe('API testing Login', () => {
     it('with right details', (done) => {
         app.request(server)
             .post('/login')
@@ -35,7 +35,7 @@ describe.skip('API testing Login', () => {
     })
 })
 
-describe.skip('API testing register', () => {
+describe('API testing register', () => {
     it('with user data exist details', (done) => {
         app.request(server)
             .post('/register')

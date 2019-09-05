@@ -16,21 +16,16 @@ const routes = require('../server/router/router');
 const notesRoutes = require('../server/router/notesRouter')
 require('dotenv').config();
 const passport = require('passport')
-// let auth = require('./router/auth');
-//creating object of express
-const cors = require('cors')
-const app = express();
+let auth = require('./router/auth');
 
-// app.use(session({
-//     secret: 's3cr3t',
-//     resave: true,
-//     saveUninitialized: true
-// }));
+
+const app = express();
 
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({
     extended: true
 }))
+
 app.use(express.static('../client'))
 app.use(expressvalidator())
 app.use(passport.initialize());
@@ -41,7 +36,7 @@ app.use(passport.session());
 //allow OPTIONS on all resources
 // app.options('*', cors())
 
-// app.use('/auth', auth);
+app.use('/auth', auth);
 app.use('/', routes)
 app.use('/note', notesRoutes)
 //creating connection for mongodb

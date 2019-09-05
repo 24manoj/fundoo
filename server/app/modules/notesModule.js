@@ -5,13 +5,10 @@ const note = new mongoose.Schema({
         require: true
     },
     title: {
-        type: String,
-        require: true,
-        unique: true
+        type: String
     },
     content: {
-        type: String,
-        required: true
+        type: String
     },
     isArchive: {
         type: Boolean,
@@ -20,9 +17,13 @@ const note = new mongoose.Schema({
     isTrash: {
         type: Boolean,
         default: false
-    }
-
-
+    },
+    reminder: {
+        type: Date
+    },
+    lables: [{
+        type: String
+    }]
 }, {
         timestamps: true
     })
@@ -34,10 +35,10 @@ exports.createNotes = (req) => {
         let noteDetails = new notes({
             "userId": req.body.userId,
             "title": req.body.title,
-            "content": req.body.content
+            "content": req.body.content,
+            "reminder": req.body.date
 
         });
-        console.log("user details==>", noteDetails)
         noteDetails.save(noteDetails, (err, data) => {
             if (err) { reject(err) }
             else { console.log(data); resolve(data) }
@@ -47,41 +48,85 @@ exports.createNotes = (req) => {
 
 exports.getNotes = (req) => {
     return new Promise((resolve, reject) => {
+
         notes.find({
             "userId": req.body.userId,
             "isTrash": false,
-            "isArchive": false
+            "isArchive": false,
         }, (err, notes) => {
             if (err || notes.length <= 0) reject(err)
             else resolve(notes)
         })
+
     })
+
 }
+
 exports.updateNotes = (req) => {
     return new Promise((resolve, reject) => {
-        if (req.body.content != null) {
-            notes.update({
-                'userId': req.body.userId
-            }, {
-                    'content': req.body.content
-
-                }, (err, updated) => {
-                    if (err) reject(err)
-                    else resolve(updated)
-                })
-        } else {
-            notes.update({
-                'userId': req.body.userId
-            }, {
-                    'isArchive': req.body.isArchive,
-                    'isTrash': req.body.isTrash
-
-                }, (err, updated) => {
-                    if (err) reject(err)
-                    else resolve(updated)
-                })
-
-        }
+        notes.update({
+            '_id': req.body.id
+        }, {
+                'title': req.body.title,
+                'content': req.body.content
+            }, (err, updated) => {
+                if (err) reject(err)
+                else resolve(updated)
+            })
     })
 
+}
+
+exports.deleteNotes = (req) => {
+    return new Promise((resolve, reject) => {
+        notes.deleteOne({
+            _id: req.body.id,
+            isArchive: false,
+            isTrash: true
+        }, (err, deletd) => {
+            if (err) reject(err)
+            else resolve(deletd)
+        })
+
+    })
+}
+
+exports.noteTrash = (req) => {
+    return new Promise((resolve, reject) => {
+        notes.update({
+            '_id': req.body.id
+        }, {
+                isTrash: req.body.trash,
+            }, (err, updated) => {
+                if (err) reject(err)
+                else resolve(updated)
+            })
+    })
+
+}
+
+exports.noteArchive = (req) => {
+    return new Promise((resolve, reject) => {
+        notes.update({
+            '_id': req.body.id
+        }, {
+                isArchive: req.body.archive,
+            }, (err, updated) => {
+                if (err) reject(err)
+                else resolve(updated)
+            })
+    })
+
+}
+exports.noteReminder = (req) => {
+    return new Promise((resolve, reject) => {
+        notes.update({
+            '_id': req.body.id
+        }, {
+                reminder: req.body.date,
+            }, (err, updated) => {
+                if (err) reject(err)
+                else resolve(updated)
+            })
+    })
 }

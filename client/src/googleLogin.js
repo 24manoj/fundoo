@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 
-import Reg from '../services/userServices';
+import reg from '../services/userservices';
 export default class login extends Component {
 
     render() {
-        let google = () => { Reg.login(); }
+        let google = () => { reg.login() }
         return (
             <div>
                 <h1>Fundoo Registeration</h1>
