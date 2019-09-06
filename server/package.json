@@ -5,7 +5,6 @@
   "scripts": {
     "start": " nodemon server.js",
     "test": "mocha test/test.js --timeout 10000000"
-
   },
   "author": "manoj kumar",
   "license": "ISC",
@@ -31,6 +30,7 @@
   },
   "dependencies": {
     "cors": "^2.8.5",
+    "elasticsearch": "^16.3.0",
     "express-session": "^1.16.2",
     "location-href": "^1.0.0",
     "multer": "^1.4.2",

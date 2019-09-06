@@ -14,6 +14,7 @@ const mongoose = require('mongoose');
 const bodyparser = require('body-parser');
 const routes = require('../server/router/router');
 const notesRoutes = require('../server/router/notesRouter')
+let search = require('./router/elasticSearchRouter')
 require('dotenv').config();
 const passport = require('passport')
 let auth = require('./router/auth');
@@ -38,6 +39,7 @@ app.use(passport.session());
 
 app.use('/auth', auth);
 app.use('/', routes)
+app.use('/elastic', search)
 app.use('/note', notesRoutes)
 //creating connection for mongodb
 mongoose.connect("mongodb://localhost:27017/fundoo", { useCreateIndex: true, useNewUrlParser: true })
@@ -57,6 +59,4 @@ mongoose.connection.on("error", () => {
 app.listen(4000, () => {
     console.log("Running sucessfully on port 4000")
 })
-// Try fetching the result from Redis first in case we have it cached
-
 module.exports = app;

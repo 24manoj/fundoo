@@ -1,10 +1,15 @@
-const router = require('express').Router();
+let noteRouter = require('express').Router();
 let notesController = require('../controler/notescontroller')
-router.post('/createNotes', notesController.createNotes);
-router.get('/getNotes', notesController.getNotes)
-router.post('/updateNotes', notesController.updateNotes);
-router.post('/deleteNotes', notesController.deleteNotes)
-router.post('/noteTrash', notesController.noteTrash);
-router.post('/noteArchive', notesController.noteArchive);
-router.post('/noteReminder', notesController.noteReminder);
-module.exports = router
+noteRouter.post('/createNotes', notesController.createNotes);
+noteRouter.get('/getNotes', notesController.getNotes)
+noteRouter.post('/updateNotes', notesController.updateNotes);
+noteRouter.post('/deleteNotes', notesController.deleteNotes)
+noteRouter.post('/noteTrash', notesController.noteTrash);
+noteRouter.post('/noteArchive', notesController.noteArchive);
+noteRouter.post('/noteReminder', notesController.noteReminder);
+noteRouter.post('/noteLable', notesController.noteLable);
+noteRouter.post('/createLabel', notesController.createLabel)
+noteRouter.post('/deleteLabel', notesController.deleteLabel)
+noteRouter.post('/updateLabel', notesController.updateLabel)
+noteRouter.get('/getLabels', notesController.getLabels)
+module.exports = noteRouter

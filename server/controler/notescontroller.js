@@ -1,194 +1,453 @@
 let noteService = require('../services/notesService')
 let status = require('../middleware/httpStatusCode')
 let response = {}
+/**
+ * @desc takes input as http req ,error validation is done,passes request data to  next services
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @return return respose sucess or failure
+ */
 exports.createNotes = (req, res) => {
-    console.log(req.body)
-    req.checkBody('userId', 'userId invalid ').isEmail()
-    let errors = req.validationErrors()
-    if (errors) {
-        response.sucess = false,
-            response.data = null,
-            response.errors = errors
-        res.status(status.UnprocessableEntity).send(response)
-    }
-    else {
-        if (req.body.title != null || req.body.content != null) {
-            noteService.createNotes(req)
-                .then((data) => {
+    try {
+        req.checkBody('userId', 'userId invalid ').isEmail()
+        let errors = req.validationErrors()
+        if (errors) {
+            response.sucess = false,
+                response.data = null,
+                response.errors = errors
+            res.status(status.UnprocessableEntity).send(response)
+        }
+        else {
+            if (req.body.title != null || req.body.content != null) {
+                noteService.createNotes(req)
+                    .then((data) => {
+                        response.sucess = true,
+                            response.data = data,
+                            response.errors = null
+                        res.status(status.sucess).send(response)
+                    })
+                    .catch((err) => {
+                        response.sucess = false,
+                            response.data = null,
+                            response.errors = err
+                        res.status(status.notfound).send(response)
+                    })
+            }
+            else {
+                response.sucess = true,
+                    response.data = "no data",
+                    response.errors = null
+                res.status(status.sucess).send(response);
+            }
+        }
+    } catch (e) { console.log(e) }
+}
+
+/**
+ * @desc takes input as http req ,error validation is done,passes request data to  next services,
+ * respoonses with array of notes
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @return return respose sucess or failure
+ */
+
+exports.getNotes = (req, res) => {
+    try {
+        req.check('userId', 'userId invalid').isEmail()
+        let errors = req.validationErrors()
+        if (errors) {
+            response.sucess = false,
+                response.data = null,
+                response.errors = errors
+            res.status(status.UnprocessableEntity).send(response)
+        } else {
+            noteService.getNotes(req)
+                .then((notes) => {
+
                     response.sucess = true,
-                        response.data = data,
+                        response.data = notes,
                         response.errors = null
                     res.status(status.sucess).send(response)
                 })
-                .catch((err) => {
+                .catch(err => {
                     response.sucess = false,
                         response.data = null,
                         response.errors = err
                     res.status(status.notfound).send(response)
                 })
         }
-        else {
-            response.sucess = true,
-                response.data = "no data",
-                response.errors = null
-            res.status(status.sucess).send(response);
-        }
+    } catch (e) {
+        console.log(e)
     }
 }
-
-exports.getNotes = (req, res) => {
-    req.check('userId', 'userId invalid').isEmail()
-    let errors = req.validationErrors()
-    if (errors) {
-        response.sucess = false,
-            response.data = null,
-            response.errors = errors
-        res.status(status.UnprocessableEntity).send(responsess)
-    } else {
-        noteService.getNotes(req)
-            .then((notes) => {
-
-                response.sucess = true,
-                    response.data = notes,
-                    response.errors = null
-                res.status(status.sucess).send(response)
-            })
-            .catch(err => {
-                response.sucess = false,
-                    response.data = null,
-                    response.errors = err
-                res.status(status.notfound).send(response)
-            })
-    }
-}
-
+/**
+ * @desc takes input as http req ,error validation is done,passes request data to  next services,
+ *  updates collection with valid details
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @return return respose sucess or failure
+ */
 
 exports.updateNotes = (req, res) => {
-    req.check('id', 'userId invalid').isEmail()
-    let errors = req.validationErrors()
-    if (errors) {
-        response.sucess = false,
-            response.data = null,
-            response.errors = errors
-        res.status(status.UnprocessableEntity).send(response)
-    } else {
-        noteService.updateNotes(req)
-            .then((notes) => {
-                response.sucess = true,
-                    response.data = notes,
-                    response.errors = null
-                res.status(status.sucess).send(response)
-            })
-            .catch(err => {
-                response.sucess = false,
-                    response.data = null,
-                    response.errors = err
-                res.status(status.notfound).send(responsess)
-            })
-    }
+    try {
+        req.check('id', 'userId invalid').isEmail()
+        let errors = req.validationErrors()
+        if (errors) {
+            response.sucess = false,
+                response.data = null,
+                response.errors = errors
+            res.status(status.UnprocessableEntity).send(response)
+        } else {
+            noteService.updateNotes(req)
+                .then((notes) => {
+                    response.sucess = true,
+                        response.data = notes,
+                        response.errors = null
+                    res.status(status.sucess).send(response)
+                })
+                .catch(err => {
+                    response.sucess = false,
+                        response.data = null,
+                        response.errors = err
+                    res.status(status.notfound).send(responsess)
+                })
+        }
+    } catch (e) { console.log(e) }
 }
+
+/**
+ * @desc takes input as http req ,error validation is done,passes request data to  next services,
+ * removes  data from collection
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @return return respose sucess or failure
+ */
 
 exports.deleteNotes = (req, res) => {
-    req.check('id', 'Id invalid').isEmail()
-    let errors = req.validationErrors()
-    if (errors) {
-        response.errors = errors
-        response.data = null
-        response.sucess = false
-        res.status(status.UnprocessableEntity).send(response)
-    }
-    else {
-        noteService.deleteNotes(req)
-            .then(data => {
-                response.errors = null
-                response.data = data
-                response.sucess = true
-                res.status(status.sucess).send(response)
-            })
-            .catch(err => {
-                response.errors = err
-                response.data = null
-                response.sucess = false
-                res.status(status.notfound).send(response)
-            })
+    try {
+        req.check('id', 'Id invalid').isEmail()
+        let errors = req.validationErrors()
+        if (errors) {
+            response.errors = errors
+            response.data = null
+            response.sucess = false
+            res.status(status.UnprocessableEntity).send(response)
+        }
+        else {
+            noteService.deleteNotes(req)
+                .then(data => {
+                    response.errors = null
+                    response.data = data
+                    response.sucess = true
+                    res.status(status.sucess).send(response)
+                })
+                .catch(err => {
+                    response.errors = err
+                    response.data = null
+                    response.sucess = false
+                    res.status(status.notfound).send(response)
+                })
+        }
+    } catch (e) {
+        console.log(e)
     }
 }
+/**
+ * @desc takes input as http req ,error validation is done,passes request data to  next services,
+ * updates collection with verified details
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @return return respose sucess or failure
+ */
+
 exports.noteTrash = (req, res) => {
-    req.check('id', 'Id invalid').notEmpty()
-    let errors = req.validationErrors()
-    if (errors) {
-        response.errors = errors
-        response.data = null
-        response.sucess = false
-        res.status(status.UnprocessableEntity).send(response)
-    }
-    else {
-        noteService.noteTrash(req)
-            .then(data => {
-                response.errors = null
-                response.data = data
-                response.sucess = true
-                res.status(status.sucess).send(response)
-            })
-            .catch(err => {
-                response.errors = err
-                response.data = null
-                response.sucess = false
-                res.status(status.notfound).send(response)
-            })
+    try {
+        req.check('id', 'Id invalid').notEmpty()
+        let errors = req.validationErrors()
+        if (errors) {
+            response.errors = errors
+            response.data = null
+            response.sucess = false
+            res.status(status.UnprocessableEntity).send(response)
+        }
+        else {
+            noteService.noteTrash(req)
+                .then(data => {
+                    response.errors = null
+                    response.data = data
+                    response.sucess = true
+                    res.status(status.sucess).send(response)
+                })
+                .catch(err => {
+                    response.errors = err
+                    response.data = null
+                    response.sucess = false
+                    res.status(status.notfound).send(response)
+                })
+        }
+    } catch (e) {
+        console.log(e)
     }
 }
 
+/**
+ * @desc takes input as http req ,error validation is done,passes request data to  next services,
+ * updates collection with verified details
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @return return respose sucess or failure
+ */
 
 exports.noteArchive = (req, res) => {
-    req.check('id', 'Id invalid').notEmpty()
-    let errors = req.validationErrors()
-    if (errors) {
-        response.errors = errors
-        response.data = null
-        response.sucess = false
-        res.status(status.UnprocessableEntity).send(response)
-    }
-    else {
-        noteService.noteArchive(req)
-            .then(data => {
-                response.errors = null
-                response.data = data
-                response.sucess = true
-                res.status(status.sucess).send(response)
-            })
-            .catch(err => {
-                response.errors = err
-                response.data = null
-                response.sucess = false
-                res.status(status.notfound).send(response)
-            })
+    try {
+        req.check('id', 'Id invalid').notEmpty()
+        let errors = req.validationErrors()
+        if (errors) {
+            response.errors = errors
+            response.data = null
+            response.sucess = false
+            res.status(status.UnprocessableEntity).send(response)
+        }
+        else {
+            noteService.noteArchive(req)
+                .then(data => {
+                    response.errors = null
+                    response.data = data
+                    response.sucess = true
+                    res.status(status.sucess).send(response)
+                })
+                .catch(err => {
+                    response.errors = err
+                    response.data = null
+                    response.sucess = false
+                    res.status(status.notfound).send(response)
+                })
+        }
+    } catch (e) {
+        console.log(e)
     }
 }
 
-
+/**
+ * @desc takes input as http req ,error validation is done,passes request data to  next services,
+ * updates collection with verified details
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @return return respose sucess or failure
+ */
 exports.noteReminder = (req, res) => {
-    req.check('id', 'Id invalid').notEmpty()
-    let errors = req.validationErrors()
-    if (errors) {
-        response.errors = errors
-        response.data = null
-        response.sucess = false
-        res.status(status.UnprocessableEntity).send(response)
+    try {
+        req.check('id', 'Id invalid').notEmpty()
+        let errors = req.validationErrors()
+        if (errors) {
+            response.errors = errors
+            response.data = null
+            response.sucess = false
+            res.status(status.UnprocessableEntity).send(response)
+        }
+        else {
+            noteService.noteReminder(req)
+                .then(data => {
+                    response.errors = null
+                    response.data = data
+                    response.sucess = true
+                    res.status(status.sucess).send(response)
+                })
+                .catch(err => {
+                    response.errors = err
+                    response.data = null
+                    response.sucess = false
+                    res.status(status.notfound).send(response)
+                })
+        }
+    } catch (e) {
+        console.log(e)
     }
-    else {
-        noteService.noteReminder(req)
-            .then(data => {
+}
+/**
+ * @desc takes input as http req ,error validation is done,passes request data to  next services,
+ * updates collection with verified details
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @return return respose sucess or failure
+ */
+
+exports.noteLable = (req, res) => {
+    try {
+        req.check('id', 'Id invalid').notEmpty()
+        req.check('lable', 'lable invalid').notEmpty()
+        let errors = req.validationErrors()
+        if (errors) {
+            response.errors = errors
+            response.data = null
+            response.sucess = false
+            res.status(status.UnprocessableEntity).send(response)
+        }
+        else {
+            noteService.noteLable(req)
+                .then(data => {
+                    response.errors = null
+                    response.data = data
+                    response.sucess = true
+                    res.status(status.sucess).send(response)
+                })
+                .catch(err => {
+                    response.errors = err
+                    response.data = null
+                    response.sucess = false
+                    res.status(status.notfound).send(response)
+                })
+        }
+    } catch (e) {
+        console.log(e)
+    }
+}/**
+ * @desc takes input as http req ,error validation is done,passes request data to  next services,
+ * collects the data and save in collection
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @return return respose sucess or failure
+ */
+
+exports.createLabel = async (req, res) => {
+    try {
+        req.check('userId', 'userId invalid').notEmpty()
+        req.check('lableName', 'lableName invalid').notEmpty()
+        let errors = req.validationErrors()
+        if (errors) {
+            response.errors = errors
+            response.data = null
+            response.sucess = false
+            res.status(status.UnprocessableEntity).send(response)
+        }
+        else {
+            await noteService.createLabel(req, (err, data))
+            if (data) {
                 response.errors = null
                 response.data = data
                 response.sucess = true
                 res.status(status.sucess).send(response)
-            })
-            .catch(err => {
+            }
+            else {
                 response.errors = err
                 response.data = null
                 response.sucess = false
                 res.status(status.notfound).send(response)
-            })
+            }
+        }
+    } catch (e) {
+        console.log(e)
+    }
+}
+/**
+ * @desc takes input as http req ,error validation is done,passes request data to  next services,
+ * updates collection with verified details
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @return return respose sucess or failure
+ */
+
+exports.updateLabel = async (req, res) => {
+    try {
+        req.check('id', 'Id invalid').notEmpty()
+        req.check('lableName', 'lableName invalid').notEmpty()
+        let errors = req.validationErrors()
+        if (errors) {
+            response.errors = errors
+            response.data = null
+            response.sucess = false
+            res.status(status.UnprocessableEntity).send(response)
+        }
+        else {
+            await noteService.updateLabel(req, res)
+                .then(data => {
+                    response.errors = null
+                    response.data = data
+                    response.sucess = true
+                    res.status(status.sucess).send(response)
+                })
+                .catch(err => {
+                    response.errors = err
+                    response.data = null
+                    response.sucess = false
+                    res.status(status.notfound).send(response)
+                })
+        }
+    } catch (e) { console.log(es) }
+}
+
+/**
+ * @desc takes input as http req ,error validation is done,passes request data to  next services,
+ * removes documents from collection
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @return return respose sucess or failure
+ */
+exports.deleteLabel = async (req, res) => {
+    try {
+        req.check('userId', 'userId invalid').notEmpty()
+        req.check('lableName', 'lableName invalid').notEmpty()
+        let errors = req.validationErrors()
+        if (errors) {
+            response.errors = errors
+            response.data = null
+            response.sucess = false
+            res.status(status.UnprocessableEntity).send(response)
+        }
+        else {
+            await noteService.deleteLabel(req)
+                .then(data => {
+                    response.errors = null
+                    response.data = data
+                    response.sucess = true
+                    res.status(status.sucess).send(response)
+                })
+                .catch(err => {
+                    response.errors = err
+                    response.data = null
+                    response.sucess = false
+                    res.status(status.notfound).send(response)
+                })
+        }
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+/**
+ * @desc takes input as http req ,error validation is done,passes request data to  next services,
+ * response with array of labels document
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @return return respose sucess or failure
+ */
+exports.getLabels = async (req, res) => {
+    try {
+        req.check('userId', 'userId invalid').notEmpty()
+        req.check('lableName', 'lableName invalid').notEmpty()
+        let errors = req.validationErrors()
+        if (errors) {
+            response.errors = errors
+            response.data = null
+            response.sucess = false
+            res.status(status.UnprocessableEntity).send(response)
+        }
+        else {
+            await noteService.getLabels(req)
+                .then(data => {
+                    response.errors = null
+                    response.data = data
+                    response.sucess = true
+                    res.status(status.sucess).send(response)
+                })
+                .catch(err => {
+                    response.errors = err
+                    response.data = null
+                    response.sucess = false
+                    res.status(status.notfound).send(response)
+                })
+        }
+    } catch (e) {
+        console.log(e)
     }
 }

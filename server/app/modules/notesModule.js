@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+//creating schema for note
 const note = new mongoose.Schema({
     userId: {
         type: String,
@@ -21,112 +22,294 @@ const note = new mongoose.Schema({
     reminder: {
         type: Date
     },
-    lables: [{
+    labels: [{
         type: String
     }]
 }, {
-        timestamps: true
-    })
-
+    timestamps: true
+})
 const notes = mongoose.model('notes', note)
-
+/**
+ * @desc gets validated request from services,performs database operations needed
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
 exports.createNotes = (req) => {
-    return new Promise((resolve, reject) => {
-        let noteDetails = new notes({
-            "userId": req.body.userId,
-            "title": req.body.title,
-            "content": req.body.content,
-            "reminder": req.body.date
+    try {
+        return new Promise((resolve, reject) => {
+            let noteDetails = new notes({
+                "userId": req.body.userId,
+                "title": req.body.title,
+                "content": req.body.content,
+                "reminder": req.body.date
 
-        });
-        noteDetails.save(noteDetails, (err, data) => {
-            if (err) { reject(err) }
-            else { console.log(data); resolve(data) }
+            });
+            //save data in collection
+            noteDetails.save(noteDetails, (err, data) => {
+                if (err) { reject(err) }
+                else { resolve(data) }
+            })
         })
-    })
+    } catch (e) {
+        console.log(e)
+    }
 }
 
+/**
+ * @desc gets validated request from services,performs database operations needed
+ * returns notes data present in database,based on conditions given
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
 exports.getNotes = (req) => {
-    return new Promise((resolve, reject) => {
+    try {
+        return new Promise((resolve, reject) => {
+            notes.find({
+                "userId": req.body.userId,
+                "isTrash": false,
+                "isArchive": false,
+            }, (err, notes) => {
+                if (err || notes.length <= 0) reject(err)
+                else resolve(notes)
+            })
 
-        notes.find({
-            "userId": req.body.userId,
-            "isTrash": false,
-            "isArchive": false,
-        }, (err, notes) => {
-            if (err || notes.length <= 0) reject(err)
-            else resolve(notes)
         })
-
-    })
-
+    } catch (e) {
+        console.log(e)
+    }
 }
 
+/**
+ * @desc gets validated request from services,performs database operations needed
+ * updates collection data for given condition
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
 exports.updateNotes = (req) => {
-    return new Promise((resolve, reject) => {
-        notes.update({
-            '_id': req.body.id
-        }, {
+    try {
+        return new Promise((resolve, reject) => {
+            notes.update({
+                '_id': req.body.id
+            }, {
                 'title': req.body.title,
                 'content': req.body.content
             }, (err, updated) => {
                 if (err) reject(err)
                 else resolve(updated)
             })
-    })
-
-}
-
-exports.deleteNotes = (req) => {
-    return new Promise((resolve, reject) => {
-        notes.deleteOne({
-            _id: req.body.id,
-            isArchive: false,
-            isTrash: true
-        }, (err, deletd) => {
-            if (err) reject(err)
-            else resolve(deletd)
         })
-
-    })
+    } catch (e) {
+        console.log(e)
+    }
 }
+/**
+ * @desc gets validated request from services,performs database operations needed
+ *  removes data from the collection based on given condition
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
+exports.deleteNotes = (req) => {
+    try {
+        return new Promise((resolve, reject) => {
+            notes.deleteOne({
+                _id: req.body.id,
+                isArchive: false,
+                isTrash: true
+            }, (err, deletd) => {
+                if (err) reject(err)
+                else resolve(deletd)
+            })
 
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
+/**
+ * @desc gets validated request from services,performs database operations needed
+ *  updates isTrash attribute for given note id
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
 exports.noteTrash = (req) => {
-    return new Promise((resolve, reject) => {
-        notes.update({
-            '_id': req.body.id
-        }, {
+    try {
+        return new Promise((resolve, reject) => {
+            // console.log(req.body.trash)
+            notes.update({
+                '_id': req.body.id
+            }, {
                 isTrash: req.body.trash,
             }, (err, updated) => {
                 if (err) reject(err)
                 else resolve(updated)
             })
-    })
-
+        })
+    } catch (e) {
+        console.log(e)
+    }
 }
 
+/**
+ * @desc gets validated request from services,performs database operations needed,
+ * updates is Archive attribute ,on given condition
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
 exports.noteArchive = (req) => {
-    return new Promise((resolve, reject) => {
-        notes.update({
-            '_id': req.body.id
-        }, {
+    try {
+        return new Promise((resolve, reject) => {
+            notes.update({
+                '_id': req.body.id
+            }, {
                 isArchive: req.body.archive,
             }, (err, updated) => {
                 if (err) reject(err)
                 else resolve(updated)
             })
-    })
-
+        })
+    } catch (e) {
+        console.log(e)
+    }
 }
+/**
+ * @desc gets validated request from services,performs database operations needed,
+ * updates reminder on given condition 
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
 exports.noteReminder = (req) => {
-    return new Promise((resolve, reject) => {
-        notes.update({
-            '_id': req.body.id
-        }, {
+    try {
+        return new Promise((resolve, reject) => {
+            notes.update({
+                '_id': req.body.id
+            }, {
                 reminder: req.body.date,
             }, (err, updated) => {
                 if (err) reject(err)
                 else resolve(updated)
             })
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
+/**
+ * @desc gets validated request from services,performs database operations needed,
+ * updates labels attribute on given condition 
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
+exports.noteLabel = (req) => {
+    try {
+        return new Promise((resolve, reject) => {
+            notes.findOneAndUpdate({
+                _id: req.body.id
+            }, {
+                labels: req.body.lable
+            }, (err, update) => {
+                if (err) reject(err)
+                else resolve(update)
+            })
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
+/** schema for storing labels in database */
+const label = new mongoose.Schema
+    ({
+        "userId": {
+            type: String,
+            required: true
+        },
+        "labelName": {
+            type: String,
+            required: true
+        }
+    }, {
+        timestamps: true
     })
+const labels = mongoose.model("label", label)
+/**
+ * @desc gets validated request from services,performs database operations needed
+ *  stores data in collection 
+ * @param req request contains http request
+ * @return returns  a callback function
+ */
+exports.createLabel = async (req, callback) => {
+    try {
+        const data = new labels({
+            "userId": req.body.userId,
+            "labelName": req.body.labelName
+        })
+        await data.save((err, data) => {
+            if (err) callback(err)
+            else callback(null, data)
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
+/**
+ * @desc gets validated request from services,performs database operations needed
+ * updates the changes of label 
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
+exports.updateLabel = (req) => {
+    try {
+        return new Promise((resolve, reject) => {
+            labels.update({
+                '_id': req.body.id
+            }, {
+                'labelName': req.body.labelName
+            }, (err, update) => {
+                if (err) reject(err)
+                else resolve(update)
+            })
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
+/**
+ * @desc gets validated request from services,performs database operations needed,
+ * deletes label data for specified label ids
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
+exports.deleteLabel = (req) => {
+    try {
+        return new Promise((resolve, reject) => {
+            labels.findOneAndDelete({
+                '_id': req.body.id
+            }, (err, update) => {
+                if (err) reject(err)
+                else resolve(update)
+            })
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+/**
+ * @desc gets validated request from services,performs database operations needed,
+ * finds labels data from database 
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
+exports.getLabels = (req) => {
+    try {
+        return new Promise((resolve, reject) => {
+            labels.find({
+                'userid': req.body.id
+            }, (err, update) => {
+                if (err) reject(err)
+                else resolve(update)
+            })
+        })
+    } catch (e) {
+        console.log(e)
+    }
 }

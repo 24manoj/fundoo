@@ -50,3 +50,44 @@ exports.noteReminder = (req) => {
             .catch(err => reject(err))
     })
 }
+
+exports.noteLable = (req) => {
+    return new Promise((resolve, reject) => {
+        model.noteLable(req)
+            .then(data => resolve(data))
+            .catch(err => reject(err))
+    })
+}
+async function createLabel(req, callback) {
+
+    await model.createLabel(req, (err, data) => {
+        if (err) callback(err)
+        else callback(null, data)
+    })
+
+}
+
+exports.updateLabel = (req) => {
+    return new Promise((resolve, reject) => {
+        model.updateLabel(req)
+            .then(data => resolve(data))
+            .catch(err => reject(err))
+    })
+}
+
+exports.deleteLabel = (req) => {
+    return new Promise((resolve, reject) => {
+        model.deleteLabel(req)
+            .then(data => resolve(data))
+            .catch(err => reject(err))
+    })
+}
+exports.getLabels = (req) => {
+    return new Promise((resolve, reject) => {
+        model.getLabels(req)
+            .then((data) => resolve(data))
+            .catch((err) => reject(err))
+    })
+}
+
+module.exports = { createLabel }
