@@ -1,12 +1,21 @@
 const model = require('../app/modules/notesModule')
+/**
+ * @desc gets validated request from controller,serves to modules
+ * @param req request contains all the requested data
+ * @return promise data
+ */
 exports.createNotes = (req) => {
     return new Promise((resolve, reject) => {
         model.createNotes(req)
-            .then((data) => resolve(data))
-            .catch((err) => reject(err))
+            .then(data => resolve(data))
+            .catch(err => reject(err))
     })
-
 }
+/**
+ * @desc gets validated request from controller,serves to modules
+ * @param req request contains all the requested data
+ * @return promise data
+ */
 exports.getNotes = (req) => {
     return new Promise((resolve, reject) => {
         model.getNotes(req)
@@ -14,6 +23,11 @@ exports.getNotes = (req) => {
             .catch(err => reject(err))
     })
 }
+/**
+ * @desc gets validated request from controller,serves to modules
+ * @param req request contains all the requested data
+ * @return promise data
+ */
 exports.updateNotes = (req) => {
     return new Promise((resolve, reject) => {
         model.updateNotes(req)
@@ -21,6 +35,11 @@ exports.updateNotes = (req) => {
             .catch(err => reject(err))
     })
 }
+/**
+ * @desc gets validated request from controller,serves to modules
+ * @param req request contains all the requested data
+ * @return promise data
+ */
 exports.deleteNotes = (req) => {
     return new Promise((resolve, reject) => {
         model.deleteNotes(req)
@@ -28,6 +47,11 @@ exports.deleteNotes = (req) => {
             .catch(err => reject(err))
     })
 }
+/**
+ * @desc gets validated request from controller,serves to modules
+ * @param req request contains all the requested data
+ * @return promise data
+ */
 exports.noteTrash = (req) => {
     return new Promise((resolve, reject) => {
         model.noteTrash(req)
@@ -35,6 +59,11 @@ exports.noteTrash = (req) => {
             .catch(err => reject(err))
     })
 }
+/**
+ * @desc gets validated request from controller,serves to modules
+ * @param req request contains all the requested data
+ * @return promise data
+ */
 exports.noteArchive = (req) => {
     return new Promise((resolve, reject) => {
         model.noteArchive(req)
@@ -42,7 +71,11 @@ exports.noteArchive = (req) => {
             .catch(err => reject(err))
     })
 }
-
+/**
+ * @desc gets validated request from controller,serves to modules
+ * @param req request contains all the requested data
+ * @return promise data
+ */
 exports.noteReminder = (req) => {
     return new Promise((resolve, reject) => {
         model.noteReminder(req)
@@ -50,7 +83,11 @@ exports.noteReminder = (req) => {
             .catch(err => reject(err))
     })
 }
-
+/**
+ * @desc gets validated request from controller,serves to modules
+ * @param req request contains all the requested data
+ * @return promise data
+ */
 exports.noteLable = (req) => {
     return new Promise((resolve, reject) => {
         model.noteLable(req)
@@ -58,7 +95,12 @@ exports.noteLable = (req) => {
             .catch(err => reject(err))
     })
 }
-async function createLabel(req, callback) {
+/**
+ * @desc gets validated request from controller,serves to modules
+ * @param req request contains all the requested data
+ * @return callback err or data
+ */
+exports.createLabel = async (req, callback) => {
 
     await model.createLabel(req, (err, data) => {
         if (err) callback(err)
@@ -66,7 +108,11 @@ async function createLabel(req, callback) {
     })
 
 }
-
+/**
+ * @desc gets validated request from controller,serves to modules
+ * @param req request contains all the requested data
+ * @return promise data
+ */
 exports.updateLabel = (req) => {
     return new Promise((resolve, reject) => {
         model.updateLabel(req)
@@ -74,7 +120,11 @@ exports.updateLabel = (req) => {
             .catch(err => reject(err))
     })
 }
-
+/**
+ * @desc gets validated request from controller,serves to modules
+ * @param req request contains all the requested data
+ * @return promise data
+ */
 exports.deleteLabel = (req) => {
     return new Promise((resolve, reject) => {
         model.deleteLabel(req)
@@ -82,6 +132,11 @@ exports.deleteLabel = (req) => {
             .catch(err => reject(err))
     })
 }
+/**
+ * @desc gets validated request from controller,serves to modules
+ * @param req request contains all the requested data
+ * @return promise data
+ */
 exports.getLabels = (req) => {
     return new Promise((resolve, reject) => {
         model.getLabels(req)
@@ -89,5 +144,3 @@ exports.getLabels = (req) => {
             .catch((err) => reject(err))
     })
 }
-
-module.exports = { createLabel }

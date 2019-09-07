@@ -1,6 +1,6 @@
-const elastic = require('../middleware/elasticSearch')
-exports.ping = (req, res) => {
-
-    elastic.ping(req, res)
-    //res.status(200).send("up")
+const client = require('../middleware/elasticSearch')
+exports.ping = () => {
+    client.cluster.health({}, function (err, resp, status) {
+        console.log("-- Client Health --", resp);
+    });
 }

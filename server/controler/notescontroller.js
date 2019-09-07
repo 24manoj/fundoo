@@ -1,6 +1,9 @@
 let noteService = require('../services/notesService')
 let status = require('../middleware/httpStatusCode')
+let redisCache = require('../middleware/redisService')
 let response = {}
+let details = {};
+
 /**
  * @desc takes input as http req ,error validation is done,passes request data to  next services
  * @param req request contains all the requested data
@@ -20,11 +23,17 @@ exports.createNotes = (req, res) => {
         else {
             if (req.body.title != null || req.body.content != null) {
                 noteService.createNotes(req)
-                    .then((data) => {
-                        response.sucess = true,
-                            response.data = data,
-                            response.errors = null
-                        res.status(status.sucess).send(response)
+                    .then(data => {
+                        details.id = data._id
+                        details.value = data
+                        console.log(details)
+                        redisCache.setRedis(details, (err, set) => {
+                            response.sucess = true,
+                                response.data = data,
+                                response.errors = null
+                            res.status(status.sucess).send(response)
+                        })
+
                     })
                     .catch((err) => {
                         response.sucess = false,
@@ -61,20 +70,31 @@ exports.getNotes = (req, res) => {
                 response.errors = errors
             res.status(status.UnprocessableEntity).send(response)
         } else {
-            noteService.getNotes(req)
-                .then((notes) => {
-
+            redisCache.getRedis(req.body, (err, data) => {
+                if (data) {
                     response.sucess = true,
-                        response.data = notes,
+                        response.data = data,
                         response.errors = null
                     res.status(status.sucess).send(response)
-                })
-                .catch(err => {
-                    response.sucess = false,
-                        response.data = null,
-                        response.errors = err
-                    res.status(status.notfound).send(response)
-                })
+                } else {
+                    noteService.getNotes(req)
+                        .then((notes) => {
+
+                            response.sucess = true,
+                                response.data = notes,
+                                response.errors = null
+                            res.status(status.sucess).send(response)
+                        })
+                        .catch(err => {
+                            response.sucess = false,
+                                response.data = null,
+                                response.errors = err
+                            res.status(status.notfound).send(response)
+                        })
+                }
+
+
+            })
         }
     } catch (e) {
         console.log(e)
@@ -98,19 +118,30 @@ exports.updateNotes = (req, res) => {
                 response.errors = errors
             res.status(status.UnprocessableEntity).send(response)
         } else {
-            noteService.updateNotes(req)
-                .then((notes) => {
-                    response.sucess = true,
-                        response.data = notes,
-                        response.errors = null
-                    res.status(status.sucess).send(response)
-                })
-                .catch(err => {
-                    response.sucess = false,
-                        response.data = null,
-                        response.errors = err
-                    res.status(status.notfound).send(responsess)
-                })
+            redisCache.delRedis(req.body, (err, dele) => {
+                if (dele) {
+                    noteService.updateNotes(req)
+                        .then((notes) => {
+                            details.id = notes._id
+                            details.value = notes
+                            redisCache.setRedis(details, (err, set) => {
+                                if (set) {
+                                    response.sucess = true,
+                                        response.data = notes,
+                                        response.errors = null
+                                    res.status(status.sucess).send(response)
+                                }
+                            })
+                        })
+                        .catch(err => {
+                            response.sucess = false,
+                                response.data = null,
+                                response.errors = err
+                            res.status(status.notfound).send(responsess)
+                        })
+                }
+            })
+
         }
     } catch (e) { console.log(e) }
 }
@@ -134,19 +165,24 @@ exports.deleteNotes = (req, res) => {
             res.status(status.UnprocessableEntity).send(response)
         }
         else {
-            noteService.deleteNotes(req)
-                .then(data => {
-                    response.errors = null
-                    response.data = data
-                    response.sucess = true
-                    res.status(status.sucess).send(response)
-                })
-                .catch(err => {
-                    response.errors = err
-                    response.data = null
-                    response.sucess = false
-                    res.status(status.notfound).send(response)
-                })
+            redisCache.delRedis(req.body, (err, del) => {
+                if (del) {
+                    noteService.deleteNotes(req)
+                        .then(data => {
+                            response.errors = null
+                            response.data = data
+                            response.sucess = true
+                            res.status(status.sucess).send(response)
+                        })
+                        .catch(err => {
+                            response.errors = err
+                            response.data = null
+                            response.sucess = false
+                            res.status(status.notfound).send(response)
+                        })
+
+                }
+            })
         }
     } catch (e) {
         console.log(e)
@@ -171,19 +207,30 @@ exports.noteTrash = (req, res) => {
             res.status(status.UnprocessableEntity).send(response)
         }
         else {
-            noteService.noteTrash(req)
-                .then(data => {
-                    response.errors = null
-                    response.data = data
-                    response.sucess = true
-                    res.status(status.sucess).send(response)
-                })
-                .catch(err => {
-                    response.errors = err
-                    response.data = null
-                    response.sucess = false
-                    res.status(status.notfound).send(response)
-                })
+            redisCache.delRedis(req.body, (err, deleted) => {
+                if (deleted) {
+                    noteService.noteTrash(req)
+                        .then(data => {
+                            details.id = data._id
+                            details.value = data
+                            redisCache.setRedis(details, (err, set) => {
+                                if (set) {
+                                    response.errors = null
+                                    response.data = data
+                                    response.sucess = true
+                                    res.status(status.sucess).send(response)
+                                }
+                            })
+                        })
+                        .catch(err => {
+                            response.errors = err
+                            response.data = null
+                            response.sucess = false
+                            res.status(status.notfound).send(response)
+                        })
+                }
+            })
+
         }
     } catch (e) {
         console.log(e)
@@ -209,19 +256,34 @@ exports.noteArchive = (req, res) => {
             res.status(status.UnprocessableEntity).send(response)
         }
         else {
-            noteService.noteArchive(req)
-                .then(data => {
-                    response.errors = null
-                    response.data = data
-                    response.sucess = true
-                    res.status(status.sucess).send(response)
-                })
-                .catch(err => {
-                    response.errors = err
-                    response.data = null
-                    response.sucess = false
-                    res.status(status.notfound).send(response)
-                })
+            redisCache.delRedis(req.body, (err, del) => {
+                if (del) {
+                    noteService.noteArchive(req)
+                        .then(data => {
+                            details.id = data._id
+                            details.value = data
+                            redisCache.setRedis(details, (err, set) => {
+                                if (set) {
+                                    response.errors = null
+                                    response.data = data
+                                    response.sucess = true
+                                    res.status(status.sucess).send(response)
+                                }
+                            })
+                        })
+                        .catch(err => {
+                            response.errors = err
+                            response.data = null
+                            response.sucess = false
+                            res.status(status.notfound).send(response)
+                        })
+
+
+
+
+                }
+            })
+
         }
     } catch (e) {
         console.log(e)
@@ -248,10 +310,15 @@ exports.noteReminder = (req, res) => {
         else {
             noteService.noteReminder(req)
                 .then(data => {
-                    response.errors = null
-                    response.data = data
-                    response.sucess = true
-                    res.status(status.sucess).send(response)
+                    details.id = data._id
+                    details.value = data
+                    redisCache.setRedis(details, (err, set) => {
+                        response.errors = null
+                        response.data = data
+                        response.sucess = true
+                        res.status(status.sucess).send(response)
+                    })
+
                 })
                 .catch(err => {
                     response.errors = err
@@ -286,11 +353,19 @@ exports.noteLable = (req, res) => {
         else {
             noteService.noteLable(req)
                 .then(data => {
-                    response.errors = null
-                    response.data = data
-                    response.sucess = true
-                    res.status(status.sucess).send(response)
+                    details.id = data._id
+                    details.value = data
+                    redisCache.setRedis(details, (err, set) => {
+                        if (set) {
+                            response.errors = null
+                            response.data = data
+                            response.sucess = true
+                            res.status(status.sucess).send(response)
+                        }
+                    })
+
                 })
+
                 .catch(err => {
                     response.errors = err
                     response.data = null
@@ -323,10 +398,16 @@ exports.createLabel = async (req, res) => {
         else {
             await noteService.createLabel(req, (err, data))
             if (data) {
-                response.errors = null
-                response.data = data
-                response.sucess = true
-                res.status(status.sucess).send(response)
+                details.id = data._id,
+                    details.value = data
+                await redisCache.setRedis(details, (err, set) => {
+                    if (set) {
+                        response.errors = null
+                        response.data = data
+                        response.sucess = true
+                        res.status(status.sucess).send(response)
+                    }
+                })
             }
             else {
                 response.errors = err
@@ -361,10 +442,16 @@ exports.updateLabel = async (req, res) => {
         else {
             await noteService.updateLabel(req, res)
                 .then(data => {
-                    response.errors = null
-                    response.data = data
-                    response.sucess = true
-                    res.status(status.sucess).send(response)
+                    details.id = data._id
+                    details.value = data
+                    redisCache.setRedis(details, (err, set) => {
+                        if (set) {
+                            response.errors = null
+                            response.data = data
+                            response.sucess = true
+                            res.status(status.sucess).send(response)
+                        }
+                    })
                 })
                 .catch(err => {
                     response.errors = err
@@ -397,10 +484,14 @@ exports.deleteLabel = async (req, res) => {
         else {
             await noteService.deleteLabel(req)
                 .then(data => {
-                    response.errors = null
-                    response.data = data
-                    response.sucess = true
-                    res.status(status.sucess).send(response)
+                    details.id = data._id
+                    details.value = data
+                    redisCache.setRedis(details, (err, data) => {
+                        response.errors = null
+                        response.data = data
+                        response.sucess = true
+                        res.status(status.sucess).send(response)
+                    })
                 })
                 .catch(err => {
                     response.errors = err
@@ -433,6 +524,7 @@ exports.getLabels = async (req, res) => {
             res.status(status.UnprocessableEntity).send(response)
         }
         else {
+
             await noteService.getLabels(req)
                 .then(data => {
                     response.errors = null

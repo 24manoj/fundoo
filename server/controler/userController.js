@@ -126,15 +126,17 @@ exports.forgotPassword = (req, res) => {
                 }
                 else {
                     console.log(data[0].id)
+
                     token.generateToken(data[0].id, (err, token) => {
                         if (err) {
-
                             response.data = null
                             response.errors = err
                             response.sucess = false
                             res.status(status.notfound).send(response);
                         }
                         else {
+                            data[0].value = token;
+                            data[0].id = data[0]._id;
                             mail.sendmail(data[0].email, (`${process.env.url}#!/resetPassword/?token=${token}`), (err, mail) => {
                                 if (err) {
                                     response.data = null
@@ -145,11 +147,10 @@ exports.forgotPassword = (req, res) => {
                                     response.data = mail
                                     response.errors = null
                                     response.sucess = true
-                                    rediscache.setToken(token, (err, data) => {
+                                    rediscache.setRedis(data[0], (err, data) => {
                                         if (err) {
                                             console.log("token not instered to cache");
                                         } else {
-
                                             res.status(status.sucess).send(response);
 
                                         }

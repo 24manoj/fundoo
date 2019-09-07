@@ -1,5 +1,6 @@
 let noteRouter = require('express').Router();
 let notesController = require('../controler/notescontroller')
+/** @description routes to specified endPoints */
 noteRouter.post('/createNotes', notesController.createNotes);
 noteRouter.get('/getNotes', notesController.getNotes)
 noteRouter.post('/updateNotes', notesController.updateNotes);

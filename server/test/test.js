@@ -1,10 +1,13 @@
-var app = require('chai')
-var should = require('chai').should()
-var chaihttp = require('chai-http');
-var server = require('../server')
-var data = require('./test.json')
+const app = require('chai')
+const should = require('chai').should()
+const chaihttp = require('chai-http');
+const server = require('../server')
+const data = require('./test.json')
 app.use(chaihttp)
 app.use(require('chai-json-schema'))
+/**
+ * @desc Testing Login api ,with right details,empty details,Wrong details
+ */
 describe('API testing Login', () => {
     it('with right details', (done) => {
         app.request(server)
@@ -34,7 +37,9 @@ describe('API testing Login', () => {
             })
     })
 })
-
+/**
+ * @desc Testing register api ,with right details,empty details,Wrong details
+ */
 describe('API testing register', () => {
     it('with user data exist details', (done) => {
         app.request(server)
@@ -58,7 +63,9 @@ describe('API testing register', () => {
     })
 })
 
-
+/**
+ * @desc Testing forgotPassword api ,with right details,empty details,Wrong details
+ */
 describe('API testing forgotpassword', () => {
     it('with Email exist in database details', (done) => {
         app.request(server)
@@ -82,7 +89,9 @@ describe('API testing forgotpassword', () => {
     })
 })
 
-
+/**
+ * @desc Testing resetPassword api ,with right details,empty details,Wrong details
+ */
 describe('API testing resetPassword', () => {
     it('with token generated', (done) => {
         app.request(server)

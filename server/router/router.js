@@ -6,7 +6,7 @@ let auth = require('../middleware/auth')
 let upload = require('../middleware/medialFile')
 
 
-//routes to specified fouction when mentioned endpoint hits
+/** @description   routes to endPoints*/
 router.route('/register').post(controller.register)
 router.route('/login').post(controller.login)
 router.route('/forgotPassword').post(controller.forgotPassword)
