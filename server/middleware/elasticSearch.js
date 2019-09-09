@@ -1,9 +1,8 @@
 const elasticsearch = require('elasticsearch');
 const client = new elasticsearch.Client({
-    hosts: [
-        'https://loaclhost:9200',
+    host: 'https://loaclhost:9200'
 
-    ]
+
 });
 
 module.exports = client

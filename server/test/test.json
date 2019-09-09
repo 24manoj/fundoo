@@ -8,10 +8,16 @@
         "password": "password"
     },
     "register": {
-
         "firstName": "yathin",
         "lastName": "k",
         "email": "yathink3@gmail.com",
+        "password": "password"
+
+    },
+    "registerRight": {
+        "firstName": "irana",
+        "lastName": "k",
+        "email": "magadum.iranna@gmail.com",
         "password": "password"
 
     },
@@ -39,6 +45,57 @@
         "password": "password",
         "confirmPassword": "passbnbnword"
     },
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkNjkyMDU1NGZjN2UyNWMyNmJiMTA4MyIsImlhdCI6MTU2NzY1Njk5NiwiZXhwIjoxNTY3NjYwNTk2fQ.HBYDBk0w3ozhpP7r81qdjp2SV41f_5QpNU0iCaKYsNo"
+    "notecreate": {
+        "userId": "5d6920554fc7e25c26bb1083",
+        "title": "testing",
+        "content": "hii"
+    },
+    "userId": {
+        "userId": "5d6920554fc7e25c26bb1083"
+    },
+    "userIderr": {
+        "userId": "5d6920554fc7e25c26bb108387"
+    },
+    "updateNotes": {
+        "userId": "5d6920554fc7e25c26bb1083",
+        "id": "5d7639337d8932448a28fc72",
+        "title": "abc",
+        "content": "hello"
+    },
+    "noteTrash": {
+        "userId": "5d6920554fc7e25c26bb1083",
+        "id": "5d7639337d8932448a28fc72",
+        "isTrash": true
+    },
+    "noteArchive": {
+        "userId": "5d6920554fc7e25c26bb1083",
+        "id": "5d7639337d8932448a28fc72",
+        "isArchive": true
+    },
+    "noteReminder": {
+        "userId": "5d6920554fc7e25c26bb1083",
+        "id": "5d7639337d8932448a28fc72",
+        "date": "2015/12/28"
+    },
+    "createLabel": {
+        "userId": "5d6920554fc7e25c26bb1083",
+        "labelName": "testing"
+    },
+    "updateLabel": {
+        "userId": "5d6920554fc7e25c26bb1083",
+        "id": "5d76317eb662543db075f63f",
+        "labelName": "testing123"
+    },
+    "getLabel": {
+        "userId": "5d6920554fc7e25c26bb1083"
+    },
+    "deleteLabel": {
+        "userId": "5d6920554fc7e25c26bb1083",
+        "id": "5d7649675092ba5788bcd3c0"
+    }
+
+
+
+
 
 }

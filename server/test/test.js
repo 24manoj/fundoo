@@ -3,6 +3,7 @@ const should = require('chai').should()
 const chaihttp = require('chai-http');
 const server = require('../server')
 const data = require('./test.json')
+let token;
 app.use(chaihttp)
 app.use(require('chai-json-schema'))
 /**
@@ -46,8 +47,16 @@ describe('API testing register', () => {
             .post('/register')
             .send(data.register)
             .end((err, res) => {
-                console.log(res.body)
                 res.should.have.status(404)
+                done()
+            })
+    })
+    it.skip('with right  details', (done) => {
+        app.request(server)
+            .post('/register')
+            .send(data.registerRight)
+            .end((err, res) => {
+                res.should.have.status(200)
                 done()
             })
     })
@@ -56,7 +65,7 @@ describe('API testing register', () => {
             .post('/register')
             .send(data.registererr)
             .end((err, res) => {
-                console.log(res.body)
+
                 res.should.have.status(422)
                 done()
             })
@@ -72,7 +81,7 @@ describe('API testing forgotpassword', () => {
             .post('/forgotPassword')
             .send(data.forgotPassword)
             .end((err, res) => {
-                console.log(res.body)
+                token = res.body.data.token
                 res.should.have.status(200)
                 done()
             })
@@ -82,7 +91,7 @@ describe('API testing forgotpassword', () => {
             .post('/forgotPassword')
             .send(data.forgotPassworderr)
             .end((err, res) => {
-                console.log(res.body)
+
                 res.should.have.status(404)
                 done()
             })
@@ -95,19 +104,19 @@ describe('API testing forgotpassword', () => {
 describe('API testing resetPassword', () => {
     it('with token generated', (done) => {
         app.request(server)
-            .post(`/resetPassword/${data.token}`)
+            .post(`/resetPassword/${token}`)
             .send(data.resetPassword)
             .end((err, res) => {
                 res.should.have.status(200)
                 done()
             })
     })
+
     it('with wrong details', (done) => {
         app.request(server)
             .post(`/resetPassword/`)
             .send(data.resetPassworderr)
             .end((err, res) => {
-                console.log(res.body)
                 res.should.have.status(404)
                 done()
             })

@@ -18,6 +18,7 @@ exports.setRedis = (details, callback) => {
         /**hmset takes key as string , field and value */
         client.hmset(process.env.RedisKey, details.id, JSON.stringify(details.value), (err, store) => {
             console.log(err, store)
+
             if (err)
                 callback(err)
             else {
@@ -39,13 +40,13 @@ exports.setRedis = (details, callback) => {
  */
 exports.getRedis = (details, callback) => {
     try {
+        console.log(details)
         /**hmset takes key as string , field and value */
         client.hmget(process.env.RedisKey, details.id, (err, get) => {
-            console.log(err, get)
             if (err)
                 callback(err)
             else {
-                console.log("details sent ")
+                console.log("details sent from cache")
                 callback(null, get)
             }
         })
@@ -64,14 +65,15 @@ exports.getRedis = (details, callback) => {
  */
 exports.delRedis = (details, callback) => {
     try {
+        console.log(details)
         /**hmset takes key as string , field and value */
-        client.hdel(process.env.RedisKey, details.id, (err, delet) => {
-            console.log(err, delet)
+        client.hdel(process.env.RedisKey, details.id, (err, del) => {
+            console.log(del)
             if (err)
                 callback(err)
             else {
                 console.log("details deletd")
-                callback(null, get)
+                callback(null, del)
             }
         })
     } catch (e) {

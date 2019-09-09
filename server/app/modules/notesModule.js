@@ -40,8 +40,7 @@ exports.createNotes = (req) => {
             let noteDetails = new notes({
                 "userId": req.body.userId,
                 "title": req.body.title,
-                "content": req.body.content,
-                "reminder": req.body.date
+                "content": req.body.content
 
             });
             //save data in collection
@@ -69,6 +68,7 @@ exports.getNotes = (req) => {
                 "isTrash": false,
                 "isArchive": false,
             }, (err, notes) => {
+                console.log(notes)
                 if (err || notes.length <= 0) reject(err)
                 else resolve(notes)
             })
@@ -88,6 +88,7 @@ exports.getNotes = (req) => {
 exports.updateNotes = (req) => {
     try {
         return new Promise((resolve, reject) => {
+            console.log(req.body)
             notes.update({
                 '_id': req.body.id
             }, {
@@ -111,10 +112,9 @@ exports.updateNotes = (req) => {
 exports.deleteNotes = (req) => {
     try {
         return new Promise((resolve, reject) => {
-            notes.deleteOne({
-                _id: req.body.id,
-                isArchive: false,
-                isTrash: true
+            console.log(req.body.id)
+            notes.findOneAndDelete({
+                _id: req.body.id
             }, (err, deletd) => {
                 if (err) reject(err)
                 else resolve(deletd)
@@ -179,11 +179,13 @@ exports.noteArchive = (req) => {
  */
 exports.noteReminder = (req) => {
     try {
+        let date = new Date(req.body.date)
+        console.log(date, req.body.date)
         return new Promise((resolve, reject) => {
             notes.update({
                 '_id': req.body.id
             }, {
-                reminder: req.body.date,
+                reminder: date,
             }, (err, updated) => {
                 if (err) reject(err)
                 else resolve(updated)
@@ -201,11 +203,12 @@ exports.noteReminder = (req) => {
  */
 exports.noteLabel = (req) => {
     try {
+        console.log(req.body.labels)
         return new Promise((resolve, reject) => {
             notes.findOneAndUpdate({
                 _id: req.body.id
             }, {
-                labels: req.body.lable
+                labels: req.body.labels
             }, (err, update) => {
                 if (err) reject(err)
                 else resolve(update)
@@ -242,6 +245,7 @@ exports.createLabel = async (req, callback) => {
             "userId": req.body.userId,
             "labelName": req.body.labelName
         })
+
         await data.save((err, data) => {
             if (err) callback(err)
             else callback(null, data)
@@ -303,7 +307,7 @@ exports.getLabels = (req) => {
     try {
         return new Promise((resolve, reject) => {
             labels.find({
-                'userid': req.body.id
+                'userId': req.body.userId
             }, (err, update) => {
                 if (err) reject(err)
                 else resolve(update)

@@ -125,7 +125,7 @@ exports.forgotPassword = (req, res) => {
                     res.status(status.notfound).send(response);
                 }
                 else {
-                    console.log(data[0].id)
+
 
                     token.generateToken(data[0].id, (err, token) => {
                         if (err) {
@@ -144,6 +144,7 @@ exports.forgotPassword = (req, res) => {
                                     response.sucess = false
                                     res.status(status.notfound).send(response);
                                 } else {
+                                    mail.token = token
                                     response.data = mail
                                     response.errors = null
                                     response.sucess = true

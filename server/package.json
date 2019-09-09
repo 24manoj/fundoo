@@ -4,7 +4,7 @@
   "main": "server.js",
   "scripts": {
     "start": " nodemon server.js",
-    "test": "mocha test/test.js --timeout 10000000"
+    "test": "mocha test/*.js --timeout 10000000"
   },
   "author": "manoj kumar",
   "license": "ISC",

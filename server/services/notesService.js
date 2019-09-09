@@ -88,9 +88,9 @@ exports.noteReminder = (req) => {
  * @param req request contains all the requested data
  * @return promise data
  */
-exports.noteLable = (req) => {
+exports.noteLabel = (req) => {
     return new Promise((resolve, reject) => {
-        model.noteLable(req)
+        model.noteLabel(req)
             .then(data => resolve(data))
             .catch(err => reject(err))
     })

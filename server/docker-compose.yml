@@ -3,7 +3,7 @@ version: "3"
 services:
   sonarqube:
     image: sonarqube:6.7.1
-    restart: unless-stopped
+    restart: always
     environment:
       - SONARQUBE_JDBC_USERNAME=sonar
       - SONARQUBE_JDBC_PASSWORD=v07IGCFCF83Z95NX
@@ -18,7 +18,7 @@ services:
       - sonarqube_bundled-plugins:/opt/sonarqube/lib/bundled-plugins
   db:
     image: postgres:10.1
-    restart: unless-stopped
+    restart: always
     environment:
       - POSTGRES_USER=sonar
       - POSTGRES_PASSWORD=v07IGCFCF83Z95NX
