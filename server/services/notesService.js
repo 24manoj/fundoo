@@ -19,7 +19,10 @@ exports.createNotes = (req) => {
 exports.getNotes = (req) => {
     return new Promise((resolve, reject) => {
         model.getNotes(req)
-            .then((notes) => resolve(notes))
+            .then((notes) => {
+                // console.log(notes)
+                resolve(notes)
+            })
             .catch(err => reject(err))
     })
 }

@@ -1,6 +1,7 @@
 let noteService = require('../services/notesService')
 let status = require('../middleware/httpStatusCode')
 let redisCache = require('../middleware/redisService')
+let elastic = require('../middleware/elasticSearch')
 let response = {}
 let details = {};
 
@@ -68,14 +69,16 @@ exports.getNotes = (req, res) => {
         } else {
             details.id = req.body.userId
             redisCache.getRedis(details, (err, data) => {
-                if (data[0] != null) {
+                if (data) {
                     response.sucess = true,
-                        response.data = JSON.parse(data),
+                        response.data = data,
                         response.errors = null
                     res.status(status.sucess).send(response)
                 } else {
                     noteService.getNotes(req)
-                        .then((notes) => {
+                        .then(notes => {
+                            console.log("in in controler")
+                            elastic.addDocument(notes)
                             details.id = req.body.userId
                             details.value = notes
                             redisCache.setRedis(details, (err, data) => {
@@ -87,6 +90,7 @@ exports.getNotes = (req, res) => {
                                 }
                             })
 
+
                         })
                         .catch(err => {
                             response.sucess = false,
@@ -95,8 +99,6 @@ exports.getNotes = (req, res) => {
                             res.status(status.notfound).send(response)
                         })
                 }
-
-
             })
         }
     } catch (e) {

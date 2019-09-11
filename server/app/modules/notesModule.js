@@ -62,13 +62,13 @@ exports.createNotes = (req) => {
  */
 exports.getNotes = (req) => {
     try {
+        console.log("in module")
         return new Promise((resolve, reject) => {
             notes.find({
                 "userId": req.body.userId,
                 "isTrash": false,
                 "isArchive": false,
             }, (err, notes) => {
-                console.log(notes)
                 if (err || notes.length <= 0) reject(err)
                 else resolve(notes)
             })

@@ -40,14 +40,15 @@ exports.setRedis = (details, callback) => {
  */
 exports.getRedis = (details, callback) => {
     try {
-        console.log(details)
+        console.log("hm get", details)
         /**hmset takes key as string , field and value */
         client.hmget(process.env.RedisKey, details.id, (err, get) => {
-            if (err)
-                callback(err)
+            // console.log(get)
+            if (err | get[0] == null)
+                callback("cache error", err)
             else {
                 console.log("details sent from cache")
-                callback(null, get)
+                callback(null, JSON.parse(get))
             }
         })
     } catch (e) {
