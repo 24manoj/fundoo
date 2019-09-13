@@ -2,6 +2,10 @@ let noteService = require('../services/notesService')
 let status = require('../middleware/httpStatusCode')
 let redisCache = require('../middleware/redisService')
 let elastic = require('../middleware/elasticSearch')
+// let mailchecker = require('email-existence')
+let model = require('../app/modules/userModule')
+require('dotenv').config()
+let mailer = require('../middleware/userMailer')
 let response = {}
 let details = {};
 
@@ -23,8 +27,10 @@ exports.createNotes = (req, res) => {
         }
         else {
             if (req.body.title != null || req.body.content != null) {
+                elastic.Documentdelete(req)
                 noteService.createNotes(req)
                     .then(data => {
+                        elastic.updateDocument(data)
                         response.sucess = true,
                             response.data = data,
                             response.errors = null
@@ -77,7 +83,7 @@ exports.getNotes = (req, res) => {
                 } else {
                     noteService.getNotes(req)
                         .then(notes => {
-                            console.log("in in controler")
+                            console.log("in in controler", notes)
                             elastic.addDocument(notes)
                             details.id = req.body.userId
                             details.value = notes
@@ -124,6 +130,7 @@ exports.updateNotes = (req, res) => {
                 response.errors = errors
             res.status(status.UnprocessableEntity).send(response)
         } else {
+            elastic.Documentdelete(req)
             details.id = req.body.userId
             redisCache.delRedis(details, (err, dele) => {
                 if (err) {
@@ -140,7 +147,7 @@ exports.updateNotes = (req, res) => {
                             response.sucess = false,
                                 response.data = null,
                                 response.errors = err
-                            res.status(status.notfound).send(responsess)
+                            res.status(status.notfound).send(response)
                         })
                 }
             })
@@ -175,6 +182,7 @@ exports.deleteNotes = (req, res) => {
                     throw new err
                 }
                 else {
+                    elastic.Documentdelete(req)
                     noteService.deleteNotes(req)
                         .then(data => {
                             response.errors = null
@@ -222,6 +230,7 @@ exports.noteTrash = (req, res) => {
                 if (err) {
                     throw new "error in radis", err;
                 } else {
+                    elastic.Documentdelete(req)
                     noteService.noteTrash(req)
                         .then(data => {
                             response.errors = null
@@ -272,6 +281,7 @@ exports.noteArchive = (req, res) => {
                 if (err) {
                     throw new "error in radis", err;
                 } else {
+                    elastic.Documentdelete(req)
                     noteService.noteArchive(req)
                         .then(data => {
                             response.errors = null
@@ -320,6 +330,7 @@ exports.noteReminder = (req, res) => {
             res.status(status.UnprocessableEntity).send(response)
         }
         else {
+            elastic.Documentdelete(req)
             noteService.noteReminder(req)
                 .then(data => {
                     response.errors = null
@@ -568,5 +579,118 @@ exports.getLabels = async (req, res) => {
         }
     } catch (e) {
         console.log(e)
+    }
+}
+
+/**
+ * @desc takes input as http req ,error validation is done,passes request data to  next services,
+ * response with add data  to database
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @return return respose sucess or failure
+ */
+exports.addCollaborate = async (req, res) => {
+    try {
+        req.check('collEmail', 'Email invlaid').isEmail()
+        req.check('userId', 'userId invalid').notEmpty()
+        req.check('noteId', ' Invalid note ID ').notEmpty()
+        let errors = req.validationErrors()
+        if (errors) {
+            response.errors = errors
+            response.data = null
+            response.sucess = false
+            res.status(status.UnprocessableEntity).send(response)
+        }
+        else {
+            let data = {
+                email: req.body.collEmail
+            }
+            await model.find(data)
+                .then(found => {
+                    req.id = found[0]._id
+                    // mailchecker.check(req.body.collEmail, (err, ok) => {
+                    //     if (err || ok == false) {
+                    //         response.errors = "given Email not Exist"
+                    //         response.data = null
+                    //         response.sucess = false
+                    //         res.status(status.UnprocessableEntity).send(response)
+                    //     } else {
+                    mailer.sendHtmlMailer(req, (err, sent) => {
+                        if (err) {
+                            response.errors = err
+                            response.data = null
+                            response.sucess = false
+                            res.status(status.UnprocessableEntity).send(response)
+                        } else {
+                            // console.log("going to database")
+                            // res.status(status.sucess).send("ok")
+                            // details.id = req.body.userId;
+                            // redisCache.delRedis(details, (err, data) => {
+                            //     if (err) {
+                            //         throw new err
+                            //     } else {
+                            noteService.addCollaborate(req)
+                                .then(data => {
+                                    response.errors = null
+                                    response.data = data
+                                    response.sucess = true
+                                    res.status(status.sucess).send(response)
+                                })
+                                .catch(err => {
+                                    response.errors = err
+                                    response.data = null
+                                    response.sucess = false
+                                    res.status(status.notfound).send(response)
+                                })
+
+                        }
+                    })
+
+
+                })
+                .catch(err => {
+                    response.errors = err
+                    response.data = null
+                    response.sucess = false
+                    res.status(status.notfound).send(response)
+                })
+        }
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+
+/**
+ * @desc takes input as http req ,error validation is done,passes request data to  next services,
+ * removes documents from collection
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @return return respose sucess or failure
+ */
+
+exports.removeCollaborate = (req, res) => {
+    req.check('userId', 'userId invalid').notEmpty()
+    req.check('noteId', 'noteId invalid').notEmpty()
+    req.check('collaborateId', 'collaborateId in valid').notEmpty()
+    let errors = req.validationErrors()
+    if (errors) {
+        response.err = errors
+        response.data = null
+        response.sucess = false
+        res.status(status.UnprocessableEntity).send(response)
+    } else {
+        noteService.removeCollaborate(req)
+            .then(removed => {
+                response.err = null
+                response.data = removed
+                response.sucess = true
+                res.status(status.sucess).send(response)
+            }).catch(err => {
+                response.err = err
+                response.data = null
+                response.sucess = false
+                res.status(status.notfound).send(response)
+            })
     }
 }

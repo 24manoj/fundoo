@@ -1,3 +1,4 @@
+/**@description importing required module */
 const model = require('../app/modules/notesModule')
 /**
  * @desc gets validated request from controller,serves to modules
@@ -19,6 +20,21 @@ exports.createNotes = (req) => {
 exports.getNotes = (req) => {
     return new Promise((resolve, reject) => {
         model.getNotes(req)
+            .then((notes) => {
+                // console.log(notes)
+                resolve(notes)
+            })
+            .catch(err => reject(err))
+    })
+}
+/**
+ * @desc gets validated request from controller,serves to modules
+ * @param req request contains http requested data
+ * @return promise data
+ */
+exports.addCollaborate = (req) => {
+    return new Promise((resolve, reject) => {
+        model.addCollaborate(req)
             .then((notes) => {
                 // console.log(notes)
                 resolve(notes)
@@ -104,7 +120,6 @@ exports.noteLabel = (req) => {
  * @return callback err or data
  */
 exports.createLabel = async (req, callback) => {
-
     await model.createLabel(req, (err, data) => {
         if (err) callback(err)
         else callback(null, data)
@@ -143,6 +158,19 @@ exports.deleteLabel = (req) => {
 exports.getLabels = (req) => {
     return new Promise((resolve, reject) => {
         model.getLabels(req)
+            .then((data) => resolve(data))
+            .catch((err) => reject(err))
+    })
+}
+
+/**
+ * @desc gets validated request from controller,serves to modules
+ * @param req request contains all the requested data
+ * @return promise data
+ */
+exports.removeCollaborate = (req) => {
+    return new Promise((resolve, reject) => {
+        model.removeCollaborate(req)
             .then((data) => resolve(data))
             .catch((err) => reject(err))
     })

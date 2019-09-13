@@ -1,4 +1,3 @@
-
 /**@description: importing required modules */
 const redis = require('redis')
 require('dotenv').config()
@@ -17,20 +16,12 @@ exports.setRedis = (details, callback) => {
     try {
         /**hmset takes key as string , field and value */
         client.hmset(process.env.RedisKey, details.id, JSON.stringify(details.value), (err, store) => {
-            console.log(err, store)
-
-            if (err)
-                callback(err)
-            else {
-                console.log("token set to cache")
-                callback(null, store)
-            }
+            err ? callback(err) : callback(null, store)
         })
     } catch (e) {
         console.log(e)
     }
 }
-
 
 /**
  * @desc setRedis takes details and stores in redis cache
@@ -43,21 +34,12 @@ exports.getRedis = (details, callback) => {
         console.log("hm get", details)
         /**hmset takes key as string , field and value */
         client.hmget(process.env.RedisKey, details.id, (err, get) => {
-            // console.log(get)
-            if (err | get[0] == null)
-                callback("cache error", err)
-            else {
-                console.log("details sent from cache")
-                callback(null, JSON.parse(get))
-            }
+            (err | !get[0]) ? callback(`cache error ${err}`) : callback(null, get)
         })
     } catch (e) {
         console.log(e)
     }
 }
-
-
-
 /**
  * @desc delRedis search for the given details in cache, if found delete from cache in redis cache
  * @param details contails data about labels or user
@@ -69,13 +51,7 @@ exports.delRedis = (details, callback) => {
         console.log(details)
         /**hmset takes key as string , field and value */
         client.hdel(process.env.RedisKey, details.id, (err, del) => {
-            console.log(del)
-            if (err)
-                callback(err)
-            else {
-                console.log("details deletd")
-                callback(null, del)
-            }
+            err ? callback(err) : callback(null, del);
         })
     } catch (e) {
         console.log(e)

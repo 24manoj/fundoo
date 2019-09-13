@@ -1,10 +1,8 @@
-
-//importing express router
+/**@description importing modules */
 let router = require('express').Router();
 let controller = require('../controler/userController')
 let auth = require('../middleware/auth')
 let upload = require('../middleware/medialFile')
-
 
 /** @description   routes to endPoints*/
 router.route('/register').post(controller.register)

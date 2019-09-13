@@ -1,6 +1,12 @@
 const client = require('../middleware/elasticSearch')
 const status = require('../middleware/httpStatusCode')
 let response = {}
+/**
+ * @desc  validates http requests 
+ * @param req request contains http requested data
+ * @param res responses back to frontend
+ * @return response 
+ */
 exports.createIndex = (req, res) => {
     req.check('userId', 'UserId invalid').notEmpty()
     let errors = req.validationErrors()
@@ -28,7 +34,12 @@ exports.createIndex = (req, res) => {
 
     }
 }
-
+/**
+ * @desc  validates http requests
+ * @param req request contains http requested data
+ * @param res responses back to frontend
+ * @return response
+ */
 exports.search = (req, res) => {
     client.searchkey(req, (err, data) => {
         if (err) {

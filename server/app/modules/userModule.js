@@ -28,8 +28,8 @@ let registration = new mongoose.Schema({
     }
 
 }, {
-        timestamps: true
-    })
+    timestamps: true
+})
 //creating model of schema
 let userRegistration = mongoose.model('userRegistration', registration);
 const s3Upload = new mongoose.Schema({
@@ -45,9 +45,9 @@ const s3Upload = new mongoose.Schema({
     }
 }, {
 
-        timestamps: true
+    timestamps: true
 
-    })
+})
 const fileUpload = mongoose.model("fileUploads", s3Upload);
 /**
  * @desc gets validated request from services,performs database operations needed
@@ -162,17 +162,17 @@ exports.resetPassword = (req, callback) => {
             userRegistration.updateOne({
                 "_id": req.decoded.id
             }, {
-                    "password": hash
-                }, (err, data) => {
-            
-                    if (err) {
+                "password": hash
+            }, (err, data) => {
 
-                        callback(err)
-                    }
-                    else {
-                        callback(null, data)
-                    }
-                })
+                if (err) {
+
+                    callback(err)
+                }
+                else {
+                    callback(null, data)
+                }
+            })
         }
     })
 
@@ -214,12 +214,12 @@ exports.resetPassword = (req, callback) => {
  */
 exports.find = (req) => {
     try {
-
+        console.log(req.email)
         return new Promise((resolve, reject) => {
             userRegistration.find({
                 "email": req.email
             }, (err, data) => {
-                if (err || data.length > 0) reject("data not exist")
+                if (err || data.length <= 0) reject("data not exist")
                 else resolve(data)
             })
         })

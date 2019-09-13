@@ -2,28 +2,22 @@ var passport = require('passport');
 const user = require('../app/modules/userModule')
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
 require('dotenv').config()
-//invokes when client is requesting for autherization,it encrypts the user details and requests for login
-passport.serializeUser(function (user, done) {
-    done(null, user);
-});
-//invokes when users autherizations is completed,it decrypts the data sent by provider
-passport.deserializeUser(function (obj, done) {
-    done(null, obj);
-});
 try {
-
+    //invokes when client is requesting for autherization,it encrypts the user details and requests for login
+    passport.serializeUser(function (user, done) {
+        done(null, user);
+    });
+    //invokes when users autherizations is completed,it decrypts the data sent by provider
+    passport.deserializeUser(function (obj, done) {
+        done(null, obj);
+    }); /**? configuring  with details  */
     passport.use(new GoogleStrategy({
-        /**? configuring  with details  */
         clientID: process.env.CLIENTID,
         clientSecret: process.env.GOOGLE_CLIENTSECRET,
         callbackURL: process.env.google_url,
         proxy: true
     },
         function (accessToken, refreshToken, profile, done) {
-            console.log("google ==> ", profile)
-            console.log("google===>", refreshToken)
-            console.log("google===>", accessToken)
-
             const userData = {
                 "firstName": profile.name.givenName,
                 "lastName": profile.name.familyName,

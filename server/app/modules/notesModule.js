@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-//creating schema for note
+/**@description schema for notes */
 const note = new mongoose.Schema({
     userId: {
         type: String,
@@ -28,6 +28,18 @@ const note = new mongoose.Schema({
 }, {
     timestamps: true
 })
+/**@description schema for collaborate */
+const collaborateData = mongoose.Schema({
+    collaborateId: [{
+        type: String,
+        required: true
+    }], noteId: {
+        type: String
+    }, userId: {
+        type: String
+    }
+})
+const colldata = mongoose.model("collaborates", collaborateData)
 const notes = mongoose.model('notes', note)
 /**
  * @desc gets validated request from services,performs database operations needed
@@ -69,10 +81,8 @@ exports.getNotes = (req) => {
                 "isTrash": false,
                 "isArchive": false,
             }, (err, notes) => {
-                if (err || notes.length <= 0) reject(err)
-                else resolve(notes)
+                (err | notes.length <= 0) ? reject(err) : resolve(notes)
             })
-
         })
     } catch (e) {
         console.log(e)
@@ -88,9 +98,8 @@ exports.getNotes = (req) => {
 exports.updateNotes = (req) => {
     try {
         return new Promise((resolve, reject) => {
-            console.log(req.body)
-            notes.update({
-                '_id': req.body.id
+            notes.updateOne({
+                _id: req.body.id
             }, {
                 'title': req.body.title,
                 'content': req.body.content
@@ -113,13 +122,12 @@ exports.deleteNotes = (req) => {
     try {
         return new Promise((resolve, reject) => {
             console.log(req.body.id)
-            notes.findOneAndDelete({
+            notes.deleteOne({
                 _id: req.body.id
             }, (err, deletd) => {
                 if (err) reject(err)
                 else resolve(deletd)
             })
-
         })
     } catch (e) {
         console.log(e)
@@ -197,6 +205,55 @@ exports.noteReminder = (req) => {
 }
 /**
  * @desc gets validated request from services,performs database operations needed,
+ * pushes Collaborates
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
+exports.addCollaborate = (req) => {
+    try {
+        console.log(req.id, req.body.id)
+        return new Promise((resolve, reject) => {
+            colldata.findOne({
+                noteId: req.body.noteId
+            }, (err, found) => {
+                console.log(found)
+                if (err || found == null) {
+                    let data = new colldata({
+                        noteId: req.body.noteId,
+                        userId: req.body.userId,
+                        collaborateId: req.id
+                    })
+                    data.save((err, store) => {
+                        if (err) reject(err)
+                        else resolve(store)
+                    })
+                } else {
+                    colldata.updateOne({
+                        noteId: found.noteId
+                    }, {
+                        $push: {
+                            collaborateId: req.id
+                        }
+                    }, (err, update) => {
+                        if (err) {
+                            reject(err)
+                        }
+                        else {
+                            resolve(update)
+                        }
+
+                    })
+                }
+
+            })
+
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
+/**
+ * @desc gets validated request from services,performs database operations needed,
  * updates labels attribute on given condition 
  * @param req request contains http request
  * @return returns  promise data resolve or reject
@@ -205,20 +262,46 @@ exports.noteLabel = (req) => {
     try {
         console.log(req.body.labels)
         return new Promise((resolve, reject) => {
-            notes.findOneAndUpdate({
+            notes.updateOne({
                 _id: req.body.id
             }, {
-                labels: req.body.labels
+                $push: {
+                    labels: req.body.label
+                }
             }, (err, update) => {
                 if (err) reject(err)
                 else resolve(update)
+                // }
             })
         })
     } catch (e) {
         console.log(e)
     }
 }
-/** schema for storing labels in database */
+/**
+ * @desc gets validated request from services,performs database operations needed,
+ * removes added collaboraters
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
+exports.removeCollaborate = (req) => {
+    try {
+        console.log('in module')
+        return new Promise((resolve, reject) => {
+            colldata.updateOne({
+                userId: req.body.userId
+            }, {
+                $pull: { collaborateId: req.body.collaborateId }
+            }, (err, removed) => {
+                if (err) reject(err)
+                else resolve(removed)
+            })
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
+/** @description schema for storing labels in database */
 const label = new mongoose.Schema
     ({
         "userId": {
@@ -245,7 +328,6 @@ exports.createLabel = async (req, callback) => {
             "userId": req.body.userId,
             "labelName": req.body.labelName
         })
-
         await data.save((err, data) => {
             if (err) callback(err)
             else callback(null, data)
@@ -263,7 +345,7 @@ exports.createLabel = async (req, callback) => {
 exports.updateLabel = (req) => {
     try {
         return new Promise((resolve, reject) => {
-            labels.update({
+            labels.updateOne({
                 '_id': req.body.id
             }, {
                 'labelName': req.body.labelName
@@ -285,7 +367,7 @@ exports.updateLabel = (req) => {
 exports.deleteLabel = (req) => {
     try {
         return new Promise((resolve, reject) => {
-            labels.findOneAndDelete({
+            labels.deleteOne({
                 '_id': req.body.id
             }, (err, update) => {
                 if (err) reject(err)
@@ -296,7 +378,6 @@ exports.deleteLabel = (req) => {
         console.log(e)
     }
 }
-
 /**
  * @desc gets validated request from services,performs database operations needed,
  * finds labels data from database 

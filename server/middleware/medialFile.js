@@ -17,13 +17,8 @@ const s3 = new aws.S3({
  * @return return respose sucess or failure
  */
 const fileFilter = (req, file, cb) => {
-    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
-        cb(null, true)
-    } else {
-        cb(new Error("not a valid format"), false)
-    }
+    (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') ? cb(null, true) : cb(new Error("not a valid format"))
 }
-
 const upload = multer({
     fileFilter,
     storage: multers3({

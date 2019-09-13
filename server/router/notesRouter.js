@@ -13,4 +13,6 @@ noteRouter.post('/createLabel', notesController.createLabel)
 noteRouter.post('/deleteLabel', notesController.deleteLabel)
 noteRouter.post('/updateLabel', notesController.updateLabel)
 noteRouter.get('/getLabels', notesController.getLabels)
+noteRouter.post('/addCollaborate', notesController.addCollaborate)
+noteRouter.post('/removeCollaborate', notesController.removeCollaborate)
 module.exports = noteRouter

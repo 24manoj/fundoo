@@ -16,7 +16,6 @@ exports.verify = (req, res, next) => {
             res.status(422).send(response)
         }
         else {
-
             req.decoded = result
             next()
         }
