@@ -10,7 +10,7 @@ exports.generateToken = (id, callback) => {
             "id": id
         }
         //sign take payload,secret key ,expire time option,a callback 
-        jsonToken.sign(payload, process.env.key, { expiresIn: 60 * 60 }, (err, token) => {
+        jsonToken.sign(payload, process.env.KEY, { expiresIn: 60 * 60 }, (err, token) => {
             if (err) {
                 callback(err);
             } else {
@@ -30,8 +30,8 @@ exports.generateToken = (id, callback) => {
  */
 exports.verifyToken = (token, callback) => {
     try {
-        jsonToken.verify(token, process.env.key, (err, result) => {
-            console.log(result, process.env.key)
+        jsonToken.verify(token, process.env.KEY, (err, result) => {
+        
             if (result != undefined) {
                 callback(null, result);
             }

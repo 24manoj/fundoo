@@ -15,9 +15,11 @@ exports.createNotes = (req) => {
 
             });
             //save data in collection
-            noteDetails.save(noteDetails, (err, data) => {
+            schema.noteDetails.save(noteDetails, (err, data) => {
                 if (err) { reject(err) }
-                else { resolve(data) }
+                else {
+                    resolve(data)
+                }
             })
         })
     } catch (e) {
@@ -33,10 +35,10 @@ exports.createNotes = (req) => {
  */
 exports.getNotes = (req) => {
     try {
-        console.log("in module")
+        console.log("in module", req.userId)
         return new Promise((resolve, reject) => {
-            notes.find({
-                "userId": req.body.userId,
+            schema.notes.find({
+                "userId": req.userId,
                 "isTrash": false,
                 "isArchive": false,
             }, (err, notes) => {
@@ -57,7 +59,7 @@ exports.getNotes = (req) => {
 exports.updateNotes = (req) => {
     try {
         return new Promise((resolve, reject) => {
-            notes.updateOne({
+            schema.notes.updateOne({
                 _id: req.body.id
             }, {
                 'title': req.body.title,
@@ -81,7 +83,7 @@ exports.deleteNotes = (req) => {
     try {
         return new Promise((resolve, reject) => {
             console.log(req.body.id)
-            notes.deleteOne({
+            schema.notes.deleteOne({
                 _id: req.body.id
             }, (err, deletd) => {
                 if (err) reject(err)
@@ -102,10 +104,10 @@ exports.noteTrash = (req) => {
     try {
         return new Promise((resolve, reject) => {
             // console.log(req.body.trash)
-            notes.update({
+            schema.notes.updateOne({
                 '_id': req.body.id
             }, {
-                isTrash: req.body.trash,
+                isTrash: true
             }, (err, updated) => {
                 if (err) reject(err)
                 else resolve(updated)
@@ -117,6 +119,29 @@ exports.noteTrash = (req) => {
 }
 
 /**
+ * @desc gets validated request from services,performs database operations needed
+ *  updates isTrash attribute for given note id
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
+exports.noteUnTrash = (req) => {
+    try {
+        return new Promise((resolve, reject) => {
+            // console.log(req.body.trash)
+            schema.notes.update({
+                '_id': req.body.id
+            }, {
+                isTrash: false
+            }, (err, updated) => {
+                if (err) reject(err)
+                else resolve(updated)
+            })
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
+/**
  * @desc gets validated request from services,performs database operations needed,
  * updates is Archive attribute ,on given condition
  * @param req request contains http request
@@ -125,10 +150,32 @@ exports.noteTrash = (req) => {
 exports.noteArchive = (req) => {
     try {
         return new Promise((resolve, reject) => {
-            notes.update({
+            schema.notes.updateOne({
                 '_id': req.body.id
             }, {
-                isArchive: req.body.archive,
+                isArchive: true
+            }, (err, updated) => {
+                if (err) reject(err)
+                else resolve(updated)
+            })
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
+/**
+ * @desc gets validated request from services,performs database operations needed,
+ * updates is Archive attribute ,on given condition
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
+exports.noteUnArchive = (req) => {
+    try {
+        return new Promise((resolve, reject) => {
+            schema.notes.update({
+                '_id': req.body.id
+            }, {
+                isArchive: false
             }, (err, updated) => {
                 if (err) reject(err)
                 else resolve(updated)
@@ -149,7 +196,7 @@ exports.noteReminder = (req) => {
         let date = new Date(req.body.date)
         console.log(date, req.body.date)
         return new Promise((resolve, reject) => {
-            notes.update({
+            schema.notes.update({
                 '_id': req.body.id
             }, {
                 reminder: date,
@@ -170,9 +217,9 @@ exports.noteReminder = (req) => {
  */
 exports.addCollaborate = (req) => {
     try {
-        console.log(req.id, req.body.id)
+
         return new Promise((resolve, reject) => {
-            colldata.findOne({
+            schema.colldata.findOne({
                 noteId: req.body.noteId
             }, (err, found) => {
                 console.log(found)
@@ -187,7 +234,7 @@ exports.addCollaborate = (req) => {
                         else resolve(store)
                     })
                 } else {
-                    colldata.updateOne({
+                    schema.colldata.updateOne({
                         noteId: found.noteId
                     }, {
                         $push: {
@@ -219,9 +266,9 @@ exports.addCollaborate = (req) => {
  */
 exports.noteLabel = (req) => {
     try {
-        console.log(req.body.label)
+        // console.log(req.body.label)
         return new Promise((resolve, reject) => {
-            notes.updateOne({
+            schema.notes.updateOne({
                 _id: req.body.id
             }, {
                 $push: {
@@ -247,7 +294,7 @@ exports.removeCollaborate = (req) => {
     try {
         console.log('in module')
         return new Promise((resolve, reject) => {
-            colldata.updateOne({
+            schema.colldata.updateOne({
                 noteId: req.body.noteId
             }, {
                 $pull: { collaborateId: req.body.collaborateId }
@@ -291,7 +338,7 @@ exports.createLabel = async (req, callback) => {
 exports.updateLabel = (req) => {
     try {
         return new Promise((resolve, reject) => {
-            labels.updateOne({
+            schema.labels.updateOne({
                 '_id': req.body.id
             }, {
                 'labelName': req.body.labelName
@@ -313,7 +360,7 @@ exports.updateLabel = (req) => {
 exports.deleteLabel = (req) => {
     try {
         return new Promise((resolve, reject) => {
-            labels.deleteOne({
+            schema.labels.deleteOne({
                 '_id': req.body.id
             }, (err, update) => {
                 if (err) reject(err)
@@ -333,7 +380,7 @@ exports.deleteLabel = (req) => {
 exports.getLabels = (req) => {
     try {
         return new Promise((resolve, reject) => {
-            labels.find({
+            schema.labels.find({
                 'userId': req.body.userId
             }, (err, update) => {
                 if (err) reject(err)

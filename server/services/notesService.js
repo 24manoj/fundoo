@@ -8,8 +8,8 @@ const model = require('../app/model/notesModel')
 exports.createNotes = (req) => {
     return new Promise((resolve, reject) => {
         model.createNotes(req)
-            .then(data => resolve(data))
-            .catch(err => reject(err))
+            .then((data) => { resolve(data) })
+            .catch((err) => { reject(err) })
     })
 }
 /**
@@ -83,7 +83,31 @@ exports.noteTrash = (req) => {
  * @param req request contains all the requested data
  * @return promise data
  */
+exports.noteUnTrash = (req) => {
+    return new Promise((resolve, reject) => {
+        model.noteUnTrash(req)
+            .then(data => resolve(data))
+            .catch(err => reject(err))
+    })
+}
+/**
+ * @desc gets validated request from controller,serves to modules
+ * @param req request contains all the requested data
+ * @return promise data
+ */
 exports.noteArchive = (req) => {
+    return new Promise((resolve, reject) => {
+        model.noteArchive(req)
+            .then(data => resolve(data))
+            .catch(err => reject(err))
+    })
+}
+/**
+ * @desc gets validated request from controller,serves to modules
+ * @param req request contains all the requested data
+ * @return promise data
+ */
+exports.noteUnArchive = (req) => {
     return new Promise((resolve, reject) => {
         model.noteArchive(req)
             .then(data => resolve(data))

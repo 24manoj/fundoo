@@ -4,6 +4,7 @@ let token = require('../middleware/token')
 let rediscache = require('../middleware/redisService')
 let status = require('../middleware/httpStatusCode')
 let mail = require('../middleware/userMailer')
+let model = require('../app/model/notesModel')
 let response = {}
 /**
  * @desc takes input ,error validation is done,passes request next services
@@ -86,14 +87,34 @@ exports.login = (req, res) => {
                     res.status(status.notfound).send(response);
 
                 } else {
-                    response.errors = null
-                    response.data = data
-                    response.sucess = true
+                    let value = {}
+                    value.userId = data._id
+                    model.getNotes(value)
+                        .then(data => {
+                            let details = {}
+                            details.id = data[0].userId
+                            details.value = data
+                            rediscache.setRedis(details, (err, set) => {
+                                if (err) {
+                                    console.log("cache not stored")
+                                } else {
 
-                    res.status(status.sucess).send(response);
+                                    response.errors = null
+                                    response.data = data
+                                    response.sucess = true
+
+                                    res.status(status.sucess).send(response);
+                                }
+
+                            })
+                        })
+                        .catch(err => {
+                            console.log(err)
+                        })
                 }
             })
         }
+
     } catch (e) {
         console.log(e);
     }

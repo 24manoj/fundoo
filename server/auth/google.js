@@ -14,7 +14,7 @@ try {
     passport.use(new GoogleStrategy({
         clientID: process.env.CLIENTID,
         clientSecret: process.env.GOOGLE_CLIENTSECRET,
-        callbackURL: process.env.google_url,
+        callbackURL: process.env.GOOGLE_CALLBACK,
         proxy: true
     },
         function (accessToken, refreshToken, profile, done) {

@@ -6,7 +6,9 @@ noteRouter.get('/getNotes', notesController.getNotes)
 noteRouter.post('/updateNotes', notesController.updateNotes);
 noteRouter.post('/deleteNotes', notesController.deleteNotes)
 noteRouter.post('/noteTrash', notesController.noteTrash);
+noteRouter.post('/noteUnTrash', notesController.noteUnTrash);
 noteRouter.post('/noteArchive', notesController.noteArchive);
+noteRouter.post('/noteUnArchive', notesController.noteUnArchive);
 noteRouter.post('/noteReminder', notesController.noteReminder);
 noteRouter.post('/noteLabel', notesController.noteLabel);
 noteRouter.post('/createLabel', notesController.createLabel)

@@ -30,13 +30,12 @@ exports.createNotes = (req, res) => {
                 elastic.Documentdelete(req)
                 noteService.createNotes(req)
                     .then(data => {
-                        elastic.updateDocument(data)
                         response.sucess = true,
                             response.data = data,
                             response.errors = null
+                        console.log(response)
                         res.status(status.sucess).send(response)
                     })
-
                     .catch((err) => {
                         response.sucess = false,
                             response.data = null,
@@ -81,7 +80,7 @@ exports.getNotes = (req, res) => {
                         response.errors = null
                     res.status(status.sucess).send(response)
                 } else {
-                    noteService.getNotes(req)
+                    noteService.getNotes(req.body)
                         .then(notes => {
                             console.log("in in controler")
                             elastic.addDocument(notes)
@@ -206,7 +205,47 @@ exports.deleteNotes = (req, res) => {
 }
 /**
  * @desc takes input as http req ,error validation is done,passes request data to  next services,
- * updates collection with verified details
+ * updates collection with isTrash to false
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @return return respose sucess or failure
+ */
+
+exports.noteUnTrash = (req, res) => {
+    try {
+        req.check('userId', "userId invalid").notEmpty()
+        req.check('id', 'Id invalid').notEmpty()
+        let errors = req.validationErrors()
+        if (errors) {
+            response.errors = errors
+            response.data = null
+            response.sucess = false
+            res.status(status.UnprocessableEntity).send(response)
+        }
+        else {
+            noteService.noteUnTrash(req)
+                .then(data => {
+                    response.errors = null
+                    response.data = data
+                    response.sucess = true
+                    res.status(status.sucess).send(response);
+                })
+                .catch(err => {
+                    response.errors = err
+                    response.data = null
+                    response.sucess = false
+                    res.status(status.notfound).send(response)
+                })
+        }
+
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+/**
+ * @desc takes input as http req ,error validation is done,passes request data to  next services,
+ * updates collection with isTrash true
  * @param req request contains all the requested data
  * @param res contains response from backend
  * @return return respose sucess or failure
@@ -216,7 +255,6 @@ exports.noteTrash = (req, res) => {
     try {
         req.check('userId', "userId invalid").notEmpty()
         req.check('id', 'Id invalid').notEmpty()
-        req.check('isTrash', 'value should be boolean').isBoolean()
         let errors = req.validationErrors()
         if (errors) {
             response.errors = errors
@@ -257,6 +295,45 @@ exports.noteTrash = (req, res) => {
 
 /**
  * @desc takes input as http req ,error validation is done,passes request data to  next services,
+ * updates collection with archive false
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @return return respose sucess or failure
+ */
+
+exports.noteUnArchive = (req, res) => {
+    try {
+        req.check('userId', 'User Id invalid').notEmpty()
+        req.check('id', 'Id invalid').notEmpty()
+        let errors = req.validationErrors()
+        if (errors) {
+            response.errors = errors
+            response.data = null
+            response.sucess = false
+            res.status(status.UnprocessableEntity).send(response)
+        }
+        else {
+            noteService.noteUnArchive(req)
+                .then(data => {
+                    response.errors = null
+                    response.data = data
+                    response.sucess = true
+                    res.status(status.sucess).send(response)
+                })
+                .catch(err => {
+                    response.errors = err
+                    response.data = null
+                    response.sucess = false
+                    res.status(status.notfound).send(response)
+                })
+        }
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+/**
+ * @desc takes input as http req ,error validation is done,passes request data to  next services,
  * updates collection with verified details
  * @param req request contains all the requested data
  * @param res contains response from backend
@@ -267,7 +344,6 @@ exports.noteArchive = (req, res) => {
     try {
         req.check('userId', 'User Id invalid').notEmpty()
         req.check('id', 'Id invalid').notEmpty()
-        req.check('isArchive', 'value  must be boolean').isBoolean()
         let errors = req.validationErrors()
         if (errors) {
             response.errors = errors

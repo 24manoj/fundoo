@@ -8,7 +8,7 @@ let bcrypt = require('bcrypt');
  * @return return respose sucess or failure
  */
 exports.register = (req, callback) => {
-    userRegistration.find({
+    schema.userRegistration.find({
         "email": req.body.email
     }, (err, data) => {
 
@@ -47,14 +47,13 @@ exports.register = (req, callback) => {
  */
 exports.login = (req, callback) => {
     try {
-        userRegistration.findOne({
+        schema.userRegistration.findOne({
             "email": req.body.email
         }, (err, data) => {
 
             if (data != null) {
 
                 bcrypt.compare(req.body.password, data.password, (err, match) => {
-
                     if (match == false) {
                         callback("password misMatch");
                     }
@@ -83,7 +82,7 @@ exports.login = (req, callback) => {
 exports.forgotpassword = (req, callback) => {
     try {
 
-        userRegistration.find({
+        schema.userRegistration.find({
             "email": req.body.email
         }, (err, data) => {
             if (data.length > 0) {
@@ -111,7 +110,7 @@ exports.resetPassword = (req, callback) => {
         if (err) {
             callback(err)
         } else {
-            userRegistration.updateOne({
+            schema.userRegistration.updateOne({
                 "_id": req.decoded.id
             }, {
                 "password": hash
@@ -168,7 +167,7 @@ exports.find = (req) => {
     try {
         console.log("in", req)
         return new Promise((resolve, reject) => {
-            userRegistration.find({
+            schema.userRegistration.find({
                 "email": req
             }, (err, data) => {
                 if (err || data.length <= 0) reject("data not exist")
@@ -189,7 +188,7 @@ exports.find = (req) => {
 exports.save = (req) => {
     try {
         return new Promise((resolve, reject) => {
-            const saveData = new userRegistration(req)
+            const saveData = new schema.userRegistration(req)
             saveData.save((err, data) => {
                 if (data) resolve(data)
                 else reject(err)

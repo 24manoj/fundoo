@@ -5,8 +5,8 @@ const multers3 = require('multer-s3')
 require('dotenv').config();
 /**@description configuration od s3 bucket */
 const s3 = new aws.S3({
-    accessKeyId: process.env.accessKeyId,
-    secretAccessKey: process.env.secretAccessKey,
+    accessKeyId: process.env.ACCESSKEYID,
+    secretAccessKey: process.env.SECRETACCESSKEY,
     region: 'us-east-2'
 });
 /**

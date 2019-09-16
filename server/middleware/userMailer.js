@@ -9,12 +9,12 @@ exports.sendmail = (mailReciver, value, callback) => {
     const transpoter = mailer.createTransport({
         service: "gmail",
         auth: {
-            user: process.env.user,
-            pass: process.env.pass
+            user: process.env.USER,
+            pass: process.env.PASS
         }
     });
     const mailoptions = {
-        from: process.env.user,
+        from: process.env.USER,
         to: mailReciver,
         subject: "Reset passowrd",
         text: value
@@ -32,12 +32,12 @@ exports.sendHtmlMailer = (mail, callback) => {
     var transpoter = mailer.createTransport({
         service: "gmail",
         auth: {
-            user: process.env.user,
-            pass: process.env.pass
+            user: process.env.USER,
+            pass: process.env.PASS
         }
     });
     var mailoptions = {
-        from: process.env.user,
+        from: process.env.USER,
         to: mail.body.collEmail,
         subject: "note collaborating",
         html: '<h1>Hi,</h1><h3> Your friend collaborated a note with you click to view</h3><br><a href="http://localhost:3000/"><button style="{color:orange}"> Open Fundoooo</button>'
