@@ -25,8 +25,9 @@ exports.createIndex = (req, callback) => {
  */
 exports.Documentdelete = (req) => {
     client.indices.delete({ index: req.body.userId })
-        .then(data => console.log(data))
-        .catch(err => console.log(err))
+        .then(data => console.log("repeat"))
+        .catch(err => console.log("err"))
+
 }
 /**
  * @desc  adds details to searchdocument

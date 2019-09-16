@@ -52,11 +52,11 @@ mongoose.connection.on("disconnected", () => {
     process.exit(0)
 })
 mongoose.connection.on("error", () => {
-    console.log("database coudnt connected")
+    console.log("database could not be connected")
     process.exit(1)
 })
 
-app.listen(4000, () => {
+app.listen(process.env.PORT, () => {
     console.log("Running sucessfully on port 4000")
 })
 module.exports = app;

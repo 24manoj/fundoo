@@ -1,6 +1,6 @@
 {
     "login": {
-        "email": "manoj.ks.24.mk@gmail.com",
+        "email": "yathink3@gmail.com",
         "password": "password"
     },
     "loginerr ": {
@@ -46,43 +46,74 @@
         "confirmPassword": "passbnbnword"
     },
     "notecreate": {
-        "userId": "5d6920554fc7e25c26bb1083",
+        "userId": "5d75da0455f8df357d234a96",
         "title": "testing",
         "content": "hii"
     },
     "userId": {
-        "userId": "5d6920554fc7e25c26bb1083"
+        "userId": "5d75da0455f8df357d234a96"
     },
     "userIderr": {
-        "userId": "5d6920554fc7e25c26bb108387"
+        "userId": "5d75da0455f8df357d234a9cdfdfdf6"
     },
     "updateNotes": {
-        "userId": "5d6920554fc7e25c26bb1083",
-        "id": "5d7639337d8932448a28fc72",
+        "userId": "5d75da0455f8df357d234a96",
+        "id": "5d7b0bac8102482133776c0a",
         "title": "abc",
         "content": "hello"
     },
+    "addCollaborate": {
+        "userId": "5d75da0455f8df357d234a96",
+        "noteId": "5d7b0bac8102482133776c0a",
+        "title": "abc",
+        "content": "hello",
+        "collEmail": "manoj.ks.24.mk@gmail.com"
+    },
+    "addCollaborateerr": {
+        "userId": "5d75da0455f8df357d234a96",
+        "noteId": "5d7b15e79952fb300293f0f5",
+        "title": "abc",
+        "content": "hello",
+        "collEmail": "manoj@gmail.com"
+    },
+    "removeCollaborateerr": {
+        "userId": "5d75da0455f8df357d234a96",
+        "noteId": "5d7639337d8932448a2dbnnbnbnbnsdddsddfdfdfdfdfd8fc72"
+
+    },
+    "removeCollaborate": {
+        "userId": "5d75da0455f8df357d234a96",
+        "noteId": "5d7b15e79952fb300293f0f5",
+        "collaborateId": "5d6920554fc7e25c26bb1083"
+    },
+
     "noteTrash": {
-        "userId": "5d6920554fc7e25c26bb1083",
+        "userId": "5d75da0455f8df357d234a96",
         "id": "5d7639337d8932448a28fc72",
         "isTrash": true
     },
     "noteArchive": {
-        "userId": "5d6920554fc7e25c26bb1083",
+        "userId": "5d75da0455f8df357d234a96",
         "id": "5d7639337d8932448a28fc72",
         "isArchive": true
     },
+    "noteLabel": {
+        "userId": "5d75da0455f8df357d234a96",
+        "id": "5d7639337d8932448a28fc72",
+        "label": "hjiii"
+
+    },
     "noteReminder": {
-        "userId": "5d6920554fc7e25c26bb1083",
+        "userId": "5d75da0455f8df357d234a96",
         "id": "5d7639337d8932448a28fc72",
         "date": "2015/12/28"
     },
     "createLabel": {
-        "userId": "5d6920554fc7e25c26bb1083",
+        "userId": "5d75da0455f8df357d234a96",
         "labelName": "testing"
     },
     "updateLabel": {
-        "userId": "5d6920554fc7e25c26bb1083",
+        "userId": "5d75da0455f8df357d234a96",
         "id": "5d76317eb662543db075f63f",
         "labelName": "testing123"
     },
@@ -90,11 +121,16 @@
         "userId": "5d6920554fc7e25c26bb1083"
     },
     "deleteLabel": {
-        "userId": "5d6920554fc7e25c26bb1083",
+        "userId": "5d75da0455f8df357d234a96",
         "id": "5d7649675092ba5788bcd3c0"
+    },
+    "createIndex": {
+        "userId": "5d75da0455f8df357d234a96"
+    },
+    "search": {
+        "userId": "5d75da0455f8df357d234a96",
+        "search": "hi"
     }
-
-
 
 
 

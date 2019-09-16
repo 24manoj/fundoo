@@ -1,46 +1,5 @@
-const mongoose = require('mongoose')
-/**@description schema for notes */
-const note = new mongoose.Schema({
-    userId: {
-        type: String,
-        require: true
-    },
-    title: {
-        type: String
-    },
-    content: {
-        type: String
-    },
-    isArchive: {
-        type: Boolean,
-        default: false
-    },
-    isTrash: {
-        type: Boolean,
-        default: false
-    },
-    reminder: {
-        type: Date
-    },
-    labels: [{
-        type: String
-    }]
-}, {
-    timestamps: true
-})
-/**@description schema for collaborate */
-const collaborateData = mongoose.Schema({
-    collaborateId: [{
-        type: String,
-        required: true
-    }], noteId: {
-        type: String
-    }, userId: {
-        type: String
-    }
-})
-const colldata = mongoose.model("collaborates", collaborateData)
-const notes = mongoose.model('notes', note)
+
+const schema = require('./schema')
 /**
  * @desc gets validated request from services,performs database operations needed
  * @param req request contains http request
@@ -49,7 +8,7 @@ const notes = mongoose.model('notes', note)
 exports.createNotes = (req) => {
     try {
         return new Promise((resolve, reject) => {
-            let noteDetails = new notes({
+            let noteDetails = new schema.notes({
                 "userId": req.body.userId,
                 "title": req.body.title,
                 "content": req.body.content
@@ -218,7 +177,7 @@ exports.addCollaborate = (req) => {
             }, (err, found) => {
                 console.log(found)
                 if (err || found == null) {
-                    let data = new colldata({
+                    let data = new schema.colldata({
                         noteId: req.body.noteId,
                         userId: req.body.userId,
                         collaborateId: req.id
@@ -260,7 +219,7 @@ exports.addCollaborate = (req) => {
  */
 exports.noteLabel = (req) => {
     try {
-        console.log(req.body.labels)
+        console.log(req.body.label)
         return new Promise((resolve, reject) => {
             notes.updateOne({
                 _id: req.body.id
@@ -289,10 +248,11 @@ exports.removeCollaborate = (req) => {
         console.log('in module')
         return new Promise((resolve, reject) => {
             colldata.updateOne({
-                userId: req.body.userId
+                noteId: req.body.noteId
             }, {
                 $pull: { collaborateId: req.body.collaborateId }
             }, (err, removed) => {
+                console.log(err, removed)
                 if (err) reject(err)
                 else resolve(removed)
             })
@@ -301,21 +261,7 @@ exports.removeCollaborate = (req) => {
         console.log(e)
     }
 }
-/** @description schema for storing labels in database */
-const label = new mongoose.Schema
-    ({
-        "userId": {
-            type: String,
-            required: true
-        },
-        "labelName": {
-            type: String,
-            required: true
-        }
-    }, {
-        timestamps: true
-    })
-const labels = mongoose.model("label", label)
+
 /**
  * @desc gets validated request from services,performs database operations needed
  *  stores data in collection 
@@ -324,7 +270,7 @@ const labels = mongoose.model("label", label)
  */
 exports.createLabel = async (req, callback) => {
     try {
-        const data = new labels({
+        const data = new schema.labels({
             "userId": req.body.userId,
             "labelName": req.body.labelName
         })
@@ -391,7 +337,10 @@ exports.getLabels = (req) => {
                 'userId': req.body.userId
             }, (err, update) => {
                 if (err) reject(err)
-                else resolve(update)
+                else {
+                    console.log(update)
+                    resolve(update)
+                }
             })
         })
     } catch (e) {

@@ -1,4 +1,4 @@
-var webtoken = require('../token')
+var webtoken = require('./token')
 var response = {}
 /**
  * @desc verifies whether given token is valid or invalid

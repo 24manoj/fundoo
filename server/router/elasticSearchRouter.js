@@ -1,5 +1,5 @@
 let elsticRouter = require('express').Router()
-let elasticSearch = require('../controler/elasticSearch')
+let elasticSearch = require('../controller/elasticSearch')
 /**@description routes to endpoints */
 elsticRouter.post('/createIndex', elasticSearch.createIndex)
 elsticRouter.get('/search', elasticSearch.search)

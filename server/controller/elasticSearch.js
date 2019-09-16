@@ -46,7 +46,7 @@ exports.search = (req, res) => {
             response.sucess = false
             response.error = err
             response.data = null
-            res.status(status.alreadyExist).send(response)
+            res.status(status.notfound).send(response)
         }
         else {
             response.sucess = true

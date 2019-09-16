@@ -3,7 +3,7 @@ let status = require('../middleware/httpStatusCode')
 let redisCache = require('../middleware/redisService')
 let elastic = require('../middleware/elasticSearch')
 // let mailchecker = require('email-existence')
-let model = require('../app/modules/userModule')
+let model = require('../app/model/userModel')
 require('dotenv').config()
 let mailer = require('../middleware/userMailer')
 let response = {}
@@ -83,7 +83,7 @@ exports.getNotes = (req, res) => {
                 } else {
                     noteService.getNotes(req)
                         .then(notes => {
-                            console.log("in in controler", notes)
+                            console.log("in in controler")
                             elastic.addDocument(notes)
                             details.id = req.body.userId
                             details.value = notes
@@ -361,7 +361,7 @@ exports.noteLabel = (req, res) => {
     try {
         req.check('userId', "id invalid").notEmpty()
         req.check('id', 'Id invalid').notEmpty()
-        req.check('labels', 'label invalid').notEmpty()
+        req.check('label', 'label invalid').notEmpty()
         let errors = req.validationErrors()
         if (errors) {
             response.errors = errors
@@ -557,8 +557,6 @@ exports.getLabels = async (req, res) => {
             details.id = req.body.userId;
             await redisCache.getRedis(details, (err, data) => {
                 if (err) {
-                    throw new err
-                } else {
                     noteService.getLabels(req)
                         .then(data => {
                             response.errors = null
@@ -567,12 +565,19 @@ exports.getLabels = async (req, res) => {
                             res.status(status.sucess).send(response)
                         })
                         .catch(err => {
+                            console.log
                             response.errors = err
                             response.data = null
                             response.sucess = false
                             res.status(status.notfound).send(response)
                         })
 
+                }
+                else {
+                    response.errors = null
+                    response.data = data
+                    response.sucess = true
+                    res.status(status.sucess).send(response)
                 }
             })
 

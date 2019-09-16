@@ -1,5 +1,5 @@
 /**@description importing required module */
-const model = require('../app/modules/notesModule')
+const model = require('../app/model/notesModel')
 /**
  * @desc gets validated request from controller,serves to modules
  * @param req request contains all the requested data
@@ -156,6 +156,7 @@ exports.deleteLabel = (req) => {
  * @return promise data
  */
 exports.getLabels = (req) => {
+    console.log("in services")
     return new Promise((resolve, reject) => {
         model.getLabels(req)
             .then((data) => resolve(data))

@@ -10,8 +10,9 @@ router.get('/google', cors(),
 router.get('/google/callback', cors(),
     passportGoogle.authenticate('google', { failureRedirect: "/", session: false }),
     function (req, res) {
-        res.json({ msg: "with corss" })
         res.redirect("http://localhost:3000/dashboard");
+        //.status(200).send("with corss")
+
 
     });
 module.exports = router

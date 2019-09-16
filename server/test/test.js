@@ -51,7 +51,7 @@ describe('API testing register', () => {
                 done()
             })
     })
-    it.skip('with right  details', (done) => {
+    it('with right  details', (done) => {
         app.request(server)
             .post('/register')
             .send(data.registerRight)

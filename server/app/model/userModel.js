@@ -1,54 +1,6 @@
-let mongoose = require('mongoose');
+let schema = require('./schema')
 let bcrypt = require('bcrypt');
-//schema design for register
 
-let registration = new mongoose.Schema({
-    "firstName": {
-        type: String,
-        required: true
-    },
-    "lastName":
-    {
-        type: String
-    },
-    "email":
-    {
-        type: String,
-        required: true,
-        unique: true
-    }
-    , "password":
-    {
-        type: String
-
-    },
-
-    "provider": {
-        type: String
-    }
-
-}, {
-    timestamps: true
-})
-//creating model of schema
-let userRegistration = mongoose.model('userRegistration', registration);
-const s3Upload = new mongoose.Schema({
-
-    "user": {
-        type: String,
-        required: true
-    },
-    "url":
-    {
-        type: String,
-        required: true
-    }
-}, {
-
-    timestamps: true
-
-})
-const fileUpload = mongoose.model("fileUploads", s3Upload);
 /**
  * @desc gets validated request from services,performs database operations needed
  * @param req request contains http request 
@@ -63,7 +15,7 @@ exports.register = (req, callback) => {
         if (data.length <= 0) {
 
             bcrypt.hash(req.body.password, 10, (err, hash) => {
-                var details = new userRegistration({
+                var details = new schema.userRegistration({
                     "firstName": req.body.firstName,
                     "lastName": req.body.lastName,
                     "email": req.body.email,
@@ -181,31 +133,31 @@ exports.resetPassword = (req, callback) => {
 }
 
 
-// /**
-//  * @desc gets validated request from services,performs database operations needed
-//  * @param req request contains http request
-//  * @param callback contains response from backend
-//  * @return return respose sucess or failure
-//  */
-// exports.fileUpload = (req, callback) => {
-//     try {
-//         let uploadDetails = new fileUpload
-//             ({
-//                 "user": process.env.user,
-//                 "url": req.file.location
-//             });
-//         uploadDetails.save((err, data) => {
-//             if (data) {
-//                 callback(null, data);
-//             }
-//             else {
-//                 callback("Details not Stored");
-//             }
-//         })
-//     } catch (e) {
-//         console.log(e)
-//     }
-// }
+/**
+ * @desc gets validated request from services,performs database operations needed
+ * @param req request contains http request
+ * @param callback contains response from backend
+ * @return return respose sucess or failure
+ */
+exports.fileUpload = (req, callback) => {
+    try {
+        let uploadDetails = new schema.fileUpload
+            ({
+                "user": process.env.user,
+                "url": req.file.location
+            });
+        uploadDetails.save((err, data) => {
+            if (data) {
+                callback(null, data);
+            }
+            else {
+                callback("Details not Stored");
+            }
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
 /**
  * @desc gets validated request from services,performs database operations needed
  * @param req request contains http request
@@ -214,10 +166,10 @@ exports.resetPassword = (req, callback) => {
  */
 exports.find = (req) => {
     try {
-        console.log(req.email)
+        console.log("in", req)
         return new Promise((resolve, reject) => {
             userRegistration.find({
-                "email": req.email
+                "email": req
             }, (err, data) => {
                 if (err || data.length <= 0) reject("data not exist")
                 else resolve(data)

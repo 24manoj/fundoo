@@ -31,10 +31,10 @@ exports.setRedis = (details, callback) => {
  */
 exports.getRedis = (details, callback) => {
     try {
-        console.log("hm get", details)
+
         /**hmset takes key as string , field and value */
         client.hmget(process.env.RedisKey, details.id, (err, get) => {
-            (err | !get[0]) ? callback(`cache error ${err}`) : callback(null, get)
+            (err | !get[0]) ? callback(`cache error ${err}`) : (console.log("token set from cache"), callback(null, get))
         })
     } catch (e) {
         console.log(e)

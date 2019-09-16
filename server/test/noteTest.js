@@ -6,17 +6,26 @@ const data = require('./test.json')
 app.use(chaihttp)
 app.use(require('chai-json-schema'))
 let noteid;
-/**
- * @description testing note api
- */
+describe('testing google api', () => {
+    it('register using google api', () => {
+        app.request(server)
+            .get('auth/google')
+            .end((err, res) => {
+                //  console.log(res)//res.should.have.status(200)
+            })
+    })
+})
+
+
 describe("Testing note api", () => {
     it("with right details", (done) => {
         app.request(server)
             .post('/note/createNotes')
             .send(data.notecreate)
             .end((err, res) => {
+                // console.log(res)
                 noteid = {
-                    id: res.body.data._id,
+                    id: res.data._id,
                     userId: data.userId
                 }
                 res.should.have.status(200)
@@ -43,13 +52,25 @@ describe("Testing note api", () => {
     })
 })
 
-describe('testing getNotes api ', () => {
+describe('testing elasticSearch create index', () => {
+    it('creating an index', () => {
+        app.request(server)
+            .post('/elastic/createIndex')
+            .send(data.createIndex)
+            .end((err, res) => {
+                res.should.have.status(200)
+            })
+    })
+
+})
+describe('testing getNotes api  and store in cache and elastic search', () => {
     it('with right details', (done) => {
         app.request(server)
             .get('/note/getNotes')
             .send(data.userId)
             .end((err, res) => {
                 res.should.have.status(200)
+                // console.log(res)
                 done()
             })
     })
@@ -64,10 +85,21 @@ describe('testing getNotes api ', () => {
     })
 })
 
+describe('testing elasticsearch index', () => {
+    it('search index ', (done) => {
+        app.request(server)
+            .get('elastic/search')
+            .send(data.search)
+            .end((err, res) => {
+                res.should.have.status(200)
+                done()
+            })
+    })
+})
 
 describe("testing delete note api", () => {
     it('deleting api with right details', (done) => {
-        console.log(noteid)
+        // console.log(noteid)
         app.request(server)
             .post('/note/deleteNotes')
             .send(noteid)
@@ -127,6 +159,15 @@ describe("testing update api ", () => {
                 done()
             })
     })
+    it('add noteLabel ', (done) => {
+        app.request(server)
+            .post('/note/noteLabel')
+            .send(data.noteLabel)
+            .end((err, res) => {
+                res.should.have.status(200)
+                done()
+            })
+    })
 })
 
 
@@ -152,7 +193,7 @@ describe('Testing Labels', () => {
 
 
     })
-    it('get all  labels', (done) => {
+    it.only('get all  labels', (done) => {
         app.request(server)
             .get('/note/getLabels')
             .send(data.getLabel)
@@ -172,5 +213,49 @@ describe('Testing Labels', () => {
 
 
     })
+})
+
+describe("collaborating operations", () => {
+    it('add collaborate', (done) => {
+        app.request(server)
+            .post('/note/addCollaborate')
+            .send(data.addCollaborate)
+            .end((err, res) => {
+                res.should.have.status(200)
+                done()
+            })
+    })
+    it('add collaborate with wrong value', (done) => {
+        app.request(server)
+            .post('/note/addCollaborate')
+            .send(data.addCollaborateerr)
+            .end((err, res) => {
+                res.should.have.status(404)
+                done()
+            })
+    })
+    it('remove collaborate with wrong value', (done) => {
+        app.request(server)
+            .post('/note/removeCollaborate')
+            .send(data.removeCollaborateerr)
+            .end((err, res) => {
+                res.should.have.status(422)
+                done()
+            })
+    })
+    it('remove collaborate ', (done) => {
+        console.log(data.removeCollaborate)
+        app.request(server)
+            .post('/note/removeCollaborate')
+            .send(data.removeCollaborate)
+            .end((err, res) => {
+                res.should.have.status(200)
+                done()
+            })
+    })
 
 })
+
+
+
+

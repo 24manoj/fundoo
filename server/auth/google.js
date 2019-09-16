@@ -1,5 +1,5 @@
 var passport = require('passport');
-const user = require('../app/modules/userModule')
+const user = require('../app/model/userModel')
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
 require('dotenv').config()
 try {
@@ -38,7 +38,7 @@ try {
                             done(null, data)
                         })
                         .catch((err) => {
-                            console.log(err)
+                            done(null, "da")
                         })
                 })
         }

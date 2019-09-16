@@ -1,6 +1,6 @@
 let services = require('../services/userServices')
 let mailchecker = require('email-existence')
-let token = require('../token')
+let token = require('../middleware/token')
 let rediscache = require('../middleware/redisService')
 let status = require('../middleware/httpStatusCode')
 let mail = require('../middleware/userMailer')

@@ -1,6 +1,6 @@
 /**@description importing modules */
 let router = require('express').Router();
-let controller = require('../controler/userController')
+let controller = require('../controller/userController')
 let auth = require('../middleware/auth')
 let upload = require('../middleware/medialFile')
 

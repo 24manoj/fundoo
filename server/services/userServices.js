@@ -1,4 +1,4 @@
-var model = require('../app/modules/userModule')
+var model = require('../app/model/userModel')
 var awss3 = require('../middleware/medialFile')
 /**
  * @desc gets validated request from controller,serves to modules
