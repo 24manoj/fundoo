@@ -30,7 +30,6 @@
 
     },
     "forgotPassword": {
-
         "email": "yathink3@gmail.com"
     },
     "forgotPassworderr": {
@@ -46,12 +45,12 @@
         "confirmPassword": "passbnbnword"
     },
     "notecreate": {
-        "userId": "5d75da0455f8df357d234a96",
+        "userId": "5d7f2ac9552dd4419ce0815e",
         "title": "testing",
         "content": "hii"
     },
     "userId": {
-        "userId": "5d75da0455f8df357d234a96"
+        "userId": "5d7f2ac9552dd4419ce0815e"
     },
     "userIderr": {
         "userId": "5d75da0455f8df357d234a9cdfdfdf6"
@@ -63,11 +62,11 @@
         "content": "hello"
     },
     "addCollaborate": {
-        "userId": "5d75da0455f8df357d234a96",
+        "userId": "5d7f2ac9552dd4419ce0815e",
         "noteId": "5d7b0bac8102482133776c0a",
         "title": "abc",
         "content": "hello",
-        "collEmail": "manoj.ks.24.mk@gmail.com"
+        "collEmail": "yathink3@gmail.com"
     },
     "addCollaborateerr": {
         "userId": "5d75da0455f8df357d234a96",
@@ -125,11 +124,11 @@
         "id": "5d7649675092ba5788bcd3c0"
     },
     "createIndex": {
-        "userId": "5d75da0455f8df357d234a96"
+        "userId": "5d7f2ac9552dd4419ce0815e"
     },
     "search": {
-        "userId": "5d75da0455f8df357d234a96",
-        "search": "hi"
+        "userId": "5d7f2ac9552dd4419ce0815e",
+        "search": ""
     }
 
 

@@ -57,6 +57,6 @@ mongoose.connection.on("error", () => {
 })
 
 app.listen(process.env.PORT, () => {
-    console.log("Running sucessfully on port 4000")
+    console.log("Running sucessfully on port ", process.env.PORT)
 })
 module.exports = app;

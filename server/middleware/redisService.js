@@ -14,7 +14,7 @@ client.on('error', (err) => {
  */
 exports.setRedis = (details, callback) => {
     try {
-
+        console.log(details.value)
         /**hmset takes key as string , field and value */
         client.hmset(process.env.REDISKEY, details.id, JSON.stringify(details.value), (err, store) => {
             err ? callback(err) : callback(null, store)
@@ -35,7 +35,7 @@ exports.getRedis = (details, callback) => {
 
         /**hmset takes key as string , field and value */
         client.hmget(process.env.REDISKEY, details.id, (err, get) => {
-            (err | !get[0]) ? callback(`cache error ${err}`) : (console.log("token set from cache"), callback(null, get))
+            (err || !get[0]) ? callback(`cache error ${err}`) : (console.log("token set from cache"), callback(null, get))
         })
     } catch (e) {
         console.log(e)

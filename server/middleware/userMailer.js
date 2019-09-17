@@ -9,7 +9,7 @@ exports.sendmail = (mailReciver, value, callback) => {
     const transpoter = mailer.createTransport({
         service: "gmail",
         auth: {
-            user: process.env.USER,
+            user: process.env.USEREMAIL,
             pass: process.env.PASS
         }
     });
@@ -29,15 +29,16 @@ exports.sendmail = (mailReciver, value, callback) => {
  * @return  callback function with err or data
  */
 exports.sendHtmlMailer = (mail, callback) => {
+    console.log("in mailer", process.env.USEREMAIL, process.env.PASS)
     var transpoter = mailer.createTransport({
         service: "gmail",
         auth: {
-            user: process.env.USER,
+            user: process.env.USEREMAIL,
             pass: process.env.PASS
         }
     });
     var mailoptions = {
-        from: process.env.USER,
+        from: process.env.DOMAIN,
         to: mail.body.collEmail,
         subject: "note collaborating",
         html: '<h1>Hi,</h1><h3> Your friend collaborated a note with you click to view</h3><br><a href="http://localhost:3000/"><button style="{color:orange}"> Open Fundoooo</button>'

@@ -1,8 +1,8 @@
 const app = require('chai')
 const should = require('chai').should()
 const chaihttp = require('chai-http');
-const server = require('../server')
-const data = require('./test.json')
+const server = require('../server/server')
+const data = require('./test.json.js.js')
 app.use(chaihttp)
 app.use(require('chai-json-schema'))
 let noteid;
@@ -23,9 +23,8 @@ describe("Testing note api", () => {
             .post('/note/createNotes')
             .send(data.notecreate)
             .end((err, res) => {
-                // console.log(res)
                 noteid = {
-                    id: res.data._id,
+                    id: res.body.data._id,
                     userId: data.userId
                 }
                 res.should.have.status(200)
@@ -58,7 +57,8 @@ describe('testing elasticSearch create index', () => {
             .post('/elastic/createIndex')
             .send(data.createIndex)
             .end((err, res) => {
-                res.should.have.status(200)
+                res.should.not.have.status(422)
+                // console.log(res.text)
             })
     })
 
@@ -88,10 +88,11 @@ describe('testing getNotes api  and store in cache and elastic search', () => {
 describe('testing elasticsearch index', () => {
     it('search index ', (done) => {
         app.request(server)
-            .get('elastic/search')
+            .get('/elastic/search')
             .send(data.search)
             .end((err, res) => {
                 res.should.have.status(200)
+                console.log(res.text)
                 done()
             })
     })
@@ -99,7 +100,7 @@ describe('testing elasticsearch index', () => {
 
 describe("testing delete note api", () => {
     it('deleting api with right details', (done) => {
-        // console.log(noteid)
+        console.log(noteid)
         app.request(server)
             .post('/note/deleteNotes')
             .send(noteid)
@@ -193,7 +194,7 @@ describe('Testing Labels', () => {
 
 
     })
-    it.only('get all  labels', (done) => {
+    it('get all  labels', (done) => {
         app.request(server)
             .get('/note/getLabels')
             .send(data.getLabel)
@@ -222,6 +223,7 @@ describe("collaborating operations", () => {
             .send(data.addCollaborate)
             .end((err, res) => {
                 res.should.have.status(200)
+                console.log(res.text)
                 done()
             })
     })

@@ -1,202 +1,394 @@
-/**@description importing required module */
-const model = require('../app/model/notesModel')
+const labelSchema = require('../app/model/labelSchema')
+const collSchema = require('../app/model/collaboraterSchema')
+const noteSchema = require('../app/model/notesSchema')
 /**
- * @desc gets validated request from controller,serves to modules
- * @param req request contains all the requested data
- * @return promise data
+ * @desc gets validated request from services,performs database operations needed
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
  */
 exports.createNotes = (req) => {
-    return new Promise((resolve, reject) => {
-        model.createNotes(req)
-            .then((data) => { resolve(data) })
-            .catch((err) => { reject(err) })
-    })
+    try {
+        return new Promise((resolve, reject) => {
+            let noteDetails = new noteSchema.notes({
+                "userId": req.body.userId,
+                "title": req.body.title,
+                "content": req.body.content
+
+            });
+            //save data in collection
+            noteDetails.save(noteDetails, (err, data) => {
+                if (err) { reject(err) }
+                else {
+                    resolve(data)
+                }
+            })
+        })
+    } catch (e) {
+        console.log(e)
+    }
 }
+
 /**
- * @desc gets validated request from controller,serves to modules
- * @param req request contains all the requested data
- * @return promise data
+ * @desc gets validated request from services,performs database operations needed
+ * returns notes data present in database,based on conditions given
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
  */
 exports.getNotes = (req) => {
-    return new Promise((resolve, reject) => {
-        model.getNotes(req)
-            .then((notes) => {
-                // console.log(notes)
-                resolve(notes)
+    try {
+
+        return new Promise((resolve, reject) => {
+            noteSchema.notes.find({
+                "userId": req.userId,
+                "isTrash": false,
+                "isArchive": false,
+            }, (err, notes) => {
+                (err || notes.length <= 0) ? reject(err) : resolve(notes)
             })
-            .catch(err => reject(err))
-    })
+        })
+    } catch (e) {
+        console.log(e)
+    }
 }
+
 /**
- * @desc gets validated request from controller,serves to modules
- * @param req request contains http requested data
- * @return promise data
- */
-exports.addCollaborate = (req) => {
-    return new Promise((resolve, reject) => {
-        model.addCollaborate(req)
-            .then((notes) => {
-                // console.log(notes)
-                resolve(notes)
-            })
-            .catch(err => reject(err))
-    })
-}
-/**
- * @desc gets validated request from controller,serves to modules
- * @param req request contains all the requested data
- * @return promise data
+ * @desc gets validated request from services,performs database operations needed
+ * updates collection data for given condition
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
  */
 exports.updateNotes = (req) => {
-    return new Promise((resolve, reject) => {
-        model.updateNotes(req)
-            .then(updated => resolve(updated))
-            .catch(err => reject(err))
-    })
+    try {
+        return new Promise((resolve, reject) => {
+            noteSchema.notes.updateOne({
+                _id: req.body.id
+            }, {
+                'title': req.body.title,
+                'content': req.body.content
+            }, (err, updated) => {
+                if (err) reject(err)
+                else resolve(updated)
+            })
+        })
+    } catch (e) {
+        console.log(e)
+    }
 }
 /**
- * @desc gets validated request from controller,serves to modules
- * @param req request contains all the requested data
- * @return promise data
+ * @desc gets validated request from services,performs database operations needed
+ *  removes data from the collection based on given condition
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
  */
 exports.deleteNotes = (req) => {
-    return new Promise((resolve, reject) => {
-        model.deleteNotes(req)
-            .then(data => resolve(data))
-            .catch(err => reject(err))
-    })
+    try {
+        console.log("delete api", req.body)
+        return new Promise((resolve, reject) => {
+            noteSchema.notes.deleteOne({
+                _id: req.body.id
+            }, (err, deletd) => {
+                if (err) reject(err)
+                else resolve(deletd)
+            })
+        })
+    } catch (e) {
+        console.log(e)
+    }
 }
 /**
- * @desc gets validated request from controller,serves to modules
- * @param req request contains all the requested data
- * @return promise data
+ * @desc gets validated request from services,performs database operations needed
+ *  updates isTrash attribute for given note id
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
  */
 exports.noteTrash = (req) => {
-    return new Promise((resolve, reject) => {
-        model.noteTrash(req)
-            .then(data => resolve(data))
-            .catch(err => reject(err))
-    })
+    try {
+        return new Promise((resolve, reject) => {
+            noteSchema.notes.updateOne({
+                '_id': req.body.id
+            }, {
+                isTrash: true
+            }, (err, updated) => {
+                if (err) reject(err)
+                else resolve(updated)
+            })
+        })
+    } catch (e) {
+        console.log(e)
+    }
 }
+
 /**
- * @desc gets validated request from controller,serves to modules
- * @param req request contains all the requested data
- * @return promise data
+ * @desc gets validated request from services,performs database operations needed
+ *  updates isTrash attribute for given note id
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
  */
 exports.noteUnTrash = (req) => {
-    return new Promise((resolve, reject) => {
-        model.noteUnTrash(req)
-            .then(data => resolve(data))
-            .catch(err => reject(err))
-    })
+    try {
+        return new Promise((resolve, reject) => {
+            // console.log(req.body.trash)
+            noteSchema.notes.update({
+                '_id': req.body.id
+            }, {
+                isTrash: false
+            }, (err, updated) => {
+                if (err) reject(err)
+                else resolve(updated)
+            })
+        })
+    } catch (e) {
+        console.log(e)
+    }
 }
 /**
- * @desc gets validated request from controller,serves to modules
- * @param req request contains all the requested data
- * @return promise data
+ * @desc gets validated request from services,performs database operations needed,
+ * updates is Archive attribute ,on given condition
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
  */
 exports.noteArchive = (req) => {
-    return new Promise((resolve, reject) => {
-        model.noteArchive(req)
-            .then(data => resolve(data))
-            .catch(err => reject(err))
-    })
+    try {
+        return new Promise((resolve, reject) => {
+            noteSchema.notes.updateOne({
+                '_id': req.body.id
+            }, {
+                isArchive: true
+            }, (err, updated) => {
+                if (err) reject(err)
+                else resolve(updated)
+            })
+        })
+    } catch (e) {
+        console.log(e)
+    }
 }
 /**
- * @desc gets validated request from controller,serves to modules
- * @param req request contains all the requested data
- * @return promise data
+ * @desc gets validated request from services,performs database operations needed,
+ * updates is Archive attribute ,on given condition
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
  */
 exports.noteUnArchive = (req) => {
-    return new Promise((resolve, reject) => {
-        model.noteArchive(req)
-            .then(data => resolve(data))
-            .catch(err => reject(err))
-    })
+    try {
+        return new Promise((resolve, reject) => {
+            noteSchema.notes.update({
+                '_id': req.body.id
+            }, {
+                isArchive: false
+            }, (err, updated) => {
+                if (err) reject(err)
+                else resolve(updated)
+            })
+        })
+    } catch (e) {
+        console.log(e)
+    }
 }
 /**
- * @desc gets validated request from controller,serves to modules
- * @param req request contains all the requested data
- * @return promise data
+ * @desc gets validated request from services,performs database operations needed,
+ * updates reminder on given condition 
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
  */
 exports.noteReminder = (req) => {
-    return new Promise((resolve, reject) => {
-        model.noteReminder(req)
-            .then(data => resolve(data))
-            .catch(err => reject(err))
-    })
+    try {
+        let date = new Date(req.body.date)
+        return new Promise((resolve, reject) => {
+            noteSchema.notes.update({
+                '_id': req.body.id
+            }, {
+                reminder: date,
+            }, (err, updated) => {
+                if (err) reject(err)
+                else resolve(updated)
+            })
+        })
+    } catch (e) {
+        console.log(e)
+    }
 }
 /**
- * @desc gets validated request from controller,serves to modules
- * @param req request contains all the requested data
- * @return promise data
+ * @desc gets validated request from services,performs database operations needed,
+ * pushes Collaborates
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
+exports.addCollaborate = (req) => {
+    try {
+
+        return new Promise((resolve, reject) => {
+            collSchema.colldata.findOne({
+                noteId: req.body.noteId
+            }, (err, found) => {
+                if (err || found == null) {
+                    let data = new collSchema.colldata({
+                        noteId: req.body.noteId,
+                        userId: req.body.userId,
+                        collaborateId: req.id
+                    })
+                    data.save((err, store) => {
+                        if (err) reject(err)
+                        else resolve(store)
+                    })
+                } else {
+                    collSchema.colldata.updateOne({
+                        noteId: found.noteId
+                    }, {
+                        $push: {
+                            collaborateId: req.id
+                        }
+                    }, (err, update) => {
+                        if (err) {
+                            reject(err)
+                        }
+                        else {
+                            resolve(update)
+                        }
+
+                    })
+                }
+
+            })
+
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
+/**
+ * @desc gets validated request from services,performs database operations needed,
+ * updates labels attribute on given condition 
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
  */
 exports.noteLabel = (req) => {
-    return new Promise((resolve, reject) => {
-        model.noteLabel(req)
-            .then(data => resolve(data))
-            .catch(err => reject(err))
-    })
+    try {
+        // console.log(req.body.label)
+        return new Promise((resolve, reject) => {
+            noteSchema.notes.updateOne({
+                _id: req.body.id
+            }, {
+                $push: {
+                    labels: req.body.label
+                }
+            }, (err, update) => {
+                if (err) reject(err)
+                else resolve(update)
+                // }
+            })
+        })
+    } catch (e) {
+        console.log(e)
+    }
 }
 /**
- * @desc gets validated request from controller,serves to modules
- * @param req request contains all the requested data
- * @return callback err or data
- */
-exports.createLabel = async (req, callback) => {
-    await model.createLabel(req, (err, data) => {
-        if (err) callback(err)
-        else callback(null, data)
-    })
-
-}
-/**
- * @desc gets validated request from controller,serves to modules
- * @param req request contains all the requested data
- * @return promise data
- */
-exports.updateLabel = (req) => {
-    return new Promise((resolve, reject) => {
-        model.updateLabel(req)
-            .then(data => resolve(data))
-            .catch(err => reject(err))
-    })
-}
-/**
- * @desc gets validated request from controller,serves to modules
- * @param req request contains all the requested data
- * @return promise data
- */
-exports.deleteLabel = (req) => {
-    return new Promise((resolve, reject) => {
-        model.deleteLabel(req)
-            .then(data => resolve(data))
-            .catch(err => reject(err))
-    })
-}
-/**
- * @desc gets validated request from controller,serves to modules
- * @param req request contains all the requested data
- * @return promise data
- */
-exports.getLabels = (req) => {
-    console.log("in services")
-    return new Promise((resolve, reject) => {
-        model.getLabels(req)
-            .then((data) => resolve(data))
-            .catch((err) => reject(err))
-    })
-}
-
-/**
- * @desc gets validated request from controller,serves to modules
- * @param req request contains all the requested data
- * @return promise data
+ * @desc gets validated request from services,performs database operations needed,
+ * removes added collaboraters
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
  */
 exports.removeCollaborate = (req) => {
-    return new Promise((resolve, reject) => {
-        model.removeCollaborate(req)
-            .then((data) => resolve(data))
-            .catch((err) => reject(err))
-    })
+    try {
+        console.log('in module')
+        return new Promise((resolve, reject) => {
+            collSchema.colldata.updateOne({
+                noteId: req.body.noteId
+            }, {
+                $pull: { collaborateId: req.body.collaborateId }
+            }, (err, removed) => {
+                console.log(err, removed)
+                if (err) reject(err)
+                else resolve(removed)
+            })
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+/**
+ * @desc gets validated request from services,performs database operations needed
+ *  stores data in collection 
+ * @param req request contains http request
+ * @return returns  a callback function
+ */
+exports.createLabel = async (req, callback) => {
+    try {
+        const data = new labelSchema.labels({
+            "userId": req.body.userId,
+            "labelName": req.body.labelName
+        })
+        await data.save((err, data) => {
+            if (err) callback(err)
+            else callback(null, data)
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
+/**
+ * @desc gets validated request from services,performs database operations needed
+ * updates the changes of label 
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
+exports.updateLabel = (req) => {
+    try {
+        return new Promise((resolve, reject) => {
+            labelSchema.labels.updateOne({
+                '_id': req.body.id
+            }, {
+                'labelName': req.body.labelName
+            }, (err, update) => {
+                if (err) reject(err)
+                else resolve(update)
+            })
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
+/**
+ * @desc gets validated request from services,performs database operations needed,
+ * deletes label data for specified label ids
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
+exports.deleteLabel = (req) => {
+    try {
+        return new Promise((resolve, reject) => {
+            labelSchema.labels.deleteOne({
+                '_id': req.body.id
+            }, (err, update) => {
+                if (err) reject(err)
+                else resolve(update)
+            })
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
+/**
+ * @desc gets validated request from services,performs database operations needed,
+ * finds labels data from database 
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
+exports.getLabels = (req) => {
+    try {
+        return new Promise((resolve, reject) => {
+            labelSchema.labels.find({
+                'userId': req.body.userId
+            }, (err, update) => {
+                if (err) reject(err)
+                else {
+                    console.log(update)
+                    resolve(update)
+                }
+            })
+        })
+    } catch (e) {
+        console.log(e)
+    }
 }

@@ -21,3 +21,26 @@ exports.verify = (req, res, next) => {
         }
     })
 }
+
+/**
+ * @desc verifies whether given token is valid or invalid
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @param next if token is valid,pass control contoler
+ * @return return respose sucess or failure
+ */
+exports.verifyUser = (req, res, next) => {
+
+    webtoken.verifyToken(req.body.token, (err, result) => {
+        if (err) {
+            response.data = null
+            response.errors = err
+            response.sucess = false
+            res.status(422).send(response)
+        }
+        else {
+            req.body.userId = result.id
+            next()
+        }
+    })
+}

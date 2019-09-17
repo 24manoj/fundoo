@@ -14,6 +14,7 @@ exports.generateToken = (id, callback) => {
             if (err) {
                 callback(err);
             } else {
+                console.log(token)
                 callback(null, token);
             }
 
@@ -31,7 +32,7 @@ exports.generateToken = (id, callback) => {
 exports.verifyToken = (token, callback) => {
     try {
         jsonToken.verify(token, process.env.KEY, (err, result) => {
-        
+
             if (result != undefined) {
                 callback(null, result);
             }

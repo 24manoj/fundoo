@@ -1,11 +1,12 @@
-let services = require('../services/userServices')
+let services = require('../services/userService')
 let mailchecker = require('email-existence')
 let token = require('../middleware/token')
 let rediscache = require('../middleware/redisService')
 let status = require('../middleware/httpStatusCode')
 let mail = require('../middleware/userMailer')
-let model = require('../app/model/notesModel')
+let model = require('../services/notesService')
 let response = {}
+let details = {}
 /**
  * @desc takes input ,error validation is done,passes request next services
  * @param req request contains all the requested data
@@ -87,32 +88,54 @@ exports.login = (req, res) => {
                     res.status(status.notfound).send(response);
 
                 } else {
-                    let value = {}
-                    value.userId = data._id
-                    model.getNotes(value)
-                        .then(data => {
-                            let details = {}
-                            details.id = data[0].userId
-                            details.value = data
-                            rediscache.setRedis(details, (err, set) => {
+                    let log = {}
+                    log.data = data
+                    token.generateToken(data._id, (err, token) => {
+                        log.token = token
+                        if (err) {
+                            response.data = null
+                            response.errors = err
+                            response.sucess = false
+                            res.status(status.notfound).send(response);
+                        } else {
+                            details.id = data.email
+                            details.value = log
+                            rediscache.setRedis(details, (err, LogDetails) => {
                                 if (err) {
-                                    console.log("cache not stored")
-                                } else {
-
-                                    response.errors = null
-                                    response.data = data
-                                    response.sucess = true
-
-                                    res.status(status.sucess).send(response);
+                                    console.log("Log details not set to cache")
                                 }
+                                else {
+                                    let value = {}
+                                    value.userId = data._id
+                                    model.getNotes(value)
+                                        .then(noteData => {
+                                            details.id = noteData[0].userId
+                                            details.value = noteData
+                                            rediscache.setRedis(details, (err, set) => {
+                                                if (err) {
+                                                    console.log("cache not stored")
+                                                } else {
+                                                    response.errors = null
+                                                    response.data = log
+                                                    response.sucess = true
+                                                    res.status(status.sucess).send(response);
+                                                }
 
+                                            })
+                                        })
+                                        .catch(err => {
+                                            response.errors = null
+                                            response.data = log
+                                            response.sucess = true
+                                            res.status(status.sucess).send(response);
+                                        })
+                                }
                             })
-                        })
-                        .catch(err => {
-                            console.log(err)
-                        })
+                        }
+                    })
                 }
             })
+
         }
 
     } catch (e) {
@@ -146,9 +169,7 @@ exports.forgotPassword = (req, res) => {
                     res.status(status.notfound).send(response);
                 }
                 else {
-
-
-                    token.generateToken(data[0].id, (err, token) => {
+                    token.generateToken(data._id, (err, token) => {
                         if (err) {
                             response.data = null
                             response.errors = err
@@ -156,9 +177,9 @@ exports.forgotPassword = (req, res) => {
                             res.status(status.notfound).send(response);
                         }
                         else {
-                            data[0].value = token;
-                            data[0].id = data[0]._id;
-                            mail.sendmail(data[0].email, (`${process.env.url}#!/resetPassword/?token=${token}`), (err, mail) => {
+                            data.value = token;
+                            data.id = data._id;
+                            mail.sendmail(data.email, (`${process.env.URL}#!/resetPassword/?token=${token}`), (err, mail) => {
                                 if (err) {
                                     response.data = null
                                     response.errors = err
@@ -169,7 +190,7 @@ exports.forgotPassword = (req, res) => {
                                     response.data = mail
                                     response.errors = null
                                     response.sucess = true
-                                    rediscache.setRedis(data[0], (err, data) => {
+                                    rediscache.setRedis(data, (err, data) => {
                                         if (err) {
                                             console.log("token not instered to cache");
                                         } else {

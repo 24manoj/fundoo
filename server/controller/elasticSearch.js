@@ -46,12 +46,14 @@ exports.search = (req, res) => {
             response.sucess = false
             response.error = err
             response.data = null
+            console.log(response)
             res.status(status.notfound).send(response)
         }
         else {
             response.sucess = true
             response.error = null
             response.data = data
+            console.log(response)
             res.status(status.sucess).send(response)
         }
     })

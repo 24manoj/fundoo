@@ -1,8 +1,8 @@
 const app = require('chai')
 const should = require('chai').should()
 const chaihttp = require('chai-http');
-const server = require('../server')
-const data = require('./test.json')
+const server = require('../server/server')
+const data = require('./test.json.js.js')
 let token;
 app.use(chaihttp)
 app.use(require('chai-json-schema'))
@@ -103,6 +103,7 @@ describe('API testing forgotpassword', () => {
  */
 describe('API testing resetPassword', () => {
     it('with token generated', (done) => {
+
         app.request(server)
             .post(`/resetPassword/${token}`)
             .send(data.resetPassword)

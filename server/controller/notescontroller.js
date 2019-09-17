@@ -3,7 +3,7 @@ let status = require('../middleware/httpStatusCode')
 let redisCache = require('../middleware/redisService')
 let elastic = require('../middleware/elasticSearch')
 // let mailchecker = require('email-existence')
-let model = require('../app/model/userModel')
+let model = require('../app/model/userSchema')
 require('dotenv').config()
 let mailer = require('../middleware/userMailer')
 let response = {}
@@ -17,6 +17,7 @@ let details = {};
  */
 exports.createNotes = (req, res) => {
     try {
+        console.log(req.body.userId)
         req.checkBody('userId', 'userId invalid ').notEmpty()
         let errors = req.validationErrors()
         if (errors) {
@@ -28,6 +29,14 @@ exports.createNotes = (req, res) => {
         else {
             if (req.body.title != null || req.body.content != null) {
                 elastic.Documentdelete(req)
+                details.id = req.body.userId
+                redisCache.delRedis(details, (err, cacheDelete) => {
+                    if (err) {
+                        console.log(err)
+                    } else {
+                        console.log(cacheDelete)
+                    }
+                })
                 noteService.createNotes(req)
                     .then(data => {
                         response.sucess = true,
@@ -40,7 +49,7 @@ exports.createNotes = (req, res) => {
                         response.sucess = false,
                             response.data = null,
                             response.errors = err
-
+                        console.log(err)
                         res.status(status.notfound).send(response)
                     })
             }

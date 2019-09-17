@@ -3,7 +3,7 @@ const elasticsearch = require('elasticsearch');
  * @desc creates a connection for elasticsearch client
  */
 const client = new elasticsearch.Client({
-    host: 'http://localhost:9200'
+    host: process.env.HOST
 });
 /**
  * @desc creates index for search
@@ -12,7 +12,6 @@ const client = new elasticsearch.Client({
  * @return callback function err or data
  */
 exports.createIndex = (req, callback) => {
-    console.log("in")
     client.indices.create({
         'index': req.body.userId
     }, ((err, result, status) => {
@@ -35,6 +34,7 @@ exports.Documentdelete = (req) => {
  */
 exports.addDocument = (req) => {
     let bulk = [];
+    console.log("in add elastic")
     req.forEach((element, key) => {
         bulk.push({
             index: {
@@ -49,7 +49,7 @@ exports.addDocument = (req) => {
             "labels": element.labels
         }
         bulk.push(data)
-        data = " "
+
     });
     //perform bulk indexing of the data passed
     client.bulk({ body: bulk }, (err, response) => {
@@ -62,6 +62,7 @@ exports.addDocument = (req) => {
  * @param callback calls invoked function with err or data
  */
 exports.searchkey = (req, callback) => {
+    console.log("in elastic search")
     let body = {
         query: {
             query_string: {

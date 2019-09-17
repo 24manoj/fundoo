@@ -1,6 +1,5 @@
-let schema = require('./schema')
+let userSchema = require('../app/model/userSchema')
 let bcrypt = require('bcrypt');
-
 /**
  * @desc gets validated request from services,performs database operations needed
  * @param req request contains http request 
@@ -8,14 +7,12 @@ let bcrypt = require('bcrypt');
  * @return return respose sucess or failure
  */
 exports.register = (req, callback) => {
-    schema.userRegistration.find({
+    userSchema.userRegistration.find({
         "email": req.body.email
     }, (err, data) => {
-
         if (data.length <= 0) {
-
             bcrypt.hash(req.body.password, 10, (err, hash) => {
-                var details = new schema.userRegistration({
+                let details = new userSchema.userRegistration({
                     "firstName": req.body.firstName,
                     "lastName": req.body.lastName,
                     "email": req.body.email,
@@ -26,6 +23,7 @@ exports.register = (req, callback) => {
                         callback(err);
                     }
                     else {
+                        console.log(data)
                         callback(null, data);
                     }
                 });
@@ -47,17 +45,16 @@ exports.register = (req, callback) => {
  */
 exports.login = (req, callback) => {
     try {
-        schema.userRegistration.findOne({
+        userSchema.userRegistration.findOne({
             "email": req.body.email
         }, (err, data) => {
-
             if (data != null) {
-
                 bcrypt.compare(req.body.password, data.password, (err, match) => {
                     if (match == false) {
                         callback("password misMatch");
                     }
                     else {
+
                         callback(null, data)
                     }
 
@@ -81,17 +78,15 @@ exports.login = (req, callback) => {
  */
 exports.forgotpassword = (req, callback) => {
     try {
-
-        schema.userRegistration.find({
+        userSchema.userRegistration.findOne({
             "email": req.body.email
         }, (err, data) => {
-            if (data.length > 0) {
-
-                callback(null, data);
-            }
-            else {
+            if (err || data == null) {
                 console.log("in module")
                 callback("NO data found");
+            }
+            else {
+                callback(null, data);
             }
         })
     } catch (e) {
@@ -105,12 +100,11 @@ exports.forgotpassword = (req, callback) => {
  * @return return respose sucess or failure
  */
 exports.resetPassword = (req, callback) => {
-
     bcrypt.hash(req.body.password, 10, (err, hash) => {
         if (err) {
             callback(err)
         } else {
-            schema.userRegistration.updateOne({
+            userSchema.userRegistration.updateOne({
                 "_id": req.decoded.id
             }, {
                 "password": hash
@@ -126,9 +120,6 @@ exports.resetPassword = (req, callback) => {
             })
         }
     })
-
-
-
 }
 
 
@@ -140,17 +131,17 @@ exports.resetPassword = (req, callback) => {
  */
 exports.fileUpload = (req, callback) => {
     try {
-        let uploadDetails = new schema.fileUpload
-            ({
-                "user": process.env.user,
-                "url": req.file.location
-            });
-        uploadDetails.save((err, data) => {
+        userSchema.userRegistration.updateOne({
+
+            "_id": req.decoded._id
+        }, {
+            "url": req.file.location
+        }, (err, data) => {
             if (data) {
                 callback(null, data);
             }
             else {
-                callback("Details not Stored");
+                callback("Details not updated");
             }
         })
     } catch (e) {
@@ -168,7 +159,7 @@ exports.find = (req) => {
         console.log("in", req)
         return new Promise((resolve, reject) => {
             schema.userRegistration.find({
-                "email": req
+                "email": req.email
             }, (err, data) => {
                 if (err || data.length <= 0) reject("data not exist")
                 else resolve(data)
