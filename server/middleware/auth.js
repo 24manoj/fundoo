@@ -30,8 +30,8 @@ exports.verify = (req, res, next) => {
  * @return return respose sucess or failure
  */
 exports.verifyUser = (req, res, next) => {
-
-    webtoken.verifyToken(req.body.token, (err, result) => {
+    console.log(req.headers.token)
+    webtoken.verifyToken(req.headers.token, (err, result) => {
         if (err) {
             response.data = null
             response.errors = err
@@ -39,7 +39,8 @@ exports.verifyUser = (req, res, next) => {
             res.status(422).send(response)
         }
         else {
-            req.body.userId = result.id
+            req.decoded = result
+
             next()
         }
     })

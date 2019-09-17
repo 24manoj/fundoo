@@ -3,7 +3,7 @@ let status = require('../middleware/httpStatusCode')
 let redisCache = require('../middleware/redisService')
 let elastic = require('../middleware/elasticSearch')
 // let mailchecker = require('email-existence')
-let model = require('../app/model/userSchema')
+let model = require('../services/userService')
 require('dotenv').config()
 let mailer = require('../middleware/userMailer')
 let response = {}
@@ -17,49 +17,39 @@ let details = {};
  */
 exports.createNotes = (req, res) => {
     try {
-        console.log(req.body.userId)
-        req.checkBody('userId', 'userId invalid ').notEmpty()
-        let errors = req.validationErrors()
-        if (errors) {
-            response.sucess = false,
-                response.data = null,
-                response.errors = errors
-            res.status(status.UnprocessableEntity).send(response)
+        if (req.body.title != null || req.body.content != null) {
+            elastic.Documentdelete(req)
+            details.id = req.decoded.id
+            redisCache.delRedis(details, (err, cacheDelete) => {
+                if (err) {
+                    console.log(err)
+                } else {
+                    console.log(cacheDelete)
+                }
+            })
+            noteService.createNotes(req)
+                .then(data => {
+                    response.sucess = true,
+                        response.data = data,
+                        response.errors = null
+                    console.log(response)
+                    res.status(status.sucess).send(response)
+                })
+                .catch((err) => {
+                    response.sucess = false,
+                        response.data = null,
+                        response.errors = err
+                    console.log(err)
+                    res.status(status.notfound).send(response)
+                })
         }
         else {
-            if (req.body.title != null || req.body.content != null) {
-                elastic.Documentdelete(req)
-                details.id = req.body.userId
-                redisCache.delRedis(details, (err, cacheDelete) => {
-                    if (err) {
-                        console.log(err)
-                    } else {
-                        console.log(cacheDelete)
-                    }
-                })
-                noteService.createNotes(req)
-                    .then(data => {
-                        response.sucess = true,
-                            response.data = data,
-                            response.errors = null
-                        console.log(response)
-                        res.status(status.sucess).send(response)
-                    })
-                    .catch((err) => {
-                        response.sucess = false,
-                            response.data = null,
-                            response.errors = err
-                        console.log(err)
-                        res.status(status.notfound).send(response)
-                    })
-            }
-            else {
-                response.sucess = true,
-                    response.data = "no data",
-                    response.errors = null
-                res.status(status.sucess).send(response);
-            }
+            response.sucess = true,
+                response.data = "no data",
+                response.errors = null
+            res.status(status.sucess).send(response);
         }
+
     } catch (e) { console.log(e) }
 }
 
@@ -73,48 +63,40 @@ exports.createNotes = (req, res) => {
 
 exports.getNotes = (req, res) => {
     try {
-        req.checkBody('userId', 'userId invalid').notEmpty()
-        let errors = req.validationErrors()
-        if (errors) {
-            response.sucess = false,
-                response.data = null,
-                response.errors = errors
-            res.status(status.UnprocessableEntity).send(response)
-        } else {
-            details.id = req.body.userId
-            redisCache.getRedis(details, (err, data) => {
-                if (data) {
-                    response.sucess = true,
-                        response.data = data,
-                        response.errors = null
-                    res.status(status.sucess).send(response)
-                } else {
-                    noteService.getNotes(req.body)
-                        .then(notes => {
-                            console.log("in in controler")
-                            elastic.addDocument(notes)
-                            details.id = req.body.userId
-                            details.value = notes
-                            redisCache.setRedis(details, (err, data) => {
-                                if (data) {
-                                    response.sucess = true,
-                                        response.data = notes,
-                                        response.errors = null
-                                    res.status(status.sucess).send(response)
-                                }
-                            })
+        details.id = req.decoded.id
+        redisCache.getRedis(details, (err, data) => {
+            if (data) {
+                response.sucess = true,
+                    response.data = data,
+                    response.errors = null
+                res.status(status.sucess).send(response)
+            } else {
+                noteService.getNotes(req.decoded.id)
+                    .then(notes => {
+                        console.log("in in controler")
+                        elastic.addDocument(notes)
+                        details.id = req.decoded.id
+                        details.value = notes
+                        redisCache.setRedis(details, (err, data) => {
+                            if (data) {
+                                response.sucess = true,
+                                    response.data = notes,
+                                    response.errors = null
+                                res.status(status.sucess).send(response)
+                            }
+                        })
 
 
-                        })
-                        .catch(err => {
-                            response.sucess = false,
-                                response.data = null,
-                                response.errors = err
-                            res.status(status.notfound).send(response)
-                        })
-                }
-            })
-        }
+                    })
+                    .catch(err => {
+                        response.sucess = false,
+                            response.data = null,
+                            response.errors = err
+                        res.status(status.notfound).send(response)
+                    })
+            }
+        })
+
     } catch (e) {
         console.log(e)
     }
@@ -129,8 +111,7 @@ exports.getNotes = (req, res) => {
 
 exports.updateNotes = (req, res) => {
     try {
-        req.check('userId', "userId invalid").notEmpty()
-        req.check('id', 'userId invalid').notEmpty()
+        req.check('noteId', 'NoteId invalid').notEmpty()
         let errors = req.validationErrors()
         if (errors) {
             response.sucess = false,
@@ -491,7 +472,6 @@ exports.noteLabel = (req, res) => {
 
 exports.createLabel = async (req, res) => {
     try {
-        req.check('userId', 'userId invalid').notEmpty()
         req.check('labelName', 'labelName invalid').notEmpty()
         let errors = req.validationErrors()
         if (errors) {
@@ -507,8 +487,6 @@ exports.createLabel = async (req, res) => {
                     response.data = data
                     response.sucess = true
                     res.status(status.sucess).send(response)
-
-
                 }
                 else {
                     response.errors = err
@@ -630,43 +608,34 @@ exports.deleteLabel = async (req, res) => {
  */
 exports.getLabels = async (req, res) => {
     try {
-        req.check('userId', 'userId invalid').notEmpty()
-        let errors = req.validationErrors()
-        if (errors) {
-            response.errors = errors
-            response.data = null
-            response.sucess = false
-            res.status(status.UnprocessableEntity).send(response)
-        }
-        else {
-            details.id = req.body.userId;
-            await redisCache.getRedis(details, (err, data) => {
-                if (err) {
-                    noteService.getLabels(req)
-                        .then(data => {
-                            response.errors = null
-                            response.data = data
-                            response.sucess = true
-                            res.status(status.sucess).send(response)
-                        })
-                        .catch(err => {
-                            console.log
-                            response.errors = err
-                            response.data = null
-                            response.sucess = false
-                            res.status(status.notfound).send(response)
-                        })
 
-                }
-                else {
-                    response.errors = null
-                    response.data = data
-                    response.sucess = true
-                    res.status(status.sucess).send(response)
-                }
-            })
+        details.id = req.decoded.id
+        await redisCache.getRedis(details, (err, data) => {
+            if (err) {
+                noteService.getLabels(req)
+                    .then(data => {
+                        response.errors = null
+                        response.data = data
+                        response.sucess = true
+                        res.status(status.sucess).send(response)
+                    })
+                    .catch(err => {
+                        response.errors = err
+                        response.data = null
+                        response.sucess = false
+                        res.status(status.notfound).send(response)
+                    })
 
-        }
+            }
+            else {
+                response.errors = null
+                response.data = data
+                response.sucess = true
+                res.status(status.sucess).send(response)
+            }
+        })
+
+
     } catch (e) {
         console.log(e)
     }
@@ -682,7 +651,6 @@ exports.getLabels = async (req, res) => {
 exports.addCollaborate = async (req, res) => {
     try {
         req.check('collEmail', 'Email invlaid').isEmail()
-        req.check('userId', 'userId invalid').notEmpty()
         req.check('noteId', ' Invalid note ID ').notEmpty()
         let errors = req.validationErrors()
         if (errors) {
@@ -697,14 +665,7 @@ exports.addCollaborate = async (req, res) => {
             }
             await model.find(data)
                 .then(found => {
-                    req.id = found[0]._id
-                    // mailchecker.check(req.body.collEmail, (err, ok) => {
-                    //     if (err || ok == false) {
-                    //         response.errors = "given Email not Exist"
-                    //         response.data = null
-                    //         response.sucess = false
-                    //         res.status(status.UnprocessableEntity).send(response)
-                    //     } else {
+                    req.id = found._id
                     mailer.sendHtmlMailer(req, (err, sent) => {
                         if (err) {
                             response.errors = err
@@ -712,13 +673,6 @@ exports.addCollaborate = async (req, res) => {
                             response.sucess = false
                             res.status(status.UnprocessableEntity).send(response)
                         } else {
-                            // console.log("going to database")
-                            // res.status(status.sucess).send("ok")
-                            // details.id = req.body.userId;
-                            // redisCache.delRedis(details, (err, data) => {
-                            //     if (err) {
-                            //         throw new err
-                            //     } else {
                             noteService.addCollaborate(req)
                                 .then(data => {
                                     response.errors = null

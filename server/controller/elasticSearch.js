@@ -8,14 +8,7 @@ let response = {}
  * @return response 
  */
 exports.createIndex = (req, res) => {
-    req.check('userId', 'UserId invalid').notEmpty()
-    let errors = req.validationErrors()
-    if (errors) {
-        response.sucess = false
-        response.error = errors
-        response.data = null
-        res.status(status.UnprocessableEntity).send(response)
-    } else {
+    try {
         client.createIndex(req, (err, data) => {
             if (err) {
                 response.sucess = false
@@ -32,8 +25,12 @@ exports.createIndex = (req, res) => {
 
         })
 
+    } catch (e) {
+        console.log(e)
     }
+
 }
+
 /**
  * @desc  validates http requests
  * @param req request contains http requested data
@@ -41,20 +38,24 @@ exports.createIndex = (req, res) => {
  * @return response
  */
 exports.search = (req, res) => {
-    client.searchkey(req, (err, data) => {
-        if (err) {
-            response.sucess = false
-            response.error = err
-            response.data = null
-            console.log(response)
-            res.status(status.notfound).send(response)
-        }
-        else {
-            response.sucess = true
-            response.error = null
-            response.data = data
-            console.log(response)
-            res.status(status.sucess).send(response)
-        }
-    })
+    try {
+        client.searchkey(req, (err, data) => {
+            if (err) {
+                response.sucess = false
+                response.error = err
+                response.data = null
+
+                res.status(status.notfound).send(response)
+            }
+            else {
+                response.sucess = true
+                response.error = null
+                response.data = data
+
+                res.status(status.sucess).send(response)
+            }
+        })
+    } catch (e) {
+        console.log(e)
+    }
 }

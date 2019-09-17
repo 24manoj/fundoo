@@ -8,9 +8,10 @@ const noteSchema = require('../app/model/notesSchema')
  */
 exports.createNotes = (req) => {
     try {
+        console.log("in controler", req.decoded.id)
         return new Promise((resolve, reject) => {
             let noteDetails = new noteSchema.notes({
-                "userId": req.body.userId,
+                "userId": req.decoded.id,
                 "title": req.body.title,
                 "content": req.body.content
 
@@ -34,12 +35,11 @@ exports.createNotes = (req) => {
  * @param req request contains http request
  * @return returns  promise data resolve or reject
  */
-exports.getNotes = (req) => {
+exports.getNotes = (id) => {
     try {
-
         return new Promise((resolve, reject) => {
             noteSchema.notes.find({
-                "userId": req.userId,
+                "userId": id,
                 "isTrash": false,
                 "isArchive": false,
             }, (err, notes) => {
@@ -61,7 +61,7 @@ exports.updateNotes = (req) => {
     try {
         return new Promise((resolve, reject) => {
             noteSchema.notes.updateOne({
-                _id: req.body.id
+                _id: req.body.noteId
             }, {
                 'title': req.body.title,
                 'content': req.body.content
@@ -224,7 +224,7 @@ exports.addCollaborate = (req) => {
                 if (err || found == null) {
                     let data = new collSchema.colldata({
                         noteId: req.body.noteId,
-                        userId: req.body.userId,
+                        userId: req.decoded.id,
                         collaborateId: req.id
                     })
                     data.save((err, store) => {
@@ -316,7 +316,7 @@ exports.removeCollaborate = (req) => {
 exports.createLabel = async (req, callback) => {
     try {
         const data = new labelSchema.labels({
-            "userId": req.body.userId,
+            "userId": req.decoded.id,
             "labelName": req.body.labelName
         })
         await data.save((err, data) => {
@@ -379,7 +379,7 @@ exports.getLabels = (req) => {
     try {
         return new Promise((resolve, reject) => {
             labelSchema.labels.find({
-                'userId': req.body.userId
+                'userId': req.decoded.id
             }, (err, update) => {
                 if (err) reject(err)
                 else {

@@ -156,9 +156,8 @@ exports.fileUpload = (req, callback) => {
  */
 exports.find = (req) => {
     try {
-        console.log("in", req)
         return new Promise((resolve, reject) => {
-            schema.userRegistration.find({
+            userSchema.userRegistration.findOne({
                 "email": req.email
             }, (err, data) => {
                 if (err || data.length <= 0) reject("data not exist")

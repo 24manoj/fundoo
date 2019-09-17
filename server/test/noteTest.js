@@ -1,8 +1,9 @@
 const app = require('chai')
 const should = require('chai').should()
 const chaihttp = require('chai-http');
-const server = require('../server/server')
-const data = require('./test.json.js.js')
+const server = require('../server')
+const data = require('./test.json')
+const logToken = require('./test')
 app.use(chaihttp)
 app.use(require('chai-json-schema'))
 let noteid;
@@ -18,9 +19,10 @@ describe('testing google api', () => {
 
 
 describe("Testing note api", () => {
-    it("with right details", (done) => {
+    it.only("with right details", (done) => {
         app.request(server)
             .post('/note/createNotes')
+            .set("token", logToken.logToken)
             .send(data.notecreate)
             .end((err, res) => {
                 noteid = {

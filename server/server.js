@@ -12,14 +12,12 @@ const express = require('express');
 const expressvalidator = require('express-validator');
 const mongoose = require('mongoose');
 const bodyparser = require('body-parser');
-const routes = require('../server/router/router');
-const notesRoutes = require('../server/router/notesRouter')
+const routes = require('./router/router');
+const notesRoutes = require('./router/notesRouter')
 let search = require('./router/elasticSearchRouter')
 require('dotenv').config();
 const passport = require('passport')
 let auth = require('./router/auth');
-
-
 const app = express();
 
 app.use(bodyparser.json());

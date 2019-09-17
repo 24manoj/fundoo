@@ -14,7 +14,7 @@ client.on('error', (err) => {
  */
 exports.setRedis = (details, callback) => {
     try {
-        console.log(details.value)
+        console.log("in redis", details.id)
         /**hmset takes key as string , field and value */
         client.hmset(process.env.REDISKEY, details.id, JSON.stringify(details.value), (err, store) => {
             err ? callback(err) : callback(null, store)

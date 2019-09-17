@@ -1,8 +1,8 @@
 const app = require('chai')
 const should = require('chai').should()
 const chaihttp = require('chai-http');
-const server = require('../server/server')
-const data = require('./test.json.js.js')
+const server = require('../server')
+const data = require('./test.json')
 let token;
 app.use(chaihttp)
 app.use(require('chai-json-schema'))
@@ -10,12 +10,13 @@ app.use(require('chai-json-schema'))
  * @desc Testing Login api ,with right details,empty details,Wrong details
  */
 describe('API testing Login', () => {
-    it('with right details', (done) => {
+    it.only('with right details', (done) => {
         app.request(server)
             .post('/login')
             .send(data.login)
             .end((err, res) => {
                 res.should.have.status(200)
+                exports.logToken = res.body.data.token
                 done()
             })
     })

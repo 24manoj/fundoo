@@ -98,6 +98,7 @@ exports.login = (req, res) => {
                             response.sucess = false
                             res.status(status.notfound).send(response);
                         } else {
+                            details = {}    
                             details.id = data.email
                             details.value = log
                             rediscache.setRedis(details, (err, LogDetails) => {
@@ -105,9 +106,9 @@ exports.login = (req, res) => {
                                     console.log("Log details not set to cache")
                                 }
                                 else {
-                                    let value = {}
-                                    value.userId = data._id
-                                    model.getNotes(value)
+                                    let userId = data._id
+
+                                    model.getNotes(userId)
                                         .then(noteData => {
                                             details.id = noteData[0].userId
                                             details.value = noteData
