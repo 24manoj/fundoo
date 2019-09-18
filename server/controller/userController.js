@@ -98,7 +98,7 @@ exports.login = (req, res) => {
                             response.sucess = false
                             res.status(status.notfound).send(response);
                         } else {
-                            details = {}    
+                            details = {}
                             details.id = data.email
                             details.value = log
                             rediscache.setRedis(details, (err, LogDetails) => {

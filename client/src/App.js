@@ -1,15 +1,14 @@
-import React, { Component } from 'react';
-import { Router, Route } from 'react-router'
+import React from 'react';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+import './App.css';
+import Login from './components/Login'
 
-class App extends Component {
-  render() {
-    return (
-      <div>
-        <Router>
-          <Route path="/" component={} />
-        </Router>
-      </div >
-    );
-  }
+function App() {
+  return (
+    <Router>
+      <Route path='/' exact component={Login} />
+    </Router>
+  );
 }
+
 export default App;
