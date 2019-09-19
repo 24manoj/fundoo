@@ -16,6 +16,7 @@ const routes = require('./router/router');
 const notesRoutes = require('./router/notesRouter')
 let search = require('./router/elasticSearchRouter')
 require('dotenv').config();
+let cors = require('cors')
 const passport = require('passport')
 let auth = require('./router/auth');
 const app = express();
@@ -24,7 +25,7 @@ app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({
     extended: true
 }))
-
+app.use(cors());
 app.use(express.static('../client'))
 app.use(expressvalidator())
 app.use(passport.initialize());

@@ -1,48 +1,40 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
-}
-
-.App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
-  color: white;
-}
-
-.App-intro {
-  font-size: large;
-}
-
 .loginStyle {
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 100vh;
+  width: 100%;
 }
 
 .cardStyle {
-  display: flex;
   text-align: center;
-  flex-direction: column;
-  width: 400px;
-  height: 450px;
-  margin-top: 10%;
+  align-content: center;
+  font-family: sans-serif;
+  flex-shrink: 1;
+  width: 30%;
+  margin-top: 10px auto;
+  padding: 10px;
+  height: 450x;
 }
 
-h1 {
+h1, p {
   font-family: Georgia, 'Times New Roman', Times, serif;
   font-style: italic;
+  margin: 5% auto;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+img {
+  border-radius: 50px;
+}
+
+.SignButton {
+  width: 70%;
+  align-items: center
+}
+
+.card-Forgot {
+  color: blue;
+  margin-right: 5%;
+  text-align: right;
+  font-size: 10pt;
 }
