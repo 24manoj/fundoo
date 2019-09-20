@@ -1,8 +1,10 @@
-var passport = require('passport');
-const user = require('../app/model/userSchema')
-var GoogleStrategy = require('passport-google-oauth20').Strategy;
+let passport = require('passport');
+const user = require('../services/userService')
+let GoogleStrategy = require('passport-google-oauth20').Strategy;
+
 require('dotenv').config()
 try {
+
     //invokes when client is requesting for autherization,it encrypts the user details and requests for login
     passport.serializeUser(function (user, done) {
         done(null, user);
@@ -24,11 +26,20 @@ try {
                 "email": profile.emails[0].value,
                 "provider": profile.provider
             }
+            console.log(profile.emails[0].value)
+            let data = {
+                email: profile.emails[0].value
+            }
             //checks for the existance of user in database
-            user.find(profile.emails[0].value)
+            user.find(data)
                 .then((data) => {
                     console.log("user exist");
-                    done(null, data)
+                    jwt.generateToken(data._id, (err, token) => {
+                        if (err) console.log(err);
+                        else {
+                            done(null, data)
+                        }
+                    })
                 })
                 .catch((err) => {
                     //user not present save in database
@@ -38,7 +49,7 @@ try {
                             done(null, data)
                         })
                         .catch((err) => {
-                            done(null, "da")
+                            done(null, err)
                         })
                 })
         }
@@ -46,4 +57,4 @@ try {
 } catch (e) {
     console.log(e)
 }
-module.exports = passport;
+module.exports = passport 

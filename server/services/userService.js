@@ -7,10 +7,11 @@ let bcrypt = require('bcrypt');
  * @return return respose sucess or failure
  */
 exports.register = (req, callback) => {
-    userSchema.userRegistration.find({
+    console.log(req.body.email)
+    userSchema.userRegistration.findOne({
         "email": req.body.email
     }, (err, data) => {
-        if (data.length <= 0) {
+        if (data === null) {
             bcrypt.hash(req.body.password, 10, (err, hash) => {
                 let details = new userSchema.userRegistration({
                     "firstName": req.body.firstName,
@@ -23,7 +24,6 @@ exports.register = (req, callback) => {
                         callback(err);
                     }
                     else {
-                        console.log(data)
                         callback(null, data);
                     }
                 });
@@ -31,7 +31,7 @@ exports.register = (req, callback) => {
             })
         }
         else {
-
+            console.log("err")
             callback("Data exist")
         }
     })
@@ -160,7 +160,7 @@ exports.find = (req) => {
             userSchema.userRegistration.findOne({
                 "email": req.email
             }, (err, data) => {
-                if (err || data.length <= 0) reject("data not exist")
+                if (err || data == null) reject("data not exist")
                 else resolve(data)
             })
         })

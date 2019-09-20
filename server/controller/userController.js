@@ -18,11 +18,10 @@ exports.register = (req, res) => {
         req.checkBody('firstName', 'firstName invalid').isAlpha().isLength({
             min: 4
         })
-        req.checkBody('lastName', 'lastName invalid').isAlpha()
         req.checkBody('email', 'email invalid').isEmail()
         req.checkBody('password', 'password invalid').isLength({ min: 8 })
         let errors = req.validationErrors();
-
+        console.log(errors)
         if (errors) {
             response.errors = errors
             response.sucess = false
@@ -43,7 +42,12 @@ exports.register = (req, res) => {
                             response.data = null
                             response.errors = err
                             response.sucess = false
-                            res.status(status.notfound).send(response);
+                            response.status = 400;
+                            var error = {
+                                status: 200,
+                                data: null
+                            }
+                            res.status(status.alreadyExist).send(error);
 
                         }
                         else {
@@ -162,7 +166,7 @@ exports.forgotPassword = (req, res) => {
             res.status(status.UnprocessableEntity).send(response);
         }
         else {
-            services.forgotPassword(req, (err, data) => {
+            services.forgotpassword(req, (err, data) => {
                 if (err) {
                     response.data = null
                     response.errors = err
