@@ -184,7 +184,7 @@ exports.forgotPassword = (req, res) => {
                         else {
                             data.value = token;
                             data.id = data._id;
-                            mail.sendmail(data.email, (`${process.env.URL}#!/resetPassword/?token=${token}`), (err, mail) => {
+                            mail.sendmail(data.email, (`${process.env.URL}resetPassword/?token=${token}`), (err, mail) => {
                                 if (err) {
                                     response.data = null
                                     response.errors = err

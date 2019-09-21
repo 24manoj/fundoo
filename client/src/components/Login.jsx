@@ -39,7 +39,6 @@ class Login extends Component {
         let passwordRegex = /^[a-zA-Z0-9]{8,}/;
         let EmailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
         const userName = event.target.value;
-        console.log(this.state.userName, this.state.password)
         if (event.target.name === 'Email') {
             this.setState({
                 userName: event.target.value
@@ -154,7 +153,7 @@ class Login extends Component {
                         stackBarMessage: "Entered mail not Found!!!???",
                         resetMail: ''
                     })
-                    this.DailogClose()
+
                 })
         }
     }
@@ -163,7 +162,7 @@ class Login extends Component {
     render() {
         return (
             <MuiThemeProvider theme={theme}>
-                <div className='loginStyle'>
+                <div className='Style'>
                     <Card className='cardStyle'>
                         <h2>
                             <span style={{ color: "#7536BD" }}>F</span>
@@ -203,7 +202,7 @@ class Login extends Component {
                         <div className="card-Forgot" onClick={this.DailogShow}>Forgot Password?</div>
                         <br />
                         <div>
-                            <Button className="SignButton" color="primary" variant='contained' onClick={this.SubmitData}>
+                            <Button className="SignButton" color="primary" variant='contained' onSubmit={this.SubmitData}>
                                 Sign In
                                </Button>
                         </div>
@@ -219,7 +218,7 @@ class Login extends Component {
                 <div>
                     <Snackbar
                         anchorOrigin={{
-                            vertical: "bottom",
+                            vertical: "top",
                             horizontal: "right"
                         }}
                         open={this.state.stackBar}
@@ -239,7 +238,7 @@ class Login extends Component {
                                 Enter your email address and we will send you a link to reset your password.
                             </DialogContentText>
                             <TextField
-                                margin="dense"
+
                                 type="email"
                                 label="Your Mail"
                                 helperText="Never share Your UserID and Password To anyOne"

@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import { Link, Redirect } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import {
     TextField, Button, MuiThemeProvider, Card, Snackbar, createMuiTheme
 } from "@material-ui/core";
 import '../App.css';
 import { Register } from '../controller/userController'
-import { Cancel, ThreeSixty } from '@material-ui/icons';
+import { Cancel } from '@material-ui/icons';
 const theme = createMuiTheme({
     overrides: {
         MuiButton: {
@@ -146,7 +146,7 @@ class Registration extends Component {
     render() {
         return (
             <MuiThemeProvider theme={theme}>
-                <div className='loginStyle'>
+                <div className='Style'>
                     <Card className='cardStyleRegister'>
                         <h2>
                             <span style={{ color: "#7536BD" }}>F</span>
@@ -210,7 +210,7 @@ class Registration extends Component {
                         </div>
                         <br />
                         <div>
-                            <Button variant="contained" color="primary" className="SignButton" onClick={this.Register}> Sign Up</Button>
+                            <Button variant="contained" color="primary" className="SignButton" onSubmit={this.Register}> Sign Up</Button>
                         </div>
                         <hr />
                         <p>Have an Account ? <Link to='/'><span style={{ color: "Blue" }}> Sign In</span></Link></p>
@@ -218,11 +218,11 @@ class Registration extends Component {
                     <div>
                         <Snackbar
                             anchorOrigin={{
-                                vertical: "bottom",
+                                vertical: "top",
                                 horizontal: "right"
                             }}
                             open={this.state.stackBar}
-                            autoHideDuration={6000}
+                            autoHideDuration={4000}
                             message={this.state.stackBarMessage}
                             onClose={this.snackbarClose}
                             action={

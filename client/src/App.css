@@ -1,34 +1,40 @@
-.loginStyle {
+.Style {
   display: flex;
-  justify-content: center;
   flex-direction: column;
-  flex-flow: wrap;
   align-items: center;
   width: 100%;
   padding: 15px;
 }
 
-.cardStyle {
+.cardStyle, .cardStyleRegister, .cardStyleReset {
   text-align: center;
   align-content: center;
   font-family: sans-serif;
   width: 50%;
   justify-content: center;
   margin-top: 20px;
-  height: auto;
+  height: 450px auto;
 }
 
-.cardStyleRegister {
-  text-align: center;
+.label {
+  display: flex;
+  flex-direction: row;
+  margin-left: 15px;
+}
+
+.NavCard {
+  display: flex;
+  margin-left: 40px;
   align-content: center;
-  font-family: sans-serif;
   width: 50%;
-  justify-content: center;
-  margin-top: 20px;
-  height: auto;
+  height: 50px;
 }
 
-h1, p {
+.NavBar {
+  width: 100%;
+}
+
+h1, h2, h3, h5, p {
   font-family: Georgia, 'Times New Roman', Times, serif;
   font-style: italic;
 }
@@ -39,7 +45,6 @@ img {
 
 .SignButton {
   width: 40%;
-
 }
 
 .card-Forgot {
