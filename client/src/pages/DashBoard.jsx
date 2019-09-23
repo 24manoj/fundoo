@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import NavBar from '../components/DashBoard/NavBar'
+import NavBar from '../components/DashBoard/NavBar';
+import '../App.css'
 class DashBoard extends Component {
     constructor() {
         super();
@@ -8,8 +9,9 @@ class DashBoard extends Component {
 
     render() {
         return (
-            <div>
+            <div className="Conatiner" >
                 <NavBar />
+
             </div>
         )
     }

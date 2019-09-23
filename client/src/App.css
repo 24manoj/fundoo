@@ -19,12 +19,13 @@
 .label {
   display: flex;
   flex-direction: row;
-  margin-left: 15px;
+  /* margin-left: 15px; */
 }
 
 .NavCard {
   display: flex;
-  margin-left: 40px;
+  min-width: 30px;
+  margin-left: 30px !important;
   align-content: center;
   width: 50%;
   height: 50px;
@@ -32,6 +33,28 @@
 
 .NavBar {
   width: 100%;
+  justify-content: space-between;
+}
+
+.DashBord {
+  width: 100%;
+  display: flex;
+  flex-flow: nowrap;
+}
+
+.sideNav.labels {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 5px;
+  margin: 5px;
+  overflow: scroll;
+  min-width: "70.9*40"
+}
+
+.navContent {
+  display: flex;
+  flex-direction: row;
 }
 
 h1, h2, h3, h5, p {
@@ -52,4 +75,9 @@ img {
   text-align: right;
   padding-right: 25%;
   font-size: 10pt;
+}
+
+.Container {
+  width: 100%;
+  height: 100%;
 }
