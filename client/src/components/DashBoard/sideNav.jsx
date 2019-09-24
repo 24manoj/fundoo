@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Drawer, MenuItem, MuiThemeProvider, createMuiTheme } from '@material-ui/core'
+import MenuIcon from '@material-ui/icons/Menu';
+import { Drawer, MenuItem, MuiThemeProvider, createMuiTheme, IconButton } from '@material-ui/core'
 import { EmojiObjectsOutlined, NotificationsOutlined, LabelOutlined, EditOutlined, ArchiveOutlined, DeleteOutline } from '@material-ui/icons'
 const theme = createMuiTheme({
     overrides: {
@@ -16,25 +17,26 @@ const theme = createMuiTheme({
 class SideNav extends Component {
     constructor(props) {
         super(props);
-        // console.log(this.props)
         this.state = {
-
+            sideToggle: false,
+            labels: ["hii", "hello", "bye"]
         }
 
     }
     render() {
-        console.log("in render  " + this.props.sideToggle);
-
         return (
             <MuiThemeProvider theme={theme}>
-            
-                    <Drawer className="sideNav" anchor="left" open={this.props.sideToggle} variant="persistent" onClose={event => this.setState({ sideToggle: false })} >
-                        <div> <MenuItem  > <EmojiObjectsOutlined titleAccess="Notes" /><div style={{ paddingLeft: "30px" }}>Notes </div></MenuItem></div>
+                <div>
+                    <IconButton onClick={event => this.state.sideToggle === true ? this.setState({ sideToggle: false }) : this.setState({ sideToggle: true })}>
+                        <MenuIcon />
+                    </IconButton>
+                    <Drawer className="sideNav" anchor="left" open={this.state.sideToggle} variant="persistent" onClose={event => this.setState({ sideToggle: false })} >
+                        <div> <MenuItem  > <EmojiObjectsOutlined titleAccess="Notes" /><div style={{ paddingLeft: "30px", minWidth: '24*24' }}>Notes </div></MenuItem></div>
                         <div> <MenuItem  > <NotificationsOutlined titleAccess="Reminder" /><div style={{ paddingLeft: "30px" }}>Reminders </div></MenuItem></div>
                         <hr style={{ width: "100%" }} />
                         <div className="labels">
                             <MenuItem>Label</MenuItem>
-                            {this.props.labels.map((element, key) =>
+                            {this.state.labels.map((element, key) =>
 
                                 <div key={key}> <MenuItem  > <LabelOutlined titleAccess="Notes" /><div style={{ paddingLeft: "30px" }}> {element} </div></MenuItem></div>
                             )}
@@ -49,7 +51,7 @@ class SideNav extends Component {
                         <hr style={{ width: "100%" }} />
 
                     </Drawer>
-                
+                </div>
             </MuiThemeProvider>
 
         )

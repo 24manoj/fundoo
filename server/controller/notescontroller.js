@@ -6,7 +6,7 @@ let elastic = require('../middleware/elasticSearch')
 let model = require('../services/userService')
 require('dotenv').config()
 let mailer = require('../middleware/userMailer')
-let response = {}
+let response = {};
 let details = {};
 
 /**

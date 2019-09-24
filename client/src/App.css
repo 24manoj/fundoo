@@ -6,7 +6,9 @@
   padding: 15px;
 }
 
-.cardStyle, .cardStyleRegister, .cardStyleReset {
+.cardStyle,
+.cardStyleRegister,
+.cardStyleReset {
   text-align: center;
   align-content: center;
   font-family: sans-serif;
@@ -39,7 +41,6 @@
 .DashBord {
   width: 100%;
   display: flex;
-  flex-flow: nowrap;
 }
 
 .sideNav.labels {
@@ -52,12 +53,19 @@
   min-width: "70.9*40"
 }
 
-.navContent {
+.NavContent,
+.titleIcon {
   display: flex;
   flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }
 
-h1, h2, h3, h5, p {
+h1,
+h2,
+h3,
+h5,
+p {
   font-family: Georgia, 'Times New Roman', Times, serif;
   font-style: italic;
 }
@@ -79,5 +87,52 @@ img {
 
 .Container {
   width: 100%;
-  height: 100%;
+  height: 100vh;
+}
+
+.NoteCreate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 5%;
+  margin-left: 10%;
+}
+
+.TakeNote {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 50%;
+  height: 50%;
+}
+
+.TakeDetails {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 50%;
+  height: 30%;
+}
+
+.decsIcon {
+  display: flex;
+  justify-content: space-around;
+
+}
+
+.notesContainer {
+  display: flex;
+  margin-top: 5%;
+  margin-left: 20%;
+  /* justify-content: center; */
+  flex-direction: row;
+  flex-flow: wrap;
+}
+
+.notesCard {
+  margin: 5px;
+  padding: 5px;
+  width: 30%;
+  height: auto;
 }
