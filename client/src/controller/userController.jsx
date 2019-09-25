@@ -8,9 +8,12 @@ const headers = {
 let loginControl = (payload) => {
 
     return new Promise((resolve, reject) => {
-        axios.post(`${process.env.REACT_BASE_URL}/login`, payload, { headers: headers })
+
+        axios.post(`${process.env.REACT_APP_BASE_URL}/login`, payload, { headers: headers })
             .then(response => {
-                sessionStorage.setItem('UserSession', response.data.data)
+            
+                sessionStorage.setItem('UserSession', JSON.stringify(response.data.data))
+
                 resolve(response)
             })
             .catch(err => {
@@ -26,12 +29,12 @@ let SocialLogin = () => {
     return new Promise((resolve, reject) => {
         axios.get(`${process.env.REACT_APP_BASE_URL}/auth/google`, { headers: headers })
             .then(response => {
-                console.log(response)
+            
                 sessionStorage.setItem('UserSession', response.data.data)
                 resolve(response)
             })
             .catch(err => {
-                console.log("in controller", err)
+             
                 reject(err)
             })
 

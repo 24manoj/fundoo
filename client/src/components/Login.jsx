@@ -75,6 +75,7 @@ class Login extends Component {
 
     }
     SubmitData = (event) => {
+
         if (this.state.EmailError === '' && this.state.passwordError === '' && this.state.userName !== '' && this.state.password !== '') {
             let payload = {
                 email: this.state.userName,
@@ -82,14 +83,14 @@ class Login extends Component {
             }
             loginControl(payload)
                 .then(response => {
-
                     this.setState({
                         stackBar: true,
                         stackBarMessage: "Loged In sucessfully !!! happy Notes"
                     })
-
+                    this.props.history.push('/Dashboard')
                 })
                 .catch(err => {
+                    console.log(err)
                     this.setState({
                         stackBar: true,
                         stackBarMessage: "UnAuthorize Access!!!??"
@@ -110,6 +111,11 @@ class Login extends Component {
                     stackBarMessage: "Password must have min 8 characters"
                 })
 
+            } else {
+                this.setState({
+                    stackBar: true,
+                    stackBarMessage: "Password must have min 8 characters"
+                })
             }
 
         }
@@ -202,7 +208,7 @@ class Login extends Component {
                         <div className="card-Forgot" onClick={this.DailogShow}>Forgot Password?</div>
                         <br />
                         <div>
-                            <Button className="SignButton" color="primary" variant='contained' onSubmit={this.SubmitData}>
+                            <Button type="submit" className="SignButton" color="primary" variant='contained' onClick={this.SubmitData}>
                                 Sign In
                                </Button>
                         </div>
@@ -238,7 +244,6 @@ class Login extends Component {
                                 Enter your email address and we will send you a link to reset your password.
                             </DialogContentText>
                             <TextField
-
                                 type="email"
                                 label="Your Mail"
                                 helperText="Never share Your UserID and Password To anyOne"

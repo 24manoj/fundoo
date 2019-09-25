@@ -137,7 +137,7 @@ class ResetPassword extends Component {
                             </div>
                             <br />
                             <div>
-                                <Button className="SignButton" variant="contained" color="primary" onSubmit={this.Reset}>
+                                <Button className="SignButton" variant="contained" color="primary" type="submit" onClick={this.Reset}>
                                     Reset
                         </Button>
                             </div>

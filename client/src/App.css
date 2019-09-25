@@ -26,17 +26,34 @@
 
 .NavCard {
   display: flex;
-  min-width: 30px;
-  margin-left: 30px !important;
-  align-content: center;
-  width: 50%;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-left: 5%;
+  width: 50vw;
   height: 50px;
+}
+
+.IconTitle {
+  display: flex;
+  flex-direction: row;
+}
+
+.appBar {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
 }
 
 .NavBar {
   width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   justify-content: space-between;
 }
+
+
 
 .DashBord {
   width: 100%;
@@ -49,17 +66,35 @@
   justify-content: space-around;
   padding: 5px;
   margin: 5px;
-  overflow: scroll;
-  min-width: "70.9*40"
 }
 
 .NavContent,
 .titleIcon {
   display: flex;
+  width: 100%;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
 }
+
+.NavContent-Left,
+.NavContent-Right {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.NotesColorSelection {
+
+  display: 'flex';
+  width: 'vw';
+  flex-direction: 'row';
+  flex-flow: 'wrap';
+  justify-content: 'space-between';
+
+}
+
+
 
 h1,
 h2,
@@ -92,11 +127,11 @@ img {
 
 .NoteCreate {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
+  margin-top: 15vh;
   justify-content: center;
-  margin-top: 5%;
-  margin-left: 10%;
+
 }
 
 .TakeNote {
@@ -125,14 +160,23 @@ img {
   display: flex;
   margin-top: 5%;
   margin-left: 20%;
-  /* justify-content: center; */
+  justify-content: center;
   flex-direction: row;
   flex-flow: wrap;
+
+
+}
+
+.NotesScroll {
+  margin-top: 2%;
+  height: 100vh;
+  overflow-y: scroll;
 }
 
 .notesCard {
   margin: 5px;
   padding: 5px;
-  width: 30%;
+  width: 20vw;
   height: auto;
+
 }

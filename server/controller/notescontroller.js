@@ -64,6 +64,7 @@ exports.createNotes = (req, res) => {
 exports.getNotes = (req, res) => {
     try {
         details.id = req.decoded.id
+        details.value = []
         redisCache.getRedis(details, (err, data) => {
             if (data) {
                 response.sucess = true,
@@ -73,10 +74,10 @@ exports.getNotes = (req, res) => {
             } else {
                 noteService.getNotes(req.decoded.id)
                     .then(notes => {
-                        console.log("in in controler")
+                        console.log("in in controler", notes)
                         elastic.addDocument(notes)
                         details.id = req.decoded.id
-                        details.value = notes
+                          details.value = notes
                         redisCache.setRedis(details, (err, data) => {
                             if (data) {
                                 response.sucess = true,

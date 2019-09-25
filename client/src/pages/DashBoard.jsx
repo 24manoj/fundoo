@@ -4,10 +4,6 @@ import TakeNote from '../components/DashBoard/TakeNote';
 import Notes from '../components/DashBoard/Notes';
 import '../App.css'
 class DashBoard extends Component {
-    constructor() {
-        super();
-
-    }
 
     render() {
         return (
@@ -16,10 +12,8 @@ class DashBoard extends Component {
                     <NavBar />
                 </div>
 
-                <div>
+                <div className="NotesScroll">
                     <TakeNote />
-                </div>
-                <div>
                     <Notes />
                 </div>
 
