@@ -4,6 +4,7 @@ import Icon from '../../assets/icons8-google-keep.svg';
 import { AppBar, Toolbar, InputBase, Card, createMuiTheme, MuiThemeProvider, Menu, MenuItem, ClickAwayListener, Avatar } from '@material-ui/core';
 import '../../App.css'
 import SideNav from './sideNav';
+import { TransitionGroup, CSSTransition } from "react-transition-group";
 const theme = createMuiTheme({
     overrides: {
         MuiAppBar: {
@@ -18,31 +19,52 @@ const theme = createMuiTheme({
 class NavBar extends Component {
     sessionValue = JSON.parse(sessionStorage.getItem('UserSession'))
     Fname = this.sessionValue.data.firstName.slice(0, 1)
-    constructor() {
-        super();
-        this.state = ({
+    constructor(props) {
+        super(props);
+        this.state = {
             Clear: false,
             search: '',
             View: false,
             popOver: false,
             anchorEl: null,
+            animate: false,
             sideToggle: false,
             labels: ["hii", "hello", "bye"]
-        })
+        }
     }
     popper = (event) => {
         this.setState({ anchorEl: event.currentTarget })
         this.state.popOver === true ? this.setState({ popOver: false }) : this.setState({ popOver: true })
     }
+    NoteToogle = () => {
+        console.log("in");
+
+        this.setState({ View: !this.state.View })
+        this.props.open(this.state.View)
+
+    }
+    refresh = async (event) => {
+        console.log("in");
+
+        this.setState({ animate: !this.state.animate })
+        // event.currentTarget.style.animation = 'rotation 2s linear'
+
+
+    }
+
+    // this.setState({ animate: !this.state.animate })
+
+
     render() {
+        let animateClass = this.state.animate ? 'rotate' : ''
         return (
             <MuiThemeProvider theme={theme}>
                 <AppBar>
                     <Toolbar>
                         <div className="NavContent-Left">
-                            <SideNav />
+                            <SideNav labels={this.props.labels} />
                             <img src={Icon} width="50px" height="50px" alt="fundoo Icon" title="Fundoo Icon" />
-                            <h4> Fundoo</h4>
+                            <div>  Fundoo</div>
                         </div>
                         <div className="appBar">
                             <div className="NavContent">
@@ -60,9 +82,8 @@ class NavBar extends Component {
                                     />
                                     <div>{this.state.search !== '' ? <ClearAll style={{ marginTop: "12px" }} onClick={(event) => this.setState({ search: '' })} /> : ''}</div>
                                 </Card>
-                                <RefreshSharp />
-
-                                {this.state.View === false ? <ViewAgendaOutlined titleAccess="List View" className="" onClick={event => this.setState({ View: true })} /> : <GridOnOutlined titleAccess="Grid View" className="" onClick={event => this.setState({ View: false })} />}
+                                <RefreshSharp className={animateClass} onClick={this.refresh} />
+                                {this.state.View ? <ViewAgendaOutlined titleAccess="List View" className="" onClick={this.NoteToogle} /> : <GridOnOutlined titleAccess="Grid View" className="" onClick={this.NoteToogle} />}
                                 <ClickAwayListener onClickAway={event => this.setState({ popOver: false })} >
                                     <Settings titleAccess="settings" onClick={this.popper} />
                                 </ClickAwayListener>

@@ -74,10 +74,9 @@ exports.getNotes = (req, res) => {
             } else {
                 noteService.getNotes(req.decoded.id)
                     .then(notes => {
-                        console.log("in in controler", notes)
                         elastic.addDocument(notes)
                         details.id = req.decoded.id
-                          details.value = notes
+                        details.value = notes
                         redisCache.setRedis(details, (err, data) => {
                             if (data) {
                                 response.sucess = true,
@@ -610,15 +609,21 @@ exports.deleteLabel = async (req, res) => {
 exports.getLabels = async (req, res) => {
     try {
 
-        details.id = req.decoded.id
+        details.id = `${req.decoded.id}Labels`
         await redisCache.getRedis(details, (err, data) => {
             if (err) {
                 noteService.getLabels(req)
                     .then(data => {
-                        response.errors = null
-                        response.data = data
-                        response.sucess = true
-                        res.status(status.sucess).send(response)
+                        details.id = `${req.decoded.id}Labels`
+                        details.value = data;
+                        redisCache.setRedis(details, (err, rdis) => {
+                            if (rdis) {
+                                response.errors = null
+                                response.data = data
+                                response.sucess = true
+                                res.status(status.sucess).send(response)
+                            }
+                        })
                     })
                     .catch(err => {
                         response.errors = err

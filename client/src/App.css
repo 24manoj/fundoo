@@ -81,13 +81,15 @@
 .NavContent-Right {
   display: flex;
   flex-direction: row;
+  align-items: center;
   justify-content: space-between;
 }
 
 .NotesColorSelection {
 
   display: 'flex';
-  width: 'vw';
+  width: 100px;
+  height: auto;
   flex-direction: 'row';
   flex-flow: 'wrap';
   justify-content: 'space-between';
@@ -130,6 +132,7 @@ img {
   flex-direction: row;
   align-items: center;
   margin-top: 15vh;
+  margin-left: 12%;
   justify-content: center;
 
 }
@@ -150,9 +153,17 @@ img {
   height: 30%;
 }
 
+.IconsList {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .decsIcon {
   display: flex;
-  justify-content: space-around;
+  width: 55%;
+  justify-content: space-between;
+  align-items: center;
 
 }
 
@@ -177,6 +188,33 @@ img {
   margin: 5px;
   padding: 5px;
   width: 20vw;
+  min-width: 200px;
   height: auto;
 
+}
+
+.rotate {
+  animation: rotate-spin 1s linear;
+}
+
+.ListView {
+  display: grid;
+  flex-direction: column;
+  flex-flow: wrap;
+  margin: 5px;
+  padding: 5px;
+  width: 80%;
+  min-width: 200px;
+  height: auto;
+
+}
+
+@keyframes rotate-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }

@@ -11,9 +11,9 @@ let loginControl = (payload) => {
 
         axios.post(`${process.env.REACT_APP_BASE_URL}/login`, payload, { headers: headers })
             .then(response => {
-            
-                sessionStorage.setItem('UserSession', JSON.stringify(response.data.data))
 
+                sessionStorage.setItem('UserSession', JSON.stringify(response.data.data))
+                console.log(response.data)
                 resolve(response)
             })
             .catch(err => {
@@ -29,12 +29,12 @@ let SocialLogin = () => {
     return new Promise((resolve, reject) => {
         axios.get(`${process.env.REACT_APP_BASE_URL}/auth/google`, { headers: headers })
             .then(response => {
-            
+
                 sessionStorage.setItem('UserSession', response.data.data)
                 resolve(response)
             })
             .catch(err => {
-             
+
                 reject(err)
             })
 

@@ -380,11 +380,11 @@ exports.getLabels = (req) => {
         return new Promise((resolve, reject) => {
             labelSchema.labels.find({
                 'userId': req.decoded.id
-            }, (err, update) => {
+            }, (err, labels) => {
                 if (err) reject(err)
                 else {
-                    console.log(update)
-                    resolve(update)
+                    console.log("labels", labels)
+                    resolve(labels)
                 }
             })
         })

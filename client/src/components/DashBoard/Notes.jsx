@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { InputBase, Card, Button, Popper, Paper, Fade, Fab, createMuiTheme, MuiThemeProvider, IconButton, ClickAwayListener } from '@material-ui/core';
 import pin from '../../assets/afterPin.svg'
 import { ImageOutlined, NotificationImportantOutlined, PersonAddOutlined, ColorLensOutlined, ArchiveOutlined } from "@material-ui/icons";
-import { getNotes } from '../../controller/notesController'
+import { flexbox } from '@material-ui/system';
 const theme = createMuiTheme({
     overrides: {
         MuiFab: {
@@ -15,13 +15,9 @@ const theme = createMuiTheme({
 })
 
 class Notes extends Component {
-    constructor() {
-        super()
-        getNotes()
-            .then(notes => {
-                // this.setState({ cards: notes.data })
-            })
-            .catch(err => console.log(err))
+    constructor(props) {
+        super(props)
+        // console.log('Allnotes', this.props)
         this.state = {
             cards: [],
             poper: false,
@@ -45,11 +41,12 @@ class Notes extends Component {
         }
     }
     render() {
+        let cardCss = this.props.view ? 'ListView' : 'notesCard'
         return (
             <MuiThemeProvider theme={theme}>
                 <div className="notesContainer">
-                    {this.state.cards.map((Element) =>
-                        <Card className="notesCard"   >
+                    {this.props.notes.map((Element) =>
+                        <Card className={cardCss}   >
                             <div className="titleIcon">
                                 <div>  <InputBase
                                     name="title"
@@ -58,40 +55,46 @@ class Notes extends Component {
                                 </div>
                                 <img src={pin} />
                             </div>
-                            <div >
-                                <InputBase
-                                    name="description"
-                                    type="text"
-                                    value={Element.title} />
-                                <InputBase
-                                    name="label"
-                                    type="text"
-                                    value={Element.title} />
-                                <InputBase
-                                    name="reminder"
-                                    type="text"
-                                    value={Element.title} />
-                                <div className="decsIcon">
-                                    <NotificationImportantOutlined titleAccess="Remind me" />
-                                    <PersonAddOutlined titleAccess="Collaborate" />
-                                    <ColorLensOutlined titleAccess="change Color" onClick={event => this.setState({ anchorEl: event.currentTarget, poper: true })} />
-                                    <ImageOutlined titleAccess=" Add Image" />
-                                    <ArchiveOutlined titleAccess=" Archive Note" />
+                            <div style={{ display: flexbox, width: "100%" }}>
+                                <div>
+                                    <InputBase
+                                        name="description"
+                                        type="text"
+                                        value={Element.content} />
+                                </div>
+                                <div>
+                                    <InputBase
+                                        name="label"
+                                        type="text"
+                                        value={Element.content} />
+                                </div>
+                                <div>
+                                    <InputBase
+                                        name="reminder"
+                                        type="text"
+                                        value={Element.title} />
+                                </div>
+                                <div className="IconsList">
+                                    <div className="decsIcon">
+                                        <NotificationImportantOutlined titleAccess="Remind me" />
+                                        <PersonAddOutlined titleAccess="Collaborate" />
+                                        <ColorLensOutlined titleAccess="change Color" onClick={event => this.setState({ anchorEl: event.currentTarget, poper: true })} />
+                                        <ImageOutlined titleAccess=" Add Image" />
+                                        <ArchiveOutlined titleAccess=" Archive Note" />
+                                    </div>
                                     <Button variant='text' onClick={event => this.setState({ NoteTake: false })}><b>Close</b></Button>
                                 </div>
                             </div>
                         </Card>
 
                     )}
-
-                    <Popper open={this.state.poper} anchorEl={this.state.anchorEl} placement={'top-start'} >
+                    <Popper open={this.state.poper} anchorEl={this.state.anchorEl} placement={'bottom-start'} style={{ width: '100px' }} >
                         <ClickAwayListener onClickAway={event => this.setState({ poper: false })}>
-                            <Paper className="NotesCollorSellection">  {this.state.colorPalette.map((code) => <div> <IconButton style={{ backgroundColor: code.colorCode }} title={code.name} />
-                            </div>
+                            <Paper>  {this.state.colorPalette.map((code) => <IconButton style={{ backgroundColor: code.colorCode }} title={code.name} />
+
                             )}</Paper>
+
                         </ClickAwayListener></Popper>
-
-
                 </div>
             </MuiThemeProvider >
         );

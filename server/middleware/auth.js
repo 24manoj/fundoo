@@ -40,6 +40,7 @@ exports.verifyUser = (req, res, next) => {
             res.status(422).send(response)
         }
         else {
+            console.log(result)
             req.decoded = result
 
             next()
