@@ -3,6 +3,7 @@ import { InputBase, Card, Button, Popper, Paper, Fade, Fab, createMuiTheme, MuiT
 import pin from '../../assets/afterPin.svg'
 import { ImageOutlined, NotificationImportantOutlined, PersonAddOutlined, ColorLensOutlined, ArchiveOutlined } from "@material-ui/icons";
 import { flexbox } from '@material-ui/system';
+
 const theme = createMuiTheme({
     overrides: {
         MuiFab: {

@@ -130,15 +130,17 @@ exports.resetPassword = (req, callback) => {
  * @return return respose sucess or failure
  */
 exports.fileUpload = (req, callback) => {
-    try {
-        userSchema.userRegistration.updateOne({
+    // console.log("request" + req.body);
 
-            "_id": req.decoded._id
+    try {
+        // console.log("req" + req.body);
+        userSchema.userRegistration.updateOne({
+            "_id": req.decoded.id
         }, {
             "url": req.file.location
         }, (err, data) => {
             if (data) {
-                callback(null, data);
+                callback(null, req.file.location);
             }
             else {
                 callback("Details not updated");

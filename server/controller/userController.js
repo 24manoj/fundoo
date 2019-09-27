@@ -276,7 +276,7 @@ exports.resetPassword = (req, res) => {
  */
 exports.fileUpload = (req, res) => {
     try {
-        console.log(req.body.image);
+        console.log("file" + req.file.location)
         services.fileUpload(req, (err, data) => {
             if (err) {
                 response.data = null
@@ -285,7 +285,7 @@ exports.fileUpload = (req, res) => {
                 res.status(404).send(response);
             }
             else {
-                dgf
+
                 response.data = data
                 response.errors = null
                 response.sucess = true

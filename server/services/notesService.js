@@ -377,6 +377,8 @@ exports.deleteLabel = (req) => {
  */
 exports.getLabels = (req) => {
     try {
+        console.log("get labels", req.decoded.id);
+
         return new Promise((resolve, reject) => {
             labelSchema.labels.find({
                 'userId': req.decoded.id

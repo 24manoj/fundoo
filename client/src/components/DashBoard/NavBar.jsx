@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { SearchRounded, RefreshSharp, ViewAgendaOutlined, ClearAll, GridOnOutlined, Settings } from '@material-ui/icons'
 import Icon from '../../assets/icons8-google-keep.svg';
-import { AppBar, Toolbar, InputBase, Card, createMuiTheme, MuiThemeProvider, Menu, MenuItem, ClickAwayListener, Avatar } from '@material-ui/core';
-import '../../App.css'
+import { AppBar, Toolbar, InputBase, Card, createMuiTheme, MuiThemeProvider, Menu, MenuItem, ClickAwayListener, Avatar, Paper, Popper, Button } from '@material-ui/core';
+import '../../App.css';
+import { withRouter } from 'react-router-dom'
 import SideNav from './sideNav';
-import { TransitionGroup, CSSTransition } from "react-transition-group";
+import { ProfileUpload } from '../../controller/userController.jsx'
 const theme = createMuiTheme({
     overrides: {
         MuiAppBar: {
@@ -16,6 +17,7 @@ const theme = createMuiTheme({
     }
 })
 
+
 class NavBar extends Component {
     sessionValue = JSON.parse(sessionStorage.getItem('UserSession'))
     Fname = this.sessionValue.data.firstName.slice(0, 1)
@@ -24,12 +26,13 @@ class NavBar extends Component {
         this.state = {
             Clear: false,
             search: '',
-            View: false,
+            View: true,
             popOver: false,
             anchorEl: null,
             animate: false,
             sideToggle: false,
-            labels: ["hii", "hello", "bye"]
+            profile: false,
+            profileUrl: this.sessionValue.data.url
         }
     }
     popper = (event) => {
@@ -43,17 +46,50 @@ class NavBar extends Component {
         this.props.open(this.state.View)
 
     }
-    refresh = async (event) => {
-        console.log("in");
+    refresh = async () => {
+        console.log(("before", this.state.animate));
 
-        this.setState({ animate: !this.state.animate })
-        // event.currentTarget.style.animation = 'rotation 2s linear'
+        await this.setState({ animate: !this.state.animate })
+        // event.currentTarget.style.animation = 'rotation 2s linea
+        console.log("after", this.state.animate);
 
+        this.props.refresh(this.state.animate)
 
     }
 
-    // this.setState({ animate: !this.state.animate })
 
+    SignOut = (event) => {
+        sessionStorage.clear();
+        this.props.history.push('/')
+
+    }
+    profile = (event) => {
+        this.setState({
+            profileUrl: URL.createObjectURL(event.target.files[0])
+        })
+        let image = event.target.files[0];
+        ProfileUpload(image)
+            .then(upload => {
+                let profile = this.sessionValue
+                sessionStorage.clear()
+                profile.data.url = upload.data.data
+                sessionStorage.setItem('UserSession', JSON.stringify(profile))
+                // console.log("new profile url", JSON.parse(profile));
+
+                // this.setState({
+                //     profileUrl: profile
+                // })
+
+            })
+            .catch(err => {
+                console.log(err);
+
+            })
+
+    }
+    fileUpload = () => {
+
+    }
 
     render() {
         let animateClass = this.state.animate ? 'rotate' : ''
@@ -96,14 +132,34 @@ class NavBar extends Component {
                                     </Menu>
                                 </div>
                             </div>
-
-                            <Avatar alt='profile img' >{this.Fname}</Avatar>
-
+                            <Avatar alt='profile img' src={this.state.profileUrl} onClick={event => this.setState({ anchorEl: event.currentTarget, profile: !this.state.profile })}>{this.Fname} </Avatar>
                         </div>
+                        <Popper open={this.state.profile} anchorEl={this.state.anchorEl} placement={'bottom-end'} style={{ marginTop: '20px' }}>
+                            <Paper> <Card className='profileCard' >
+                                <label className="Avatar" for='file'>
+                                    <Avatar className="Avatar-profile" alt='profile img' src={this.state.profileUrl} style={{
+                                        width: '100px',
+                                        height: '100px',
+                                    }} >
+                                        {this.Fname}
+                                    </Avatar>
+                                    <input type='file' id='file' onChange={this.profile} style={{ display: 'none' }} />
+                                    <div className="Avatar-text">
+                                        <h3>{this.sessionValue.data.firstName}</h3>
+                                        <h6>{this.sessionValue.data.email}</h6>
+                                    </div>
+                                </label>
+
+                                <hr style={{ width: "100%" }} />
+                                <div className="Avatar-button">
+                                    <Button variant='contained' type='submit' color='primary' >AddAccount</Button>
+                                    <Button variant='contained' type="reset" color="primary" onClick={this.SignOut}>SignOut  </Button></div>
+                            </Card></Paper>
+                        </Popper>
                     </Toolbar>
                 </AppBar>
-            </MuiThemeProvider>
+            </MuiThemeProvider >
         )
     }
 }
-export default NavBar;
+export default withRouter(NavBar);

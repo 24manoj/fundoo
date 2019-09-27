@@ -2,7 +2,6 @@ let noteService = require('../services/notesService')
 let status = require('../middleware/httpStatusCode')
 let redisCache = require('../middleware/redisService')
 let elastic = require('../middleware/elasticSearch')
-// let mailchecker = require('email-existence')
 let model = require('../services/userService')
 require('dotenv').config()
 let mailer = require('../middleware/userMailer')
@@ -155,7 +154,6 @@ exports.updateNotes = (req, res) => {
 
 exports.deleteNotes = (req, res) => {
     try {
-        req.check('userId', "userId invalid").notEmpty()
         req.check('id', 'id invalid').notEmpty()
         let errors = req.validationErrors()
         if (errors) {
@@ -203,7 +201,6 @@ exports.deleteNotes = (req, res) => {
 
 exports.noteUnTrash = (req, res) => {
     try {
-        req.check('userId', "userId invalid").notEmpty()
         req.check('id', 'Id invalid').notEmpty()
         let errors = req.validationErrors()
         if (errors) {
@@ -243,7 +240,6 @@ exports.noteUnTrash = (req, res) => {
 
 exports.noteTrash = (req, res) => {
     try {
-        req.check('userId', "userId invalid").notEmpty()
         req.check('id', 'Id invalid').notEmpty()
         let errors = req.validationErrors()
         if (errors) {
@@ -293,7 +289,7 @@ exports.noteTrash = (req, res) => {
 
 exports.noteUnArchive = (req, res) => {
     try {
-        req.check('userId', 'User Id invalid').notEmpty()
+        
         req.check('id', 'Id invalid').notEmpty()
         let errors = req.validationErrors()
         if (errors) {
@@ -332,7 +328,7 @@ exports.noteUnArchive = (req, res) => {
 
 exports.noteArchive = (req, res) => {
     try {
-        req.check('userId', 'User Id invalid').notEmpty()
+        
         req.check('id', 'Id invalid').notEmpty()
         let errors = req.validationErrors()
         if (errors) {
@@ -385,7 +381,7 @@ exports.noteArchive = (req, res) => {
  */
 exports.noteReminder = (req, res) => {
     try {
-        req.check('userId', "userId invalid").notEmpty()
+    
         req.check('id', 'Id invalid').notEmpty()
         req.check('date', 'requires a time and date').notEmpty()
         let errors = req.validationErrors()
@@ -425,7 +421,6 @@ exports.noteReminder = (req, res) => {
 
 exports.noteLabel = (req, res) => {
     try {
-        req.check('userId', "id invalid").notEmpty()
         req.check('id', 'Id invalid').notEmpty()
         req.check('label', 'label invalid').notEmpty()
         let errors = req.validationErrors()
@@ -481,20 +476,28 @@ exports.createLabel = async (req, res) => {
             res.status(status.UnprocessableEntity).send(response)
         }
         else {
-            await noteService.createLabel(req, (err, data) => {
-                if (data) {
-                    response.errors = null
-                    response.data = data
-                    response.sucess = true
-                    res.status(status.sucess).send(response)
+            details.id = details.id = `${req.decoded.id}Labels`
+            await redisCache.delRedis(details, (err, del) => {
+                if (err) {
+                    throw new err
+                } else {
+                    noteService.createLabel(req, (err, data) => {
+                        if (data) {
+                            response.errors = null
+                            response.data = data
+                            response.sucess = true
+                            res.status(status.sucess).send(response)
+                        }
+                        else {
+                            response.errors = err
+                            response.data = null
+                            response.sucess = false
+                            res.status(status.notfound).send(response)
+                        }
+                    })
                 }
-                else {
-                    response.errors = err
-                    response.data = null
-                    response.sucess = false
-                    res.status(status.notfound).send(response)
-                }
-            })
+            }
+            )
         }
     } catch (e) {
         console.log(e)
@@ -521,7 +524,8 @@ exports.updateLabel = async (req, res) => {
             res.status(status.UnprocessableEntity).send(response)
         }
         else {
-            details.id = req.body.userId;
+            details.id = details.id = `${req.decoded.id}Labels`
+
             await redisCache.delRedis(details, (err, del) => {
                 if (err) {
                     throw new err
@@ -567,7 +571,8 @@ exports.deleteLabel = async (req, res) => {
             res.status(status.UnprocessableEntity).send(response)
         }
         else {
-            details.id = req.body.userId;
+            details.id = details.id = `${req.decoded.id}Labels`
+
             await redisCache.delRedis(details, (err, del) => {
                 if (err) {
                     throw new err

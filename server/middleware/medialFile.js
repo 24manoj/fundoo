@@ -26,9 +26,13 @@ const upload = multer({
         bucket: 'fundoonotess3',
         acl: 'public-read',
         metadata: function (req, file, cb) {
+            console.log("in metadata", req.body);
+
             cb(null, { fieldName: 'TESTING_META_DATA' });
         },
         key: function (req, file, cb) {
+            console.log('in media file upload', file);
+
             cb(null, file.originalname)
         }
     })

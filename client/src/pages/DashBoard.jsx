@@ -4,6 +4,10 @@ import TakeNote from '../components/DashBoard/TakeNote';
 import Notes from '../components/DashBoard/Notes';
 import { getLabels, getNotes } from '../controller/notesController';
 import '../App.css'
+import { log } from "util";
+var Alllabels;
+var AllNotes;
+
 
 class DashBoard extends Component {
     constructor(props) {
@@ -14,11 +18,13 @@ class DashBoard extends Component {
             View: false
         }
         this.open = this.open.bind(this);
+        // this.refresh = this.refresh.bind(this);
     }
+
     componentDidMount() {
 
         getLabels().then(labels => {
-            var Alllabels = labels.data.data;
+            Alllabels = labels.data.data;
             console.log(Alllabels)
             this.setState({
                 labels: Alllabels
@@ -29,7 +35,7 @@ class DashBoard extends Component {
 
             })
         getNotes().then(notes => {
-            var AllNotes = notes.data.data;
+            AllNotes = notes.data.data;
             // console.log("All notes " + AllNotes);
             this.setState({
                 notesArray: AllNotes
@@ -45,6 +51,34 @@ class DashBoard extends Component {
         console.log("state", this.state.View);
 
     }
+    refresh = (animate) => {
+        console.log("refresh hit dashboard", animate);
+
+        if (animate) {
+            console.log("refresh hit dashboard", animate);
+            getLabels().then(labels => {
+                Alllabels = labels.data.data;
+                console.log("refreshed labels", Alllabels)
+                this.setState({
+                    labels: Alllabels
+                })
+            })
+                .catch(err => {
+                    console.log((err));
+
+                })
+            getNotes().then(notes => {
+                AllNotes = notes.data.data;
+                // console.log("All notes " + AllNotes);
+                this.setState({
+                    notesArray: AllNotes
+                })
+            }).catch(err => {
+                console.log(err);
+
+            })
+        }
+    }
 
 
     render() {
@@ -53,12 +87,13 @@ class DashBoard extends Component {
             <div className="Container">
                 <div>
                     <NavBar labels={this.state.labels}
-                        open={this.open} />
+                        open={this.open} refresh={this.refresh} />
                 </div>
                 <div className="NotesScroll">
                     <TakeNote />
                     <Notes notes={this.state.notesArray} view={this.state.View} />
                 </div>
+                <input type='file' />
             </div>
         )
     }

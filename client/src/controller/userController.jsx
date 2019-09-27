@@ -1,9 +1,30 @@
 
 import axios from 'axios'
 import 'dotenv'
-
 const headers = {
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
+}
+let ProfileUpload = (payload) => {
+    const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
+    const data = new FormData();
+    data.append("image", payload);
+    console.log("data" + data);
+    const profileheader = {
+        "Content-Type": "multipart/form-data",
+        token: sessionValue.token
+    }
+
+    return new Promise((resolve, reject) => {
+        axios.post(`${process.env.REACT_APP_BASE_URL}/upload`, data, { headers: profileheader })
+            .then(uploaded => {
+                resolve(uploaded)
+            })
+            .catch(err => {
+                reject(err)
+                console.log(err);
+
+            })
+    })
 }
 let loginControl = (payload) => {
 
@@ -90,4 +111,4 @@ let Reset = (payload) => {
     })
 
 }
-export { loginControl, SocialLogin, forgotPassword, Register, Reset }
+export { loginControl, SocialLogin, forgotPassword, Register, Reset, ProfileUpload }
