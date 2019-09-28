@@ -22,7 +22,6 @@ class DashBoard extends Component {
     }
 
     componentDidMount() {
-
         getLabels().then(labels => {
             Alllabels = labels.data.data;
             console.log(Alllabels)
@@ -48,17 +47,12 @@ class DashBoard extends Component {
     }
     open(toggle) {
         this.setState({ View: toggle })
-        console.log("state", this.state.View);
-
     }
     refresh = (animate) => {
-        console.log("refresh hit dashboard", animate);
-
+        
         if (animate) {
-            console.log("refresh hit dashboard", animate);
             getLabels().then(labels => {
                 Alllabels = labels.data.data;
-                console.log("refreshed labels", Alllabels)
                 this.setState({
                     labels: Alllabels
                 })
@@ -69,7 +63,6 @@ class DashBoard extends Component {
                 })
             getNotes().then(notes => {
                 AllNotes = notes.data.data;
-                // console.log("All notes " + AllNotes);
                 this.setState({
                     notesArray: AllNotes
                 })
@@ -93,7 +86,6 @@ class DashBoard extends Component {
                     <TakeNote />
                     <Notes notes={this.state.notesArray} view={this.state.View} />
                 </div>
-                <input type='file' />
             </div>
         )
     }

@@ -43,8 +43,9 @@ class SideNav extends Component {
                             , borderRadius: '0px 50px 50px 0px'
                         }} onClick={event => this.setState({ activeClass: 'reminder' })}> <MenuItem > <NotificationsOutlined titleAccess="Reminder" /> <div style={{ paddingLeft: "30px" }}>Reminders </div></MenuItem></div>
                         <hr style={{ width: "100%" }} />
+                        <MenuItem>Label</MenuItem>
                         <div className="labels">
-                            <MenuItem>Label</MenuItem>
+
                             {this.props.labels.map((element) =>
 
                                 <div style={{
@@ -52,24 +53,25 @@ class SideNav extends Component {
                                     , borderRadius: '0px 50px 50px 0px'
                                 }} onClick={event => this.setState({ activeClass: element.labelName })} key={element._id}> <MenuItem  > <LabelOutlined titleAccess="Notes" /><div style={{ paddingLeft: "30px" }}> {element.labelName} </div></MenuItem></div>
                             )}
-                            <div style={{
-                                backgroundColor: this.state.activeClass === 'editLabel' ? '#F5EEC3' : ''
-                                , borderRadius: '0px 50px 50px 0px'
-                            }} onClick={event => this.setState({ activeClass: 'editLabel' })}><MenuItem> <EditOutlined titleAccess="Edit Label" /><div style={{ paddingLeft: "30px" }}> Edit Labels </div></MenuItem></div>
                         </div>
-                        <hr style={{ width: "100%" }} />
-                        <div>
-                            <div style={{
-                                backgroundColor: this.state.activeClass === 'archive' ? '#F5EEC3' : ''
-                                , borderRadius: '0px 50px 50px 0px'
-                            }} onClick={event => this.setState({ activeClass: 'archive' })}><MenuItem> <ArchiveOutlined titleAccess="Edit Label" /><div style={{ paddingLeft: "30px" }}> Archive </div></MenuItem></div>
-                            <div style={{
-                                backgroundColor: this.state.activeClass === 'trash' ? '#F5EEC3' : ''
-                                , borderRadius: '0px 50px 50px 0px'
-                            }} onClick={event => this.setState({ activeClass: 'trash' })}><MenuItem> <DeleteOutline titleAccess="Edit Label" /><div style={{ paddingLeft: "30px" }}> Trash</div></MenuItem></div>
+                        <div style={{
+                            backgroundColor: this.state.activeClass === 'editLabel' ? '#F5EEC3' : ''
+                            , borderRadius: '0px 50px 50px 0px'
+                        }} onClick={event => this.setState({ activeClass: 'editLabel' })}><MenuItem> <EditOutlined titleAccess="Edit Label" /><div style={{ paddingLeft: "30px" }}> Edit Labels </div></MenuItem></div>
+                        
+                    <hr style={{ width: "100%" }} />
+                    <div>
+                        <div style={{
+                            backgroundColor: this.state.activeClass === 'archive' ? '#F5EEC3' : ''
+                            , borderRadius: '0px 50px 50px 0px'
+                        }} onClick={event => this.setState({ activeClass: 'archive' })}><MenuItem> <ArchiveOutlined titleAccess="Edit Label" /><div style={{ paddingLeft: "30px" }}> Archive </div></MenuItem></div>
+                        <div style={{
+                            backgroundColor: this.state.activeClass === 'trash' ? '#F5EEC3' : ''
+                            , borderRadius: '0px 50px 50px 0px'
+                        }} onClick={event => this.setState({ activeClass: 'trash' })}><MenuItem> <DeleteOutline titleAccess="Edit Label" /><div style={{ paddingLeft: "30px" }}> Trash</div></MenuItem></div>
 
-                        </div>
-                        <hr style={{ width: "100%" }} />
+                    </div>
+                    <hr style={{ width: "100%" }} />
 
                     </Drawer>
                 </div>

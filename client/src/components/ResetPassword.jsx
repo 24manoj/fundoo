@@ -116,6 +116,7 @@ class ResetPassword extends Component {
                         <div>
                             <div>
                                 <TextField
+                                    id="NewPassword"
                                     label="New Password"
                                     type="password"
                                     helperText={(this.state.NewPassword === '' | this.state.NewPasswordError === '') ? "Never Share User`Id and Password" : <span style={{ color: "red" }}>{this.state.NewPasswordError}</span>}
@@ -126,6 +127,7 @@ class ResetPassword extends Component {
                             </div>
                             <div>
                                 <TextField
+                                    id="ConfirmPassword"
                                     label="Confirm Password"
                                     type="password"
                                     helperText={(this.state.CofirmPassword === '' | this.state.ConfirmError === '') ? "Never Share User`Id and Password" : <span style={{ color: "red" }}>{this.state.ConfirmError}</span>}

@@ -1,6 +1,4 @@
 import axios from 'axios'
-import { rejects } from 'assert'
-
 
 let getNotes = () => {
     try {

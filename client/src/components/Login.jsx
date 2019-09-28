@@ -6,9 +6,9 @@ import { Link } from 'react-router-dom'
 import { Card, Fab, Button, MuiThemeProvider, TextField, Snackbar, DialogContent, Dialog, DialogTitle, DialogContentText, DialogActions } from '@material-ui/core';
 import '../App.css'
 import { loginControl, SocialLogin, forgotPassword } from '../controller/userController'
-
-
-
+/**
+ * @description overriding muiButton-Root theme
+ */
 const theme = createMuiTheme({
     overrides: {
         MuiButton: {
@@ -19,7 +19,10 @@ const theme = createMuiTheme({
         }
     }
 })
-class Login extends Component {
+/**
+ * @description  Creating a login Component
+ */
+export default class Login extends Component {
     constructor() {
         super()
         this.state = {
@@ -35,6 +38,10 @@ class Login extends Component {
         }
 
     }
+    /**
+    * @desc validates fields for empty and  regex match,alerts with approprate msgs
+    * @param event event conatins the value and details of each field
+    */
     validateInput = (event) => {
         let passwordRegex = /^[a-zA-Z0-9]{8,}/;
         let EmailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
@@ -74,6 +81,10 @@ class Login extends Component {
         }
 
     }
+    /**
+    * @desc checks for data,collects data and pass data to controller ,handles data using promises
+    * @param event event conatins the value and details of each field
+    */
     SubmitData = (event) => {
 
         if (this.state.EmailError === '' && this.state.passwordError === '' && this.state.userName !== '' && this.state.password !== '') {
@@ -90,7 +101,6 @@ class Login extends Component {
                     this.props.history.push('/Dashboard')
                 })
                 .catch(err => {
-                    console.log(err)
                     this.setState({
                         stackBar: true,
                         stackBarMessage: "UnAuthorize Access!!!??"
@@ -120,7 +130,14 @@ class Login extends Component {
 
         }
     }
+    /**
+    * @desc invokes when onClick operation is performed,sets stackBar state to false
+    */
     snackbarClose = () => this.setState({ stackBar: false })
+
+    /**
+    * @desc Login with Google 
+    */
     GoogleLogin = () => {
         SocialLogin()
             .then(LoginSucess => this.setState({
@@ -134,6 +151,9 @@ class Login extends Component {
             })
             )
     }
+    /**
+    * @desc validates  email,forward to controller
+    */
     forgotPassword = () => {
         let EmailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
         if (this.state.resetMail === '' || !EmailRegex.test(this.state.resetMail)) {
@@ -163,8 +183,14 @@ class Login extends Component {
                 })
         }
     }
+    /**
+     * @desc Controlls flow of dailogBox
+     */
     DailogShow = () => this.setState({ DailogShow: true })
     DailogClose = () => this.setState({ DailogShow: false })
+    /**
+     * @description renders components to dom
+     */
     render() {
         return (
             <MuiThemeProvider theme={theme}>
@@ -182,6 +208,7 @@ class Login extends Component {
                         <div>
                             <div>
                                 <TextField
+                                    id="userName"
                                     required
                                     label="Your Email"
                                     type="email"
@@ -194,6 +221,7 @@ class Login extends Component {
                             </div>
                             <div>
                                 <TextField
+                                    id="password"
                                     required
                                     label="Your Password"
                                     type="password"
@@ -271,5 +299,3 @@ class Login extends Component {
         )
     }
 }
-
-export default Login

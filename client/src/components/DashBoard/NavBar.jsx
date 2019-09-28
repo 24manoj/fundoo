@@ -64,6 +64,7 @@ class NavBar extends Component {
 
     }
     profile = (event) => {
+
         this.setState({
             profileUrl: URL.createObjectURL(event.target.files[0])
         })
@@ -132,30 +133,45 @@ class NavBar extends Component {
                                     </Menu>
                                 </div>
                             </div>
-                            <Avatar alt='profile img' src={this.state.profileUrl} onClick={event => this.setState({ anchorEl: event.currentTarget, profile: !this.state.profile })}>{this.Fname} </Avatar>
-                        </div>
-                        <Popper open={this.state.profile} anchorEl={this.state.anchorEl} placement={'bottom-end'} style={{ marginTop: '20px' }}>
-                            <Paper> <Card className='profileCard' >
-                                <label className="Avatar" for='file'>
-                                    <Avatar className="Avatar-profile" alt='profile img' src={this.state.profileUrl} style={{
-                                        width: '100px',
-                                        height: '100px',
-                                    }} >
-                                        {this.Fname}
-                                    </Avatar>
-                                    <input type='file' id='file' onChange={this.profile} style={{ display: 'none' }} />
-                                    <div className="Avatar-text">
-                                        <h3>{this.sessionValue.data.firstName}</h3>
-                                        <h6>{this.sessionValue.data.email}</h6>
-                                    </div>
-                                </label>
 
-                                <hr style={{ width: "100%" }} />
-                                <div className="Avatar-button">
-                                    <Button variant='contained' type='submit' color='primary' >AddAccount</Button>
-                                    <Button variant='contained' type="reset" color="primary" onClick={this.SignOut}>SignOut  </Button></div>
-                            </Card></Paper>
+                            <Avatar alt='profile img' src={this.state.profileUrl} onClick={event => this.setState({ anchorEl: event.currentTarget, profile: !this.state.profile })}>{this.Fname} </Avatar>
+
+                        </div>
+
+                        <Popper open={this.state.profile} anchorEl={this.state.anchorEl} placement={'bottom-end'} style={{ marginTop: '25px' }}>
+                            <Paper>
+                                <ClickAwayListener onClickAway={event => this.setState({ profile: false })}>
+                                    <Card className='profileCard' >
+                                        <label className="Avatar" for='file'>
+                                            <Avatar alt='profile img' src={this.state.profileUrl} style={{
+                                                width: '100px',
+                                                height: '100px',
+
+                                            }} >
+                                                {this.Fname}
+                                            </Avatar>
+                                            <input type='file' id='file' onChange={this.profile} style={{ display: 'none' }} />
+                                            <div className="Avatar-text">
+                                                <h3>{this.sessionValue.data.firstName}</h3>
+                                                <h6>{this.sessionValue.data.email}</h6>
+                                            </div>
+                                        </label>
+
+                                        <hr style={{ width: "100%" }} />
+                                        <div className="Avatar-button">
+                                            <div>
+                                                <Button variant='contained' type='submit' >AddAccount</Button>
+                                            </div>
+                                            <div>
+                                                <Button variant='contained' type="reset" onClick={this.SignOut}>SignOut
+                                        </Button></div>
+                                        </div>
+
+                                    </Card>
+                                </ClickAwayListener>
+                            </Paper>
                         </Popper>
+
                     </Toolbar>
                 </AppBar>
             </MuiThemeProvider >

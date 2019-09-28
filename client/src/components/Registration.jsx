@@ -36,6 +36,10 @@ class Registration extends Component {
         }
     }
     snackbarClose = () => this.setState({ stackBar: false })
+    /**
+    * @desc validates fields for empty and  regex match,alerts with approprate msgs
+    * @param event event conatins the value and details of each field
+    */
     validateInput = (event) => {
         let passwordRegex = /^[a-zA-Z0-9]{8,}/;
         let EmailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
@@ -92,6 +96,10 @@ class Registration extends Component {
         }
     }
 
+    /**
+    * @desc checks for data,collects data and pass data to controller ,handles data using promises
+
+    */
     Register = () => {
         if (this.state.fname === '' || this.state.fnameError !== '') {
             this.setState({
@@ -160,6 +168,7 @@ class Registration extends Component {
                         <div>
                             <div>
                                 <TextField
+                                    id='Fname'
                                     required
                                     label="Your FirstName"
                                     type="text"
@@ -172,6 +181,7 @@ class Registration extends Component {
                             </div>
                             <div>
                                 <TextField
+                                    id='Lname'
                                     required
                                     label="Your LastName"
                                     type="text"
@@ -185,6 +195,7 @@ class Registration extends Component {
 
                             <div>
                                 <TextField
+                                    id='Password'
                                     required
                                     label="Your Password"
                                     type="password"
@@ -197,6 +208,7 @@ class Registration extends Component {
                             </div>
                             <div>
                                 <TextField
+                                    id='Email'
                                     required
                                     label="Your Email"
                                     type="email"

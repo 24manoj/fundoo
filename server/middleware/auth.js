@@ -30,6 +30,7 @@ exports.verify = (req, res, next) => {
  * @return return respose sucess or failure
  */
 exports.verifyUser = (req, res, next) => {
+    console.log('in');
 
     webtoken.verifyToken(req.headers.token, (err, result) => {
         if (err) {
