@@ -7,20 +7,22 @@ let response = {}
  * @param res responses back to frontend
  * @return response 
  */
-exports.createIndex = (req, res) => {
+exports.createIndex = (req, callback) => {
     try {
         client.createIndex(req, (err, data) => {
             if (err) {
-                response.sucess = false
-                response.error = err
-                response.data = null
-                res.status(status.alreadyExist).send(response)
+                callback(err)
+                // response.sucess = false
+                // response.error = err
+                // response.data = null
+                // res.status(status.alreadyExist).send(response)
             }
             else {
-                response.sucess = true
-                response.error = null
-                response.data = data
-                res.status(status.sucess).send(response)
+                callback(null, data)
+                // response.sucess = true
+                // response.error = null
+                // response.data = data
+                // res.status(status.sucess).send(response)
             }
 
         })
@@ -39,19 +41,21 @@ exports.createIndex = (req, res) => {
  */
 exports.search = (req, res) => {
     try {
+        console.log("in elastic", req.body.search);
+
         client.searchkey(req, (err, data) => {
             if (err) {
                 response.sucess = false
                 response.error = err
                 response.data = null
-
                 res.status(status.notfound).send(response)
             }
             else {
+
+
                 response.sucess = true
                 response.error = null
                 response.data = data
-
                 res.status(status.sucess).send(response)
             }
         })

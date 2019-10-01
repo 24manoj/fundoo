@@ -24,7 +24,10 @@ const note = new mongoose.Schema({
     },
     labels: [{
         type: String
-    }]
+    }],
+    color: {
+        type: String
+    }
 }, {
     timestamps: true
 })

@@ -16,6 +16,7 @@ const theme = createMuiTheme({
         }
     }
 })
+const WAIT_INTERVAL = 1000;
 
 
 class NavBar extends Component {
@@ -75,12 +76,6 @@ class NavBar extends Component {
                 sessionStorage.clear()
                 profile.data.url = upload.data.data
                 sessionStorage.setItem('UserSession', JSON.stringify(profile))
-                // console.log("new profile url", JSON.parse(profile));
-
-                // this.setState({
-                //     profileUrl: profile
-                // })
-
             })
             .catch(err => {
                 console.log(err);
@@ -88,9 +83,10 @@ class NavBar extends Component {
             })
 
     }
-    fileUpload = () => {
-
+    searchData = (event) => {
+        this.props.onSearch(this.state.search)
     }
+
 
     render() {
         let animateClass = this.state.animate ? 'rotate' : ''
@@ -115,7 +111,9 @@ class NavBar extends Component {
                                         autoComplete="true"
                                         fullWidth
                                         value={this.state.search}
-                                        onChange={event => this.setState({ search: event.target.value })}
+
+                                        onChange={(event) => this.setState({ search: event.target.value })}
+                                        onKeyUp={() => { this.searchData(this.state.search) }}
                                     />
                                     <div>{this.state.search !== '' ? <ClearAll style={{ marginTop: "12px" }} onClick={(event) => this.setState({ search: '' })} /> : ''}</div>
                                 </Card>

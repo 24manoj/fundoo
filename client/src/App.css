@@ -108,8 +108,6 @@
 
 }
 
-
-
 h1,
 h2,
 h5,
@@ -172,15 +170,27 @@ img {
   height: 30%;
 }
 
-.IconsList {
+
+
+.TakeNoteIcon-Icons {
   display: flex;
+  width: 70%;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.TakeNoteIcon {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
 }
 
 .decsIcon {
-  display: flex;
-  width: 55%;
+  display: none;
+  width: 77%;
   justify-content: space-between;
   align-items: center;
 
@@ -193,8 +203,6 @@ img {
   justify-content: center;
   flex-direction: row;
   flex-flow: wrap;
-
-
 }
 
 .NotesScroll {
@@ -204,9 +212,10 @@ img {
 }
 
 .notesCard {
-  margin: 5px;
+  margin: 10px;
   padding: 5px;
   width: 20vw;
+
   min-width: 200px;
   height: auto;
 
@@ -224,7 +233,8 @@ img {
   padding: 5px;
   width: 80%;
   min-width: 200px;
-  height: auto;
+  min-height: 140px;
+
 
 }
 
@@ -251,7 +261,6 @@ img {
 }
 
 .Avatar-profile {
-
   width: 70px;
   height: 90px;
 }
@@ -261,6 +270,50 @@ img {
   margin-bottom: 2%;
   flex-direction: row;
   justify-content: space-around;
+}
+
+.searchNote {
+  display: flex;
+  justify-content: center;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 20px;
+  font-style: italic
+}
+
+.IconsList {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+}
+
+.noHover {
+  pointer-events: none;
+}
+
+.IconPin {
+  display: none;
+}
+
+.colorPoper:hover .decsIcon {
+  display: flex
+}
+
+.ListView:hover .decsIcon {
+  display: flex
+}
+
+
+.notesCard:hover .decsIcon {
+  display: flex
+}
+
+.notesCard:hover .IconPin {
+  display: flex
+}
+
+.ListView:hover .IconPin {
+  display: flex
 }
 
 @keyframes rotate-spin {

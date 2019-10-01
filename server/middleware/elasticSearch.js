@@ -13,8 +13,10 @@ const client = new elasticsearch.Client({
  */
 exports.createIndex = (req, callback) => {
     try {
+
+        let index = req._id.toString()
         client.indices.create({
-            'index': req.decoded.id
+            'index': index
         }, ((err, result, status) => {
             err ? callback(err) : callback(null, result)
         }))
@@ -74,7 +76,7 @@ exports.addDocument = (req) => {
  */
 exports.searchkey = (req, callback) => {
     try {
-        console.log("in elastic search")
+        console.log("in elastic search", req.body.search)
         let body = {
             query: {
                 query_string: {

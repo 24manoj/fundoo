@@ -53,6 +53,44 @@ exports.createNotes = (req, res) => {
 }
 
 /**
+ * @desc takes input as http req ,error validation is done,passes request data to  next services
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @return return respose sucess or failure
+ */
+exports.updateColor = (req, res) => {
+    try {
+        elastic.Documentdelete(req)
+        details.id = req.decoded.id
+        redisCache.delRedis(details, (err, cacheDelete) => {
+            if (err) {
+                console.log(err)
+            } else {
+                console.log(cacheDelete)
+            }
+        })
+        noteService.updateColor(req)
+            .then(data => {
+                response.sucess = true,
+                    response.data = data,
+                    response.errors = null
+                console.log(response)
+                res.status(status.sucess).send(response)
+            })
+            .catch((err) => {
+                response.sucess = false,
+                    response.data = null,
+                    response.errors = err
+                console.log(err)
+                res.status(status.notfound).send(response)
+            })
+
+
+
+    } catch (e) { console.log(e) }
+}
+
+/**
  * @desc takes input as http req ,error validation is done,passes request data to  next services,
  * respoonses with array of notes
  * @param req request contains all the requested data
@@ -289,7 +327,7 @@ exports.noteTrash = (req, res) => {
 
 exports.noteUnArchive = (req, res) => {
     try {
-        
+
         req.check('id', 'Id invalid').notEmpty()
         let errors = req.validationErrors()
         if (errors) {
@@ -328,8 +366,8 @@ exports.noteUnArchive = (req, res) => {
 
 exports.noteArchive = (req, res) => {
     try {
-        
-        req.check('id', 'Id invalid').notEmpty()
+
+        req.check('noteId', 'noteId invalid').notEmpty()
         let errors = req.validationErrors()
         if (errors) {
             response.errors = errors
@@ -338,7 +376,7 @@ exports.noteArchive = (req, res) => {
             res.status(status.UnprocessableEntity).send(response)
         }
         else {
-            details.id = req.body.userId;
+            details.id = req.decoded.id;
             redisCache.delRedis(details, (err, del) => {
                 if (err) {
                     throw new "error in radis", err;
@@ -381,7 +419,7 @@ exports.noteArchive = (req, res) => {
  */
 exports.noteReminder = (req, res) => {
     try {
-    
+
         req.check('id', 'Id invalid').notEmpty()
         req.check('date', 'requires a time and date').notEmpty()
         let errors = req.validationErrors()

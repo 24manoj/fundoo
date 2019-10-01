@@ -3,7 +3,9 @@ let mailchecker = require('email-existence')
 let token = require('../middleware/token')
 let rediscache = require('../middleware/redisService')
 let status = require('../middleware/httpStatusCode')
+let elasticSearch = require('../controller/elasticSearch')
 let mail = require('../middleware/userMailer')
+let elastic = require('../middleware/elasticSearch')
 let model = require('../services/notesService')
 let response = {}
 let details = {}
@@ -92,6 +94,14 @@ exports.login = (req, res) => {
                     res.status(status.notfound).send(response);
 
                 } else {
+                    elasticSearch.createIndex(data, (err, data) => {
+                        if (err) {
+                            console.log('index exist');
+                        }
+                        else {
+                            console.log("index Created sucessfully");
+                        }
+                    })
                     let log = {}
                     log.data = data
                     token.generateToken(data._id, (err, token) => {
@@ -102,46 +112,51 @@ exports.login = (req, res) => {
                             response.sucess = false
                             res.status(status.notfound).send(response);
                         } else {
-                            details = {}
-                            details.id = data.email
-                            details.value = log
-                            rediscache.setRedis(details, (err, LogDetails) => {
-                                if (err) {
-                                    console.log("Log details not set to cache")
-                                }
-                                else {
-                                    let userId = data._id
+                            let userId = data._id
+                            console.log('login in user Id', data._id);
+                            model.getNotes(userId)
+                                .then(noteData => {
+                                    console.log(noteData);
 
-                                    model.getNotes(userId)
-                                        .then(noteData => {
-                                            details.id = noteData[0].userId
-                                            details.value = noteData
-                                            rediscache.setRedis(details, (err, set) => {
-                                                if (err) {
-                                                    console.log("cache not stored")
-                                                } else {
-                                                    response.errors = null
-                                                    response.data = log
-                                                    response.sucess = true
-                                                    res.status(status.sucess).send(response);
-                                                }
+                                    if (noteData.length > 0) {
+                                        elastic.addDocument(noteData)
+                                        details.id = noteData[0].userId
+                                        details.value = noteData
+                                        rediscache.setRedis(details, (err, set) => {
+                                            if (err) {
+                                                console.log("cache not stored")
+                                            } else {
+                                                response.errors = null
+                                                response.data = log
+                                                response.sucess = true
+                                                res.status(status.sucess).send(response);
+                                            }
+                                        })
+                                    }
+                                    else {
+                                        response.errors = null
+                                        response.data = log
+                                        response.sucess = true
+                                        res.status(status.sucess).send(response);
+                                    }
 
-                                            })
-                                        })
-                                        .catch(err => {
-                                            response.errors = null
-                                            response.data = log
-                                            response.sucess = true
-                                            res.status(status.sucess).send(response);
-                                        })
-                                }
-                            })
+
+                                })
+                                .catch(err => {
+
+                                    response.errors = err
+                                    response.data = null
+                                    response.sucess = false
+                                    res.status(status.notfound).send(response);
+                                })
                         }
                     })
                 }
             })
-
         }
+
+
+
 
     } catch (e) {
         console.log(e);

@@ -45,6 +45,8 @@ exports.register = (req, callback) => {
  */
 exports.login = (req, callback) => {
     try {
+        console.log('in schema', req.body.email, req.body.password);
+
         userSchema.userRegistration.findOne({
             "email": req.body.email
         }, (err, data) => {

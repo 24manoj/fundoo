@@ -14,7 +14,6 @@ exports.generateToken = (id, callback) => {
             if (err) {
                 callback(err);
             } else {
-                console.log(token)
                 callback(null, token);
             }
 

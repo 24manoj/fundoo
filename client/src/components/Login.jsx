@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import { createMuiTheme } from '@material-ui/core/styles';
 import Glogo from '../assets/google_icon.png'
+import { Link, withRouter } from 'react-router-dom';
 import { Cancel } from '@material-ui/icons'
-import { Link } from 'react-router-dom'
 import { Card, Fab, Button, MuiThemeProvider, TextField, Snackbar, DialogContent, Dialog, DialogTitle, DialogContentText, DialogActions } from '@material-ui/core';
 import '../App.css'
 import { loginControl, SocialLogin, forgotPassword } from '../controller/userController'
+
 /**
  * @description overriding muiButton-Root theme
  */
@@ -22,7 +23,7 @@ const theme = createMuiTheme({
 /**
  * @description  Creating a login Component
  */
-export default class Login extends Component {
+class Login extends Component {
     constructor() {
         super()
         this.state = {
@@ -99,6 +100,7 @@ export default class Login extends Component {
                         stackBarMessage: "Loged In sucessfully !!! happy Notes"
                     })
                     this.props.history.push('/Dashboard')
+                    // this.history.push('/Dashboard')
                 })
                 .catch(err => {
                     this.setState({
@@ -294,8 +296,10 @@ export default class Login extends Component {
 
                     </Dialog>
                 </div>
-            </MuiThemeProvider >
+            </MuiThemeProvider>
 
         )
     }
 }
+
+export default withRouter(Login);

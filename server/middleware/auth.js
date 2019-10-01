@@ -30,7 +30,7 @@ exports.verify = (req, res, next) => {
  * @return return respose sucess or failure
  */
 exports.verifyUser = (req, res, next) => {
-    console.log('in');
+    console.log('in', req.headers.token);
 
     webtoken.verifyToken(req.headers.token, (err, result) => {
         if (err) {
@@ -40,9 +40,7 @@ exports.verifyUser = (req, res, next) => {
             res.status(422).send(response)
         }
         else {
-            console.log(result)
             req.decoded = result
-
             next()
         }
     })

@@ -9,11 +9,15 @@ const noteSchema = require('../app/model/notesSchema')
 exports.createNotes = (req) => {
     try {
         console.log("in controler", req.decoded.id)
+        console.log(req.body.Archive);
+
         return new Promise((resolve, reject) => {
             let noteDetails = new noteSchema.notes({
                 "userId": req.decoded.id,
                 "title": req.body.title,
-                "content": req.body.content
+                "content": req.body.content,
+                "color": req.body.color,
+                "isArchive": req.body.Archive
 
             });
             //save data in collection
@@ -43,7 +47,7 @@ exports.getNotes = (id) => {
                 "isTrash": false,
                 "isArchive": false,
             }, (err, notes) => {
-                (err || notes.length <= 0) ? reject(err) : resolve(notes)
+                (err) ? reject(err) : resolve(notes)
             })
         })
     } catch (e) {
@@ -65,6 +69,31 @@ exports.updateNotes = (req) => {
             }, {
                 'title': req.body.title,
                 'content': req.body.content
+            }, (err, updated) => {
+                if (err) reject(err)
+                else resolve(updated)
+            })
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+/**
+ * @desc gets validated request from services,performs database operations needed
+ * updates collection data for given condition
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
+exports.updateColor = (req) => {
+    try {
+        return new Promise((resolve, reject) => {
+            console.log(req.body.color);
+
+            noteSchema.notes.updateOne({
+                _id: req.body.noteId
+            }, {
+                'color': req.body.color,
             }, (err, updated) => {
                 if (err) reject(err)
                 else resolve(updated)
@@ -151,7 +180,7 @@ exports.noteArchive = (req) => {
     try {
         return new Promise((resolve, reject) => {
             noteSchema.notes.updateOne({
-                '_id': req.body.id
+                '_id': req.body.noteId
             }, {
                 isArchive: true
             }, (err, updated) => {
