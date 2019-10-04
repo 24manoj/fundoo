@@ -8,23 +8,14 @@ import Register from "./components/Registration";
 import ResetPassword from "./components/ResetPassword";
 
 function App() {
-    return ( <
-        Router >
-        <
-        Route path = "/"
-        exact component = { Login }
-        />{" "} <
-        Route path = "/register"
-        component = { Register }
-        />{" "} <
-        Route path = "/resetPassword"
-        component = { ResetPassword }
-        />{" "} <
-        Route path = "/Dashboard"
-        component = { DashBoard }
-        />{" "} <
-        /Router>
-    );
+  return (
+    <Router>
+      <Route path="/" exact component={Login} />
+      <Route path="/register" component={Register} />
+      <Route path="/resetPassword" component={ResetPassword} />
+      <Route path="/Dashboard" component={DashBoard} />
+    </Router>
+  );
 }
 
 export default App;

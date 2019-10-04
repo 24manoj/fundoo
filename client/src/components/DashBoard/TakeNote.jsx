@@ -213,9 +213,7 @@ class Notes extends Component {
                 }}
               >
                 <div className="titleIcon">
-                  {" "}
                   <div>
-                    {" "}
                     <InputBase
                       title="Title"
                       type="text"
@@ -228,11 +226,11 @@ class Notes extends Component {
                       }
                       fullWidth
                     />
-                  </div>{" "}
+                  </div>
                   <div>
                     <img src={pin} className="Iconpin" />
-                  </div>{" "}
-                </div>{" "}
+                  </div>
+                </div>
                 <div>
                   <InputBase
                     title="Description"
