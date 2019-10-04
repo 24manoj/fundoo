@@ -317,16 +317,18 @@ exports.noteLabel = (req) => {
     try {
         // console.log(req.body.label)
         return new Promise((resolve, reject) => {
-            noteSchema.notes.updateOne({
-                _id: req.body.id
-            }, {
-                $push: {
-                    labels: req.body.label
-                }
-            }, (err, update) => {
-                if (err) reject(err)
-                else resolve(update)
-                // }
+            req.body.label.forEach(Element => {
+                noteSchema.notes.updateOne({
+                    _id: req.body.id
+                }, {
+                    $push: {
+                        labels: Element
+                    }
+                }, (err, update) => {
+                    if (err) reject(err)
+                    else resolve(update)
+                    // }
+                })
             })
         })
     } catch (e) {

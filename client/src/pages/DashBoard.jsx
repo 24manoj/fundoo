@@ -330,7 +330,7 @@ class DashBoard extends Component {
                         open={this.open} refresh={this.refresh} onSearch={this.search} />
                 </div>
                 <div className="NotesScroll">
-                    <TakeNote createNote={this.createNote} NoteArchived={this.NoteArchived} />
+                    <TakeNote createNote={this.createNote} NoteArchived={this.NoteArchived} labels={this.state.labels} />
                     <Notes notes={this.state.filterState ? this.state.filterArray : this.state.notesArray} view={this.state.View}
                         setValue={this.setValue} NoteReminder={this.NoteReminder} />
                 </div>

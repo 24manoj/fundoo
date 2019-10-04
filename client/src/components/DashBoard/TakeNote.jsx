@@ -11,13 +11,13 @@ import {
   Popper,
   Paper,
   Snackbar,
-  Chip
+  Chip,
+  Checkbox
 } from "@material-ui/core";
 import "../../App.css";
 import {
   Alarm,
   BrushOutlined,
-  ImageAspectRatioOutlined,
   CheckBoxOutlined,
   UndoOutlined,
   ImageOutlined,
@@ -31,11 +31,14 @@ import {
   ColorizeOutlined,
   ColorLensOutlined,
   ArchiveOutlined,
-  CloseOutlined
+  CloseOutlined,
+  MoreVertOutlined,
+  PlusOneOutlined
 } from "@material-ui/icons";
 import pin from "../../assets/afterPin.svg";
 import DateFnsUtils from "@date-io/date-fns";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import { isThisSecond } from "date-fns/esm";
 class Notes extends Component {
   constructor() {
     super();
@@ -46,11 +49,13 @@ class Notes extends Component {
       NoteContent: "",
       NoteColor: "",
       anchorEl: null,
+      OptionsPoper: false,
       reminderPoper: false,
       ColorProper: false,
       Archive: false,
       reminder: undefined,
       reminderPoper: false,
+      labelListPoper: false,
       colorPalette: [
         {
           name: "default",
@@ -156,12 +161,14 @@ class Notes extends Component {
       });
     }
   };
-  AddReminder = event => {
+
+  AddReminder = (event) => {
     this.setState({
       reminderPoper: !this.state.reminderPoper,
       anchorEl: event.currentTarget
     });
   };
+
   dateSet = async newDate => {
     await this.setState({
       reminder: newDate.toString().slice(0, 15),
@@ -175,7 +182,6 @@ class Notes extends Component {
           {!this.state.NoteTake ? (
             <Card className="TakeNote" hidden={this.state.NoteTake}>
               <div>
-                {" "}
                 <InputBase
                   onClick={event =>
                     this.setState({
@@ -186,7 +192,7 @@ class Notes extends Component {
                   type="text"
                   placeholder="Take a note..."
                 />
-              </div>{" "}
+              </div>
               <div>
                 <CheckBoxOutlined titleAccess="New List" />
                 <BrushOutlined titleAccess=" new Note with Drawing" />
@@ -194,152 +200,155 @@ class Notes extends Component {
               </div>
             </Card>
           ) : (
-            <ClickAwayListener
-              onClickAway={event =>
-                this.state.ColorProper |
-                this.state.reminderPoper |
-                this.state.NoteState
-                  ? ""
-                  : this.setState({
+              <ClickAwayListener
+                onClickAway={event =>
+                  this.state.ColorProper |
+                    this.state.reminderPoper |
+                    this.state.NoteState
+                    | this.state.labelListPoper |
+                    this.state.OptionsPoper
+                    ? ""
+                    : this.setState({
                       NoteTake: false
                     })
-              }
-            >
-              <Card
-                className="TakeDetails"
-                hidden={!this.state.NoteTake}
-                style={{
-                  backgroundColor: this.state.NoteColor
-                }}
+                }
               >
-                <div className="titleIcon">
+                <Card
+                  className="TakeDetails"
+                  hidden={!this.state.NoteTake}
+                  style={{
+                    backgroundColor: this.state.NoteColor
+                  }}
+                >
+                  <div className="titleIcon">
+                    <div>
+                      <InputBase
+                        title="Title"
+                        type="text"
+                        placeholder="Title"
+                        value={this.state.NoteTitile}
+                        onChange={event =>
+                          this.setState({
+                            NoteTitile: event.target.value
+                          })
+                        }
+                        fullWidth
+                      />
+                    </div>
+                    <div>
+                      <img src={pin} className="Iconpin" />
+                    </div>
+                  </div>
                   <div>
                     <InputBase
-                      title="Title"
+                      title="Description"
                       type="text"
-                      placeholder="Title"
-                      value={this.state.NoteTitile}
+                      placeholder="Take a note..."
+                      value={this.state.NoteContent}
                       onChange={event =>
                         this.setState({
-                          NoteTitile: event.target.value
+                          NoteContent: event.target.value
                         })
                       }
                       fullWidth
                     />
                   </div>
-                  <div>
-                    <img src={pin} className="Iconpin" />
+                  {this.state.reminder !== undefined ? (
+                    <div>
+                      <Chip
+                        style={{
+                          width: "auto"
+                        }}
+                        icon={<Alarm />}
+                        label={
+                          this.state.reminder != undefined
+                            ? this.state.reminder
+                            : ""
+                        }
+                        onDelete={event => this.state.reminder}
+                        onDelete={event =>
+                          this.setState({
+                            NoteState: false,
+                            reminder: undefined
+                          })
+                        }
+                      />
+                    </div>
+                  ) : (
+                      ""
+                    )}
+                  <div className="TakeNoteIcon">
+                    <div className="TakeNoteIcon-Icons">
+                      <NotificationImportantOutlined
+                        titleAccess="Remind me"
+                        onClick={this.AddReminder}
+                      />
+                      <PersonAddOutlined titleAccess="Collaborate" />
+                      <ColorLensOutlined
+                        titleAccess="change Color"
+                        onClick={event =>
+                          this.setState({
+                            anchorEl: event.currentTarget,
+                            ColorProper: true
+                          })
+                        }
+                      />
+                      <ImageOutlined titleAccess=" Add Image" />
+                      <ArchiveOutlined
+                        titleAccess=" Archive Note"
+                        onClick={this.NoteArchived}
+                      />
+                      <MoreVertOutlined titleAccess="More"
+                        onClick={event => this.setState({ OptionsPoper: !this.state.OptionsPoper, anchorEl: event.currentTarget })}
+                      />
+                    </div>
+                    <Button variant="text" onClick={this.CreateNote}>
+                      <b> Close </b>
+                    </Button>
                   </div>
-                </div>
-                <div>
-                  <InputBase
-                    title="Description"
-                    type="text"
-                    placeholder="Take a note..."
-                    value={this.state.NoteContent}
-                    onChange={event =>
-                      this.setState({
-                        NoteContent: event.target.value
-                      })
-                    }
-                    fullWidth
-                  />
-                </div>{" "}
-                {this.state.reminder !== undefined ? (
-                  <div>
-                    <Chip
-                      style={{
-                        width: "auto"
-                      }}
-                      icon={<Alarm />}
-                      label={
-                        this.state.reminder != undefined
-                          ? this.state.reminder
+                  <Popper
+                    open={this.state.ColorProper}
+                    anchorEl={this.state.anchorEl}
+                    placement={"top-start"}
+                    style={{
+                      width: "100px"
+                    }}
+                  >
+                    <ClickAwayListener
+                      onClickAway={event =>
+                        this.state.NoteTake
+                          ? this.setState({
+                            ColorProper: false,
+                            anchorEl: null
+                          })
                           : ""
                       }
-                      onDelete={event => this.state.reminder}
-                      onDelete={event =>
-                        this.setState({
-                          NoteState: false,
-                          reminder: undefined
-                        })
-                      }
-                    />
-                  </div>
-                ) : (
-                  ""
-                )}{" "}
-                <div className="TakeNoteIcon">
-                  <div className="TakeNoteIcon-Icons">
-                    <NotificationImportantOutlined
-                      titleAccess="Remind me"
-                      onClick={this.AddReminder}
-                    />{" "}
-                    <PersonAddOutlined titleAccess="Collaborate" />
-                    <ColorLensOutlined
-                      titleAccess="change Color"
-                      onClick={event =>
-                        this.setState({
-                          anchorEl: event.currentTarget,
-                          ColorProper: true
-                        })
-                      }
-                    />{" "}
-                    <ImageOutlined titleAccess=" Add Image" />
-                    <ArchiveOutlined
-                      titleAccess=" Archive Note"
-                      onClick={this.NoteArchived}
-                    />{" "}
-                  </div>{" "}
-                  <Button variant="text" onClick={this.CreateNote}>
-                    {" "}
-                    <b> Close </b>
-                  </Button>
-                </div>
-                <Popper
-                  open={this.state.ColorProper}
-                  anchorEl={this.state.anchorEl}
-                  placement={"top-start"}
-                  style={{
-                    width: "100px"
-                  }}
-                >
-                  <ClickAwayListener
-                    onClickAway={event =>
-                      this.state.NoteTake
-                        ? this.setState({
-                            ColorProper: false,
-                            anchorEl: ""
-                          })
-                        : ""
-                    }
-                  >
-                    <Paper>
-                      {" "}
-                      {this.state.colorPalette.map((code, index) => (
-                        <IconButton
-                          key={index}
-                          style={{
-                            backgroundColor: code.colorCode,
-                            margin: "2px"
-                          }}
-                          title={code.name}
-                          onClick={event =>
-                            this.setState({
-                              NoteColor: event.target.value,
-                              anchorEl: "",
-                              ColorProper: false
-                            })
-                          }
-                          value={code.colorCode}
-                        />
-                      ))}{" "}
-                    </Paper>
-                  </ClickAwayListener>
-                </Popper>
-              </Card>{" "}
-            </ClickAwayListener>
-          )}
+                    >
+                      <Paper>
+                        {this.state.colorPalette.map((code, index) => (
+                          <IconButton
+                            key={index}
+                            style={{
+                              backgroundColor: code.colorCode,
+                              margin: "2px"
+                            }}
+                            title={code.name}
+                            onClick={event =>
+                              this.setState({
+                                NoteColor: event.target.value,
+                                anchorEl: "",
+                                ColorProper: false
+                              })
+                            }
+                            value={code.colorCode}
+                          />
+                        ))}
+                      </Paper>
+                    </ClickAwayListener>
+                  </Popper>
+                </Card>
+              </ClickAwayListener>
+            )}
         </div>
 
         <Popper open={this.state.reminderPoper} anchorEl={this.state.anchorEl}>
@@ -364,11 +373,42 @@ class Notes extends Component {
                   onChange={this.dateSet}
                   errortext="Required"
                 />
-              </MuiPickersUtilsProvider>{" "}
-            </ClickAwayListener>{" "}
+              </MuiPickersUtilsProvider>
+            </ClickAwayListener>
           </Paper>
         </Popper>
-      </div>
+
+        <Popper open={this.state.OptionsPoper} anchorEl={this.state.anchorEl} placement={'bottom'} >
+          <ClickAwayListener onClickAway={event => this.setState({ OptionsPoper: !this.state.OptionsPoper })} >
+            <Card className="Options">
+              <label onClick={event => this.setState({ OptionsPoper: !this.state.OptionsPoper, labelListPoper: !this.state.labelListPoper })}>  Add Label  </label>
+            </Card>
+          </ClickAwayListener>
+        </Popper>
+        <Popper open={this.state.labelListPoper} anchorEl={this.state.anchorEl} placement={'bottom'} >
+          <ClickAwayListener onClickAway={event => this.setState({ labelListPoper: !this.state.labelListPoper, anchorEl: null })} >
+            <Card className="Options-label">
+              <label>Label List</label>
+              <TextField
+                type="text"
+                placeholder='Add Label'
+                fullWidth
+              />
+              {
+                this.props.labels.map((label) =>
+                  <div className="listLabels">
+                    <Checkbox color="primary" value={label._id} />
+                    <p></p>{label.labelName} </div>
+                )
+              }
+
+            </Card>
+          </ClickAwayListener>
+        </Popper>
+
+
+      </div >
+
     );
   }
 }

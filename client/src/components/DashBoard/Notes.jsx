@@ -123,7 +123,6 @@ class Notes extends Component {
 
                         )}
 
-
                 </div>
             </MuiThemeProvider>
         );

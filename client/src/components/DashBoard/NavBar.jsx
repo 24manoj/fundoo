@@ -75,7 +75,7 @@ class NavBar extends Component {
                 let profile = this.sessionValue
                 sessionStorage.clear()
                 profile.data.url = upload.data.data
-                sessionStorage.setItem('UserSession', JSON.stringify(profile))
+                sessionStorage.setItem(process.env.REACT_APP_STORAGE, JSON.stringify(profile))
             })
             .catch(err => {
                 console.log(err);
@@ -140,20 +140,23 @@ class NavBar extends Component {
                             <Paper>
                                 <ClickAwayListener onClickAway={event => this.setState({ profile: false })}>
                                     <Card className='profileCard' >
-                                        <label className="Avatar" htmlFor='file'>
-                                            <Avatar alt='profile img' src={this.state.profileUrl} style={{
-                                                width: '100px',
-                                                height: '100px',
+                                        <div className="Avatar">
+                                            <label htmlFor='file'>
+                                                <Avatar alt='profile img' src={this.state.profileUrl} style={{
+                                                    width: '100px',
+                                                    height: '100px',
 
-                                            }} >
-                                                {this.Fname}
-                                            </Avatar>
-                                            <input type='file' id='file' onChange={this.profile} style={{ display: 'none' }} />
+                                                }} >
+                                                    {this.Fname}
+                                                </Avatar>
+                                                <input type='file' id='file' onChange={this.profile} style={{ display: 'none' }} />
+
+                                            </label>
                                             <div className="Avatar-text">
-                                                <h3>{this.sessionValue.data.firstName}</h3>
-                                                <h6>{this.sessionValue.data.email}</h6>
+                                                <h1>{this.sessionValue.data.firstName}</h1>
+                                                <h4>{this.sessionValue.data.email}</h4>
                                             </div>
-                                        </label>
+                                        </div>
 
                                         <hr style={{ width: "100%" }} />
                                         <div className="Avatar-button">

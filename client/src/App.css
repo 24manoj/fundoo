@@ -74,7 +74,8 @@
 .sideNav {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  align-items: center;
+  justify-content: space-between;
   padding: 5px;
   margin: 5px;
   height: auto;
@@ -93,8 +94,48 @@
 .NavContent-Right {
   display: flex;
   flex-direction: row;
+  align-content: center;
   align-items: center;
   justify-content: space-between;
+}
+
+.listLabels {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+}
+
+.Options {
+  width: 200px;
+  min-height: 50px;
+  display: flex;
+  padding: 5px;
+  margin: 5px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.Options-labels {
+  width: 200px;
+  min-height: 50px;
+  height: 150px;
+  display: flex;
+  overflow-y: scroll;
+  padding: 5px;
+  margin: 5px;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.NavSideBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .NotesColorSelection {
@@ -249,6 +290,7 @@ img {
 
 .Avatar {
   display: flex;
+  flex-direction: row;
   justify-content: space-around;
   flex-wrap: wrap;
   align-items: center;
@@ -257,6 +299,7 @@ img {
 .Avatar-text {
   display: flex;
   align-items: center;
+  justify-content: space-around;
   flex-direction: column;
 }
 

@@ -8,6 +8,10 @@
     "@material-ui/icons": "^4.4.3",
     "@material-ui/pickers": "^3.2.6",
     "axios": "^0.19.0",
+    "date-fns": "^2.4.1",
+    "dotenv": "^8.1.0",
+    "i": "^0.3.6",
+    "npm": "^6.11.3",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
     "react-scripts": "3.2.0"
