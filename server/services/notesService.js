@@ -8,8 +8,7 @@ const noteSchema = require('../app/model/notesSchema')
  */
 exports.createNotes = (req) => {
     try {
-        console.log("in controler", req.decoded.id)
-        console.log(req.body.Archive);
+        console.log("in controler", req.body.reminder)
 
         return new Promise((resolve, reject) => {
             let noteDetails = new noteSchema.notes({
@@ -17,7 +16,8 @@ exports.createNotes = (req) => {
                 "title": req.body.title,
                 "content": req.body.content,
                 "color": req.body.color,
-                "isArchive": req.body.Archive
+                "isArchive": req.body.Archive,
+                "reminder": (req.body.reminder !== undefined ? req.body.reminder + 1 : null)
 
             });
             //save data in collection
@@ -202,7 +202,7 @@ exports.noteUnArchive = (req) => {
     try {
         return new Promise((resolve, reject) => {
             noteSchema.notes.update({
-                '_id': req.body.id
+                '_id': req.body.noteId
             }, {
                 isArchive: false
             }, (err, updated) => {
@@ -220,12 +220,34 @@ exports.noteUnArchive = (req) => {
  * @param req request contains http request
  * @return returns  promise data resolve or reject
  */
+exports.noteUndoReminder = (req) => {
+    try {
+        return new Promise((resolve, reject) => {
+            noteSchema.notes.updateOne({
+                '_id': req.body.noteId
+            }, {
+                reminder: null,
+            }, (err, updated) => {
+                if (err) reject(err)
+                else resolve(updated)
+            })
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
+/**
+ * @desc gets validated request from services,performs database operations needed,
+ * updates reminder on given condition 
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
 exports.noteReminder = (req) => {
     try {
-        let date = new Date(req.body.date)
+        let date = new Date(req.body.reminder)
         return new Promise((resolve, reject) => {
             noteSchema.notes.update({
-                '_id': req.body.id
+                '_id': req.body.noteId
             }, {
                 reminder: date,
             }, (err, updated) => {

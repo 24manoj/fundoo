@@ -75,7 +75,7 @@ class SideNav extends Component {
 
                     </Drawer>
                 </div>
-            </MuiThemeProvider >
+            </MuiThemeProvider>
 
         )
     }

@@ -153,4 +153,80 @@ let getLabels = () => {
     }
 }
 
-export { getNotes, getLabels, searchText, createNote, updateColor, updateArchive }
+let UndoArchive = (payload) => {
+    try {
+        const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
+        console.log(sessionValue.token)
+        const headers = {
+            "Content-Type": "application/json",
+            token: sessionValue.token
+        }
+        return new Promise((resolve, reject) => {
+            axios.put(`${process.env.REACT_APP_BASE_URL}/note/noteUnArchive`, payload, { headers: headers })
+                .then(notes => {
+                    resolve(notes)
+
+                })
+                .catch(err => {
+                    reject(err)
+                })
+        })
+
+    } catch (err) {
+        console.log(err);
+
+    }
+}
+let updateReminder = (payload) => {
+    try {
+
+        const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
+        console.log(sessionValue.token)
+        const headers = {
+            "Content-Type": "application/json",
+            token: sessionValue.token
+        }
+        return new Promise((resolve, reject) => {
+            axios.put(`${process.env.REACT_APP_BASE_URL}/note/noteReminder`, payload, { headers: headers })
+                .then(notes => {
+                    resolve(notes)
+
+                })
+                .catch(err => {
+                    reject(err)
+                })
+        })
+
+
+    } catch (err) {
+        console.log(err);
+
+    }
+}
+let undoReminder = (payload) => {
+    try {
+
+        const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
+        console.log(sessionValue.token)
+        const headers = {
+            "Content-Type": "application/json",
+            token: sessionValue.token
+        }
+        return new Promise((resolve, reject) => {
+            axios.put(`${process.env.REACT_APP_BASE_URL}/note/noteUndoReminder`, payload, { headers: headers })
+                .then(notes => {
+                    resolve(notes)
+                })
+                .catch(err => {
+                    reject(err)
+                })
+        })
+
+
+    } catch (err) {
+        console.log(err);
+
+    }
+}
+
+export { getNotes, getLabels, searchText, createNote, updateColor, updateArchive, UndoArchive, updateReminder, undoReminder }

@@ -9,7 +9,7 @@ let ProfileUpload = (payload) => {
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
         const data = new FormData();
         data.append("image", payload);
-        console.log("data" + data);
+        console.log("data", data);
         const profileheader = {
             "Content-Type": "multipart/form-data",
             token: sessionValue.token

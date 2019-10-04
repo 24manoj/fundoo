@@ -226,7 +226,7 @@ img {
 }
 
 .ListView {
-  display: grid;
+  display: grid !important;
   flex-direction: column;
   flex-flow: wrap;
   margin: 5px;

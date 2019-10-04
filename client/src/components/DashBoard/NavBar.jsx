@@ -140,7 +140,7 @@ class NavBar extends Component {
                             <Paper>
                                 <ClickAwayListener onClickAway={event => this.setState({ profile: false })}>
                                     <Card className='profileCard' >
-                                        <label className="Avatar" for='file'>
+                                        <label className="Avatar" htmlFor='file'>
                                             <Avatar alt='profile img' src={this.state.profileUrl} style={{
                                                 width: '100px',
                                                 height: '100px',
@@ -172,7 +172,7 @@ class NavBar extends Component {
 
                     </Toolbar>
                 </AppBar>
-            </MuiThemeProvider >
+            </MuiThemeProvider>
         )
     }
 }

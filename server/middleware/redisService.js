@@ -50,7 +50,7 @@ exports.getRedis = (details, callback) => {
  */
 exports.delRedis = (details, callback) => {
     try {
-        console.log('redis')
+        console.log('redis del')
         /**hmset takes key as string , field and value */
         client.hdel(process.env.REDISKEY, details.id, (err, del) => {
             err ? callback(err) : callback(null, del);

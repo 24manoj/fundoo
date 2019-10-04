@@ -11,6 +11,7 @@ noteRouter.put('/noteUnTrash', auth.verifyUser, notesController.noteUnTrash);
 noteRouter.put('/noteArchive', auth.verifyUser, notesController.noteArchive);
 noteRouter.put('/noteUnArchive', auth.verifyUser, notesController.noteUnArchive);
 noteRouter.put('/noteReminder', auth.verifyUser, notesController.noteReminder);
+noteRouter.put('/noteUndoReminder', auth.verifyUser, notesController.noteUndoReminder);
 noteRouter.put('/noteLabel', auth.verifyUser, notesController.noteLabel);
 noteRouter.post('/createLabel', auth.verifyUser, notesController.createLabel)
 noteRouter.delete('/deleteLabel', auth.verifyUser, notesController.deleteLabel)

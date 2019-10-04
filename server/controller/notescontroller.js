@@ -328,7 +328,7 @@ exports.noteTrash = (req, res) => {
 exports.noteUnArchive = (req, res) => {
     try {
 
-        req.check('id', 'Id invalid').notEmpty()
+        req.check('noteId', 'noteId invalid').notEmpty()
         let errors = req.validationErrors()
         if (errors) {
             response.errors = errors
@@ -410,6 +410,43 @@ exports.noteArchive = (req, res) => {
     }
 }
 
+
+
+
+/**
+ * @desc takes input as http req ,error validation is done,passes request data to  next services,
+ * updates collection with verified details
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @return return respose sucess or failure
+ */
+exports.noteUndoReminder = (req, res) => {
+    try {
+        elastic.Documentdelete(req)
+        details.id = req.decoded.id;
+        redisCache.delRedis(details, (err, del) => {
+            if (err) {
+                throw  "error in radis", err;
+            } else {
+                noteService.noteUndoReminder(req)
+                    .then(data => {
+                        response.errors = null
+                        response.data = data
+                        response.sucess = true
+                        res.status(status.sucess).send(response)
+                    })
+                    .catch(err => {
+                        response.errors = err
+                        response.data = null
+                        response.sucess = false
+                        res.status(status.notfound).send(response)
+                    })
+            }
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
 /**
  * @desc takes input as http req ,error validation is done,passes request data to  next services,
  * updates collection with verified details
@@ -419,32 +456,28 @@ exports.noteArchive = (req, res) => {
  */
 exports.noteReminder = (req, res) => {
     try {
+        elastic.Documentdelete(req)
+        details.id = req.decoded.id;
+        redisCache.delRedis(details, (err, del) => {
+            if (err) {
+                throw new "error in radis", err;
+            } else {
+                noteService.noteReminder(req)
+                    .then(data => {
+                        response.errors = null
+                        response.data = data
+                        response.sucess = true
+                        res.status(status.sucess).send(response)
+                    })
+                    .catch(err => {
+                        response.errors = err
+                        response.data = null
+                        response.sucess = false
+                        res.status(status.notfound).send(response)
+                    })
+            }
+        })
 
-        req.check('id', 'Id invalid').notEmpty()
-        req.check('date', 'requires a time and date').notEmpty()
-        let errors = req.validationErrors()
-        if (errors) {
-            response.errors = errors
-            response.data = null
-            response.sucess = false
-            res.status(status.UnprocessableEntity).send(response)
-        }
-        else {
-            elastic.Documentdelete(req)
-            noteService.noteReminder(req)
-                .then(data => {
-                    response.errors = null
-                    response.data = data
-                    response.sucess = true
-                    res.status(status.sucess).send(response)
-                })
-                .catch(err => {
-                    response.errors = err
-                    response.data = null
-                    response.sucess = false
-                    res.status(status.notfound).send(response)
-                })
-        }
     } catch (e) {
         console.log(e)
     }
