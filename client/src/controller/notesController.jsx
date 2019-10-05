@@ -27,6 +27,7 @@ let getNotes = () => {
 }
 
 
+
 let searchText = (payload) => {
     console.log("payload" + JSON.stringify(payload));
 
@@ -229,4 +230,54 @@ let undoReminder = (payload) => {
     }
 }
 
-export { getNotes, getLabels, searchText, createNote, updateColor, updateArchive, UndoArchive, updateReminder, undoReminder }
+let removeNoteLabel = (payload) => {
+    try {
+        const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
+        console.log(sessionValue.token)
+        const headers = {
+            "Content-Type": "application/json",
+            token: sessionValue.token
+        }
+        return new Promise((resolve, reject) => {
+            axios.put(`${process.env.REACT_APP_BASE_URL}/note/noteUndoLabel`, payload, { headers: headers })
+                .then(removed => {
+                    resolve(removed)
+                })
+                .catch(err => {
+                    reject(err)
+                })
+        })
+
+    } catch (err) {
+        console.log(err);
+
+    }
+
+}
+let addNoteLabel = (payload) => {
+    try {
+        const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
+        console.log(sessionValue.token)
+        const headers = {
+            "Content-Type": "application/json",
+            token: sessionValue.token
+        }
+        return new Promise((resolve, reject) => {
+            axios.put(`${process.env.REACT_APP_BASE_URL}/note/noteLabel`, payload, { headers: headers })
+                .then(removed => {
+                    resolve(removed)
+                })
+                .catch(err => {
+                    reject(err)
+                })
+        })
+
+    } catch (err) {
+        console.log(err);
+
+    }
+}
+export {
+    getNotes, getLabels, searchText, createNote, updateColor, updateArchive, UndoArchive, updateReminder, undoReminder,
+    removeNoteLabel, addNoteLabel
+}

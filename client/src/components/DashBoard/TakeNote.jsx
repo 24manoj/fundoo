@@ -48,6 +48,8 @@ class Notes extends Component {
       NoteTitile: "",
       NoteContent: "",
       NoteColor: "",
+      labelValue: '',
+      noteLabel: [],
       anchorEl: null,
       OptionsPoper: false,
       reminderPoper: false,
@@ -116,7 +118,8 @@ class Notes extends Component {
         content: this.state.NoteContent,
         color: this.state.NoteColor,
         Archive: this.state.Archive,
-        reminder: this.state.reminder
+        reminder: this.state.reminder,
+        label: this.state.noteLabel
       };
       await this.props.createNote(payload);
 
@@ -175,6 +178,62 @@ class Notes extends Component {
       NoteState: true
     });
   };
+
+  addNoteLabel = async (event) => {
+    try {
+      console.log(event.target.id, event.target.value);
+      let array = this.state.noteLabel;
+      let remove = false;
+      let data = {
+        id: event.target.id,
+        value: event.target.value
+      }
+
+      this.state.noteLabel.forEach((element, index) => {
+        if (element.id === data.id) {
+          remove = true;
+          array.splice(index, 1)
+          this.setState({ noteLabel: array })
+        }
+      })
+      if (remove == false) {
+
+        this.setState({ noteLabel: [...this.state.noteLabel, data] })
+      }
+    } catch (err) {
+      console.log(err);
+
+    }
+  }
+  removeLabel = (id, event) => {
+    try {
+      let array = this.state.noteLabel;
+      this.state.noteLabel.forEach((element, index) => {
+        if (element.id === id) {
+          array.splice(index, 1)
+          this.setState({ noteLabel: array })
+        }
+      })
+    } catch (err) {
+      console.log(err);
+
+    }
+
+  }
+
+  filterLabel = async (event) => {
+    await this.setState({ labelValue: event.target.value })
+    let patt = /[*event.target.value*]/
+    this.props.labels.forEach((element) => {
+      if (patt.test(element.value)) {
+        console.log("seacrh", element.value);
+
+      }
+    })
+    console.log(this.state.labelValue);
+
+
+  }
   render() {
     return (
       <div>
@@ -253,6 +312,12 @@ class Notes extends Component {
                       fullWidth
                     />
                   </div>
+                  <div>
+                    {this.state.noteLabel.length > 0 ? this.state.noteLabel.map((element) =>
+                      <Chip key={element.id} label={element.value} onDelete={(event) => this.removeLabel(element.id, event)} />
+                    ) : ''}
+
+                  </div>
                   {this.state.reminder !== undefined ? (
                     <div>
                       <Chip
@@ -265,7 +330,6 @@ class Notes extends Component {
                             ? this.state.reminder
                             : ""
                         }
-                        onDelete={event => this.state.reminder}
                         onDelete={event =>
                           this.setState({
                             NoteState: false,
@@ -357,7 +421,7 @@ class Notes extends Component {
               onClickAway={event =>
                 this.setState({
                   reminderPoper: false,
-                  anchorEl: "",
+                  anchorEl: null,
                   NoteState: false
                 })
               }
@@ -367,7 +431,7 @@ class Notes extends Component {
                   onClose={() =>
                     this.setState({
                       reminderPoper: false,
-                      anchorEl: ""
+                      anchorEl: null
                     })
                   }
                   onChange={this.dateSet}
@@ -387,27 +451,31 @@ class Notes extends Component {
         </Popper>
         <Popper open={this.state.labelListPoper} anchorEl={this.state.anchorEl} placement={'bottom'} >
           <ClickAwayListener onClickAway={event => this.setState({ labelListPoper: !this.state.labelListPoper, anchorEl: null })} >
-            <Card className="Options-label">
+            <Card className="Options-labels">
               <label>Label List</label>
               <TextField
                 type="text"
-                placeholder='Add Label'
-                fullWidth
+                placeholder='Enter Label'
+                value={this.state.labelValue}
+                onChange={this.filterLabel}
+
               />
-              {
-                this.props.labels.map((label) =>
-                  <div className="listLabels">
-                    <Checkbox color="primary" value={label._id} />
-                    <p></p>{label.labelName} </div>
-                )
-              }
+              <div className="listLabels">
+                {
+                  this.props.labels.map((label) =>
+                    <div key={label._id} className="labelsCheckBox">
+                      <Checkbox color="primary" value={label.labelName} id={label._id} onChange={this.addNoteLabel} />
+                      <p></p>{label.labelName} </div>
+                  )
+                }
+              </div>
 
             </Card>
           </ClickAwayListener>
         </Popper>
 
 
-      </div >
+      </div>
 
     );
   }

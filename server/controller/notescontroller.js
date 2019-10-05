@@ -58,9 +58,9 @@ exports.createNotes = (req, res) => {
  * @param res contains response from backend
  * @return return respose sucess or failure
  */
-exports.updateColor = (req, res) => {
+exports.updateColor = async (req, res) => {
     try {
-        elastic.Documentdelete(req)
+        await elastic.Documentdelete(req)
         details.id = req.decoded.id
         redisCache.delRedis(details, (err, cacheDelete) => {
             if (err) {
@@ -426,7 +426,7 @@ exports.noteUndoReminder = (req, res) => {
         details.id = req.decoded.id;
         redisCache.delRedis(details, (err, del) => {
             if (err) {
-                throw  "error in radis", err;
+                throw "error in radis", err;
             } else {
                 noteService.noteUndoReminder(req)
                     .then(data => {
@@ -482,6 +482,8 @@ exports.noteReminder = (req, res) => {
         console.log(e)
     }
 }
+
+
 /**
  * @desc takes input as http req ,error validation is done,passes request data to  next services,
  * updates collection with verified details
@@ -490,10 +492,10 @@ exports.noteReminder = (req, res) => {
  * @return return respose sucess or failure
  */
 
-exports.noteLabel = (req, res) => {
+exports.noteUndoLabel = (req, res) => {
     try {
-        req.check('id', 'Id invalid').notEmpty()
-        req.check('label', 'label invalid').notEmpty()
+        req.check('noteId', 'Id invalid').notEmpty()
+        req.check('labelId', 'label invalid').notEmpty()
         let errors = req.validationErrors()
         if (errors) {
             response.errors = errors
@@ -502,11 +504,12 @@ exports.noteLabel = (req, res) => {
             res.status(status.UnprocessableEntity).send(response)
         }
         else {
-            details.id = req.body.userId
+            elastic.Documentdelete(req)
+            details.id = req.decoded.id
             redisCache.delRedis(details, (err, del) => {
                 if (err) throw new err
                 else {
-                    noteService.noteLabel(req)
+                    noteService.noteUndoLabel(req)
                         .then(data => {
                             response.errors = null
                             response.data = data
@@ -528,7 +531,59 @@ exports.noteLabel = (req, res) => {
     } catch (e) {
         console.log(e)
     }
-}/**
+}
+
+
+/**
+ * @desc takes input as http req ,error validation is done,passes request data to  next services,
+ * updates collection with verified details
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @return return respose sucess or failure
+ */
+
+exports.noteLabel = (req, res) => {
+    try {
+        req.check('noteId', 'Id invalid').notEmpty()
+        let errors = req.validationErrors()
+        if (errors) {
+            response.errors = errors
+            response.data = null
+            response.sucess = false
+            res.status(status.UnprocessableEntity).send(response)
+        }
+        else {
+            elastic.Documentdelete(req)
+            details.id = req.decoded.id
+            redisCache.delRedis(details, (err, del) => {
+                if (err) throw new err
+                else {
+                    noteService.noteLabel(req)
+                        .then(data => {
+                            response.errors = null
+                            response.data = data
+                            response.sucess = true
+                            res.status(status.sucess).send(response)
+                        })
+
+                        .catch(err => {
+                            console.log("err", err);
+
+                            response.errors = err
+                            response.data = null
+                            response.sucess = false
+                            res.status(status.notfound).send(response)
+                        })
+                }
+
+            })
+
+        }
+    } catch (e) {
+        console.log(e)
+    }
+}
+/**
  * @desc takes input as http req ,error validation is done,passes request data to  next services,
  * collects the data and save in collection
  * @param req request contains all the requested data

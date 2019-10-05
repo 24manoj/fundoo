@@ -17,6 +17,7 @@ exports.createNotes = (req) => {
                 "content": req.body.content,
                 "color": req.body.color,
                 "isArchive": req.body.Archive,
+                "labels": req.body.label,
                 "reminder": (req.body.reminder !== undefined ? req.body.reminder + 1 : null)
 
             });
@@ -313,24 +314,60 @@ exports.addCollaborate = (req) => {
  * @param req request contains http request
  * @return returns  promise data resolve or reject
  */
+exports.noteUndoLabel = (req) => {
+    try {
+        console.log("labelId", req.body.labelId)
+        return new Promise((resolve, reject) => {
+            noteSchema.notes.updateOne({
+                _id: req.body.noteId
+            }, {
+                $pull: {
+                    labels: {
+                        id: req.body.labelId
+                    }
+                }
+
+            }, (err, update) => {
+                if (err) reject(err)
+                else resolve(update)
+                // }
+            })
+
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
+/**
+ * @desc gets validated request from services,performs database operations needed,
+ * updates labels attribute on given condition 
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
 exports.noteLabel = (req) => {
     try {
-        // console.log(req.body.label)
+        console.log("label body", req.body.label.id, req.decoded.id, req.body.noteId)
         return new Promise((resolve, reject) => {
-            req.body.label.forEach(Element => {
-                noteSchema.notes.updateOne({
-                    _id: req.body.id
-                }, {
-                    $push: {
-                        labels: Element
-                    }
-                }, (err, update) => {
-                    if (err) reject(err)
-                    else resolve(update)
-                    // }
-                })
+            noteSchema.notes.updateOne({
+                _id: req.body.noteId
+            }, {
+                $push: {
+                    labels: req.body.label
+                }
+            }, (err, update) => {
+                if (err) {
+                    console.log("err", err);
+                    reject(err)
+                }
+                else {
+                    console.log("updated", update);
+
+                    resolve(update)
+                }
+
             })
         })
+
     } catch (e) {
         console.log(e)
     }

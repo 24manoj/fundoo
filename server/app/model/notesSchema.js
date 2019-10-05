@@ -23,7 +23,8 @@ const note = new mongoose.Schema({
         type: Date
     },
     labels: [{
-        type: String
+        id: { type: String },
+        value: { type: String }
     }],
     color: {
         type: String

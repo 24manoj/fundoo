@@ -14,7 +14,7 @@ const client = new elasticsearch.Client({
 exports.createIndex = (req, callback) => {
     try {
 
-        let index = req._id.toString()
+        let index = req._id
         client.indices.create({
             'index': index
         }, ((err, result, status) => {

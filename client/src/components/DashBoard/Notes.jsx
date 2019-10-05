@@ -3,7 +3,7 @@ import {
     InputBase, Card, Button, Popper, Paper, Fade, Fab, createMuiTheme, MuiThemeProvider, IconButton, ClickAwayListener, Chip
 } from '@material-ui/core';
 import pin from '../../assets/afterPin.svg'
-import { ImageOutlined, Alarm, NotificationImportantOutlined, PersonAddOutlined, ColorLensOutlined, ArchiveOutlined } from "@material-ui/icons";
+import { ImageOutlined, Alarm, NotificationImportantOutlined, PersonAddOutlined, ColorLensOutlined, ArchiveOutlined, Label, MoreVertOutlined } from "@material-ui/icons";
 
 
 
@@ -25,10 +25,12 @@ class Notes extends Component {
         this.state = {
             cards: [],
             poper: false,
-            anchorEl: '',
+            anchorEl: null,
             icons: true,
             cardId: '',
-            CardIdRequired: false
+            CardIdRequired: false,
+            open: true,
+            OptionsPoper: false
 
         }
     }
@@ -60,9 +62,25 @@ class Notes extends Component {
             this.props.NoteReminder(true, AnchorEl, cardId)
         } catch (err) {
             console.log(err);
+        }
+    }
+    LabelList = async (cardId, event) => {
+        console.log("in ", event.currentTarget);
+
+        await this.setState({ poper: true, anchorEl: event.currentTarget })
+        console.log(event.currentTarget);
+
+        this.props.setValue(cardId, this.state.anchorEl, false, false, true)
+    }
+
+    removeNoteLabel = (cardId, labelId) => {
+        try {
+            this.props.removeNoteLabel(cardId, labelId)
+
+        } catch (err) {
+            console.log(err);
 
         }
-
     }
     render() {
         let cardCss = this.props.view ? 'ListView' : 'notesCard'
@@ -106,6 +124,15 @@ class Notes extends Component {
 
                                             />
                                         </div> : ''}
+                                    {Element.labels.length > 0 ? Element.labels.map((labelvalue) =>
+                                        <Chip
+                                            key={labelvalue.id}
+                                            style={{ width: 'auto' }}
+                                            label={labelvalue.value
+                                            }
+                                            onDelete={() => this.removeNoteLabel(Element._id, labelvalue.id)}
+                                        />
+                                    ) : ''}
                                     <div className="IconsList">
                                         <div className="decsIcon">
                                             <NotificationImportantOutlined titleAccess="Remind me" onClick={(event) => this.addReminder(Element._id, event)} />
@@ -115,9 +142,15 @@ class Notes extends Component {
                                             <ImageOutlined titleAccess=" Add Image" />
                                             <ArchiveOutlined titleAccess=" Archive Note"
                                                 onClick={() => this.NoteArchived(Element._id)} />
+                                            <MoreVertOutlined titleAccess="More"
+                                                onClick={(event) => this.LabelList(Element._id, event)}
+
+
+                                            />
                                         </div>
 
                                     </div>
+
                                 </div>
                             </Card>
 
