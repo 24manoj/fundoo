@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-    InputBase, Card, Button, Popper, Paper, Fade, Fab, createMuiTheme, MuiThemeProvider, IconButton, ClickAwayListener, Chip
+    InputBase, Card, Button, Popper, Paper, Fade, Fab, createMuiTheme, MuiThemeProvider, IconButton, ClickAwayListener, Chip, TextField, Checkbox
 } from '@material-ui/core';
 import pin from '../../assets/afterPin.svg'
 import { ImageOutlined, Alarm, NotificationImportantOutlined, PersonAddOutlined, ColorLensOutlined, ArchiveOutlined, Label, MoreVertOutlined } from "@material-ui/icons";
@@ -30,9 +30,12 @@ class Notes extends Component {
             cardId: '',
             CardIdRequired: false,
             open: true,
-            OptionsPoper: false
+            OptionsPoper: false,
+            labelListPoper: false
+
 
         }
+        this.LabelList = this.LabelList.bind(this);
     }
 
     setNoteColor = async (event, cardId) => {
@@ -64,13 +67,10 @@ class Notes extends Component {
             console.log(err);
         }
     }
-    LabelList = async (cardId, event) => {
-        console.log("in ", event.currentTarget);
+    LabelList(cardId, event) {
 
-        await this.setState({ poper: true, anchorEl: event.currentTarget })
-        console.log(event.currentTarget);
 
-        this.props.setValue(cardId, this.state.anchorEl, false, false, true)
+        this.props.LabelPoper(cardId, true, event.target)
     }
 
     removeNoteLabel = (cardId, labelId) => {
@@ -145,7 +145,6 @@ class Notes extends Component {
                                             <MoreVertOutlined titleAccess="More"
                                                 onClick={(event) => this.LabelList(Element._id, event)}
 
-
                                             />
                                         </div>
 
@@ -157,6 +156,8 @@ class Notes extends Component {
                         )}
 
                 </div>
+
+
             </MuiThemeProvider>
         );
     }

@@ -1,6 +1,7 @@
 import axios from 'axios'
 
 
+
 let getNotes = () => {
     try {
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
@@ -76,6 +77,51 @@ let createNote = (payload) => {
         console.log(err);
 
     }
+}
+
+let undoTrash = (payload) => {
+    try {
+        const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
+        const headers = {
+            "Content-Type": "application/json",
+            token: sessionValue.token
+        }
+        return new Promise((resolve, reject) => {
+            axios.put(`${process.env.REACT_APP_BASE_URL}/note/noteUnTrash`, payload, { headers: headers })
+                .then(notes => {
+                    resolve(notes)
+                })
+                .catch(err => {
+                    reject(err)
+                })
+        })
+    } catch (err) {
+        console.log(err);
+
+    }
+
+}
+let NoteTrash = (payload) => {
+    try {
+        const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
+        const headers = {
+            "Content-Type": "application/json",
+            token: sessionValue.token
+        }
+        return new Promise((resolve, reject) => {
+            axios.put(`${process.env.REACT_APP_BASE_URL}/note/noteTrash`, payload, { headers: headers })
+                .then(notes => {
+                    resolve(notes)
+                })
+                .catch(err => {
+                    reject(err)
+                })
+        })
+    } catch (err) {
+        console.log(err);
+
+    }
+
 }
 
 let updateArchive = (payload) => {
@@ -277,7 +323,31 @@ let addNoteLabel = (payload) => {
 
     }
 }
+
+let createLabel = (payload) => {
+    try {
+        const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
+        console.log(sessionValue.token)
+        const headers = {
+            "Content-Type": "application/json",
+            token: sessionValue.token
+        }
+        return new Promise((resolve, reject) => {
+            axios.post(`${process.env.REACT_APP_BASE_URL}/note/createLabel`, payload, { headers: headers })
+                .then(created => {
+                    resolve(created)
+                })
+                .catch(err => {
+                    reject(err)
+                })
+        })
+
+    } catch (err) {
+        console.log(err);
+
+    }
+}
 export {
     getNotes, getLabels, searchText, createNote, updateColor, updateArchive, UndoArchive, updateReminder, undoReminder,
-    removeNoteLabel, addNoteLabel
+    removeNoteLabel, addNoteLabel, NoteTrash, undoTrash, createLabel
 }

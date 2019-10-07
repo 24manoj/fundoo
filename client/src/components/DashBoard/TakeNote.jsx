@@ -33,21 +33,25 @@ import {
   ArchiveOutlined,
   CloseOutlined,
   MoreVertOutlined,
-  PlusOneOutlined
+  PlusOneOutlined,
+  AddCircleOutline
 } from "@material-ui/icons";
 import pin from "../../assets/afterPin.svg";
 import DateFnsUtils from "@date-io/date-fns";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import { isThisSecond } from "date-fns/esm";
+
 class Notes extends Component {
   constructor() {
     super();
+
     this.state = {
+      newLabel: '',
       NoteState: false,
       NoteTake: false,
       NoteTitile: "",
       NoteContent: "",
       NoteColor: "",
+      searchLabels: [],
       labelValue: '',
       noteLabel: [],
       anchorEl: null,
@@ -55,9 +59,11 @@ class Notes extends Component {
       reminderPoper: false,
       ColorProper: false,
       Archive: false,
+      found: true,
       reminder: undefined,
       reminderPoper: false,
       labelListPoper: false,
+      filterState: false,
       colorPalette: [
         {
           name: "default",
@@ -110,6 +116,8 @@ class Notes extends Component {
       ]
     };
   }
+
+
 
   CreateNote = async () => {
     if ((this.state.NoteContent !== "") | (this.state.NoteTitile !== "")) {
@@ -207,12 +215,16 @@ class Notes extends Component {
   }
   removeLabel = (id, event) => {
     try {
+      if (this.state.newLabel._id === id) {
+        this.setState({ newLabel: '' })
+      }
       let array = this.state.noteLabel;
       this.state.noteLabel.forEach((element, index) => {
         if (element.id === id) {
           array.splice(index, 1)
           this.setState({ noteLabel: array })
         }
+
       })
     } catch (err) {
       console.log(err);
@@ -222,19 +234,54 @@ class Notes extends Component {
   }
 
   filterLabel = async (event) => {
-    await this.setState({ labelValue: event.target.value })
-    let patt = /[*event.target.value*]/
-    this.props.labels.forEach((element) => {
-      if (patt.test(element.value)) {
-        console.log("seacrh", element.value);
+    await this.setState({ labelValue: event.target.value, searchLabels: [] })
+    let filterLabel = []
+    let special = /[!@#$%^&*(),.?":{}|<>]/
+    console.log("this", (this.state.labelValue === ''));
 
+    if (this.state.labelValue.length <= 0) {
+      this.setState({ found: true, filterState: false })
+      console.log("thsis found", this.state.found);
+
+    } else {
+      if (!special.test(this.state.labelValue)) {
+        let patt = new RegExp(`${this.state.labelValue}`)
+        this.props.labels.forEach((element) => {
+
+          if (patt.test(element.labelName)) {
+            console.log("search", element.labelName);
+            filterLabel.push(element)
+          }
+        })
+        // console.log(filterLabel.length, this.state.labelValue.length, filterLabel[0].labelName);
+        if (filterLabel.length === 0) {
+          this.setState({ found: false })
+
+        } else {
+          if (filterLabel.length === 1 && filterLabel[0].labelName.length === this.state.labelValue.length) {
+            this.setState({ found: true }
+            )
+          } else {
+            this.setState({ found: false })
+          }
+          this.setState({ filterState: true, searchLabels: filterLabel })
+        }
       }
-    })
-    console.log(this.state.labelValue);
+    }
+  }
+  createLabel = async (event) => {
+    await this.props.createLabel(this.state.labelValue)
+    this.setState({ labelValue: '', filterState: false, found: true })
 
 
   }
+
+
+  componentWillMount() {
+    this.setState({ newLabel: this.props.newLabel })
+  }
   render() {
+
     return (
       <div>
         <div className="NoteCreate">
@@ -313,9 +360,12 @@ class Notes extends Component {
                     />
                   </div>
                   <div>
-                    {this.state.noteLabel.length > 0 ? this.state.noteLabel.map((element) =>
-                      <Chip key={element.id} label={element.value} onDelete={(event) => this.removeLabel(element.id, event)} />
-                    ) : ''}
+                    {this.state.newLabel !== undefined && this.state.newLabel != '' ?
+                      <Chip key={this.state.newLabel._id} label={this.state.newLabel.labelName} onDelete={(event) => this.removeLabel(this.state.newLabel._id, event)} />
+                      :
+                      this.state.noteLabel.length > 0 ? this.state.noteLabel.map((element) =>
+                        <Chip key={element.id} label={element.value} onDelete={(event) => this.removeLabel(element.id, event)} />
+                      ) : ''}
 
                   </div>
                   {this.state.reminder !== undefined ? (
@@ -417,40 +467,31 @@ class Notes extends Component {
 
         <Popper open={this.state.reminderPoper} anchorEl={this.state.anchorEl}>
           <Paper>
-            <ClickAwayListener
-              onClickAway={event =>
-                this.setState({
-                  reminderPoper: false,
-                  anchorEl: null,
-                  NoteState: false
-                })
-              }
-            >
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <DateTimePicker
-                  onClose={() =>
-                    this.setState({
-                      reminderPoper: false,
-                      anchorEl: null
-                    })
-                  }
-                  onChange={this.dateSet}
-                  errortext="Required"
-                />
-              </MuiPickersUtilsProvider>
-            </ClickAwayListener>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <DateTimePicker
+                onClose={() =>
+                  this.setState({
+                    reminderPoper: false,
+                    anchorEl: null
+                  })
+                }
+                onChange={this.dateSet}
+              />
+            </MuiPickersUtilsProvider>
+
           </Paper>
         </Popper>
 
         <Popper open={this.state.OptionsPoper} anchorEl={this.state.anchorEl} placement={'bottom'} >
           <ClickAwayListener onClickAway={event => this.setState({ OptionsPoper: !this.state.OptionsPoper })} >
             <Card className="Options">
-              <label onClick={event => this.setState({ OptionsPoper: !this.state.OptionsPoper, labelListPoper: !this.state.labelListPoper })}>  Add Label  </label>
+              <label onClick={event => this.setState({ OptionsPoper: !this.state.OptionsPoper, labelListPoper: !this.state.labelListPoper })}>
+                <IconButton style={{ borderRadius: '0px', width: '100%' }} > <AddCircleOutline /> Add Label </IconButton> </label>
             </Card>
           </ClickAwayListener>
         </Popper>
         <Popper open={this.state.labelListPoper} anchorEl={this.state.anchorEl} placement={'bottom'} >
-          <ClickAwayListener onClickAway={event => this.setState({ labelListPoper: !this.state.labelListPoper, anchorEl: null })} >
+          <ClickAwayListener onClickAway={event => this.setState({ labelListPoper: !this.state.labelListPoper, anchorEl: null, filterState: false })} >
             <Card className="Options-labels">
               <label>Label List</label>
               <TextField
@@ -461,7 +502,12 @@ class Notes extends Component {
 
               />
               <div className="listLabels">
-                {
+                {this.state.filterState ?
+                  this.state.searchLabels.length > 0 ? this.state.searchLabels.map((label) =>
+                    <div key={label._id} className="labelsCheckBox">
+                      <Checkbox color="primary" value={label.labelName} id={label._id} onChange={this.addNoteLabel} />
+                      <p></p>{label.labelName} </div>) : <label> No Label Found!!</label>
+                  :
                   this.props.labels.map((label) =>
                     <div key={label._id} className="labelsCheckBox">
                       <Checkbox color="primary" value={label.labelName} id={label._id} onChange={this.addNoteLabel} />
@@ -469,12 +515,16 @@ class Notes extends Component {
                   )
                 }
               </div>
+              <div hidden={this.state.found}>
+                <hr />
+                <IconButton onClick={this.createLabel} > <AddCircleOutline />Create Label</IconButton>
+                <p>"{this.state.labelValue}"</p>
+
+              </div>
 
             </Card>
           </ClickAwayListener>
         </Popper>
-
-
       </div>
 
     );

@@ -239,7 +239,7 @@ exports.deleteNotes = (req, res) => {
 
 exports.noteUnTrash = (req, res) => {
     try {
-        req.check('id', 'Id invalid').notEmpty()
+        req.check('noteId', 'Id invalid').notEmpty()
         let errors = req.validationErrors()
         if (errors) {
             response.errors = errors
@@ -248,19 +248,27 @@ exports.noteUnTrash = (req, res) => {
             res.status(status.UnprocessableEntity).send(response)
         }
         else {
-            noteService.noteUnTrash(req)
-                .then(data => {
-                    response.errors = null
-                    response.data = data
-                    response.sucess = true
-                    res.status(status.sucess).send(response);
-                })
-                .catch(err => {
-                    response.errors = err
-                    response.data = null
-                    response.sucess = false
-                    res.status(status.notfound).send(response)
-                })
+            details.id = req.decoded.id
+            redisCache.delRedis(details, (err, deleted) => {
+                if (err) {
+                    throw new "error in radis", err;
+                } else {
+                    elastic.Documentdelete(req)
+                    noteService.noteUnTrash(req)
+                        .then(data => {
+                            response.errors = null
+                            response.data = data
+                            response.sucess = true
+                            res.status(status.sucess).send(response);
+                        })
+                        .catch(err => {
+                            response.errors = err
+                            response.data = null
+                            response.sucess = false
+                            res.status(status.notfound).send(response)
+                        })
+                }
+            })
         }
 
     } catch (e) {
@@ -278,7 +286,7 @@ exports.noteUnTrash = (req, res) => {
 
 exports.noteTrash = (req, res) => {
     try {
-        req.check('id', 'Id invalid').notEmpty()
+        req.check('noteId', 'Id invalid').notEmpty()
         let errors = req.validationErrors()
         if (errors) {
             response.errors = errors
@@ -287,7 +295,7 @@ exports.noteTrash = (req, res) => {
             res.status(status.UnprocessableEntity).send(response)
         }
         else {
-            details.id = req.body.userId;
+            details.id = req.decoded.id
             redisCache.delRedis(details, (err, deleted) => {
                 if (err) {
                     throw new "error in radis", err;

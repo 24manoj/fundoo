@@ -112,7 +112,8 @@
 .listLabels {
   display: flex;
   width: 100%;
-  height: 150px;
+  min-height: 100px;
+  height: auto;
   overflow-y: scroll;
   flex-direction: column;
   align-items: center;
@@ -135,7 +136,7 @@
   width: 200px;
   min-height: 50px;
   overflow-y: scroll;
-  height: 200px;
+  height: 250px;
   display: flex;
   padding: 5px;
   margin: 5px;
@@ -186,6 +187,14 @@ img {
 .Container {
   width: 100%;
   height: 100vh;
+}
+
+.popNone {
+  display: none
+}
+
+.popDisplay {
+  display: flex
 }
 
 @media screen and (max-width: 600px) {
@@ -242,7 +251,7 @@ img {
 }
 
 .decsIcon {
-  display: none;
+  display: flex;
   width: 77%;
   justify-content: space-between;
   align-items: center;
@@ -342,7 +351,7 @@ img {
 
 }
 
-.noHover {
+/* .noHover {
   pointer-events: none;
 }
 
@@ -370,6 +379,9 @@ img {
 .ListView:hover .IconPin {
   display: flex
 }
+
+*/
+
 
 @keyframes rotate-spin {
   from {

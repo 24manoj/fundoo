@@ -3,11 +3,11 @@ import NavBar from '../components/DashBoard/NavBar';
 import TakeNote from '../components/DashBoard/TakeNote';
 import Notes from '../components/DashBoard/Notes';
 import { withRouter } from 'react-router-dom';
-import { Popper, Paper, ClickAwayListener, IconButton, Snackbar, Card, TextField, Checkbox, Dialog } from "@material-ui/core";
-import { UndoOutlined } from '@material-ui/icons'
+import { Popper, Paper, ClickAwayListener, IconButton, Snackbar, Card, TextField, Checkbox, Dialog, Menu, MenuItem } from "@material-ui/core";
+import { UndoOutlined, DeleteOutline, AddCircleOutline } from '@material-ui/icons'
 import {
     getLabels, getNotes, searchText, updateColor, updateArchive, createNote, UndoArchive, updateReminder, undoReminder,
-    removeNoteLabel, addNoteLabel
+    removeNoteLabel, addNoteLabel, NoteTrash, undoTrash, createLabel
 } from '../controller/notesController';
 import '../App.css'
 import DateFnsUtils from '@date-io/date-fns';
@@ -16,16 +16,17 @@ import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 var Alllabels;
 var AllNotes;
 var UndoTakeNote;
-var labellocation;
-
+var tabindex;
 class DashBoard extends Component {
     constructor(props) {
         super(props);
+        // this.eventEmitter = new EventEmitter();
         this.state = {
             filterArray: [],
             notesArray: [],
             noteLabel: [],
             labels: [],
+            newLabel: '',
             View: false,
             filterState: false,
             colorPoper: false,
@@ -35,11 +36,12 @@ class DashBoard extends Component {
             NoteColor: '',
             Archive: '',
             stackBar: false,
+            found: true,
             stackBarMessage: '',
             OptionsPoper: false,
-            LabelPoper: false,
             labelListPoper: false,
             reminderPoper: false,
+            trashState: false,
             colorPalette: [
                 { name: 'default', colorCode: '#FDFEFE' },
                 { name: 'Red', colorCode: '#ef9a9a' },
@@ -59,6 +61,7 @@ class DashBoard extends Component {
         this.open = this.open.bind(this);
         this.search = this.search.bind(this);
     }
+
 
     componentDidMount() {
         getLabels().then(labels => {
@@ -83,6 +86,7 @@ class DashBoard extends Component {
         })
 
     }
+
     open(toggle) {
         this.setState({ View: toggle })
     }
@@ -144,9 +148,9 @@ class DashBoard extends Component {
 
     }
 
-    setValue = async (cardId, anchorEl, poper, Archive, labelPoper) => {
+    setValue = async (cardId, anchorEl, poper, Archive) => {
         try {
-            await this.setState({ cardId: cardId, AnchorEl: anchorEl, colorPoper: poper, Archive: Archive, OptionsPoper: labelPoper })
+            await this.setState({ cardId: cardId, AnchorEl: anchorEl, colorPoper: poper, Archive: Archive })
             console.log("in Color Poper", this.state.AnachorEl);
             if (this.state.Archive == true) {
                 this.noteArchive()
@@ -293,7 +297,8 @@ class DashBoard extends Component {
                     notesArray: array,
                     cardId: '',
                     dateTime: '',
-                    AnchorEl: null
+                    AnchorEl: null,
+
                 })
                 // console.log('rem ', reminder);
             })
@@ -310,21 +315,39 @@ class DashBoard extends Component {
         let payload = {
             noteId: UndoTakeNote._id
         }
-        UndoArchive(payload)
-            .then(updated => {
-                let array = this.state.notesArray;
-                array.push(UndoTakeNote)
-                this.setState({
-                    stackBar: false,
-                    stackBarMessage: ''
+        if (this.state.trashState) {
+            undoTrash(payload)
+                .then(update => {
+                    let array = this.state.notesArray;
+                    array.push(UndoTakeNote)
+                    this.setState({
+                        notesArray: array,
+                        stackBar: false,
+                        stackBarMessage: ''
+                    })
+                    UndoTakeNote = ''
+
                 })
-                UndoTakeNote = ''
+        } else {
+            UndoArchive(payload)
+                .then(updated => {
+                    let array = this.state.notesArray;
+                    array.push(UndoTakeNote)
+                    this.setState({
+                        notesArray: array,
+                        stackBar: false,
+                        stackBarMessage: ''
+                    })
+                    UndoTakeNote = ''
 
-            })
-            .catch(err => {
-                console.log(err);
+                })
 
-            })
+
+                .catch(err => {
+                    console.log(err);
+
+                })
+        }
     }
 
     removeNoteLabel = (cardId, labelId) => {
@@ -333,8 +356,6 @@ class DashBoard extends Component {
                 noteId: cardId,
                 labelId: labelId
             }
-            console.log("remove", payload);
-
             removeNoteLabel(payload)
                 .then(removed => {
                     let array = this.state.notesArray
@@ -411,27 +432,86 @@ class DashBoard extends Component {
 
         }
     }
-    moreOptions = async (cardId, location, moreOptionsPoper) => {
+    LabelPoper = (cardId, poper, location) => {
         try {
-            console.log("in dashbordd", cardId, location, moreOptionsPoper);
-            await this.setState({ cardId: cardId, AnchorEl: location, OptionsPoper: moreOptionsPoper })
+
+            this.setState({ AnchorEl: location, OptionsPoper: poper, cardId: cardId })
         } catch (err) {
             console.log(err);
         }
     }
+    addLabel = (event) => {
+        this.setState({
+            labelListAnchor: event.currentTarget,
+            labelListPoper: !this.state.labelListPoper,
+
+        })
+    }
+
+    NoteTrash = () => {
+        console.log("cardId", this.state.cardId);
+        this.setState({ OptionsPoper: !this.state.OptionsPoper })
+        let payload = {
+            noteId: this.state.cardId
+        }
+        NoteTrash(payload)
+            .then(deleted => {
+                let arrayNotes = this.state.notesArray
+                arrayNotes.forEach((element) => {
+                    if (element._id === this.state.cardId) {
+                        let index = arrayNotes.indexOf(element)
+                        tabindex = index;
+                        UndoTakeNote = arrayNotes.splice(index, 1)[0]
+                        this.setState({ notesArray: arrayNotes, stackBar: true, stackBarMessage: 'Note Trashed Sucessfully', trashState: true })
+                        console.log("updated", arrayNotes);
+
+
+                    }
+                })
+                console.log(deleted);
+
+            })
+            .catch(err => {
+                console.log(err);
+
+            })
+
+    }
+
+    createLabel = (labelName) => {
+        let payload = {
+            labelName: labelName
+        }
+        createLabel(payload)
+            .then(createdLabel => {
+                this.setState({ newLabel: createdLabel.data.data })
+                let Labels = this.state.labels
+                // console.log("new Label", newLabel);
+
+                Labels.push(this.state.newLabel)
+                this.setState({ labels: Labels })
+            })
+            .catch(err => {
+                console.log(err);
+
+            })
+
+    }
+
     render() {
-        console.log('toogle', this.state.View)
+        console.log("props", this.props.newLabel);
+
         return (
-            <div className="Container">
+            <div className="Container" >
                 <div>
                     <NavBar labels={this.state.labels}
                         open={this.open} refresh={this.refresh} onSearch={this.search} />
                 </div>
                 <div className="NotesScroll">
-                    <TakeNote createNote={this.createNote} NoteArchived={this.NoteArchived} labels={this.state.labels} />
+                    <TakeNote createNote={this.createNote} NoteArchived={this.NoteArchived} labels={this.state.labels} createLabel={this.createLabel} newLabel={this.state.newLabel} />
                     <Notes notes={this.state.filterState ? this.state.filterArray : this.state.notesArray} view={this.state.View}
                         setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}
-                        moreOptions={this.moreOptions}
+                        LabelPoper={this.LabelPoper}
                     />
                 </div>
                 <Popper open={this.state.colorPoper} anchorEl={this.state.AnchorEl}
@@ -449,7 +529,6 @@ class DashBoard extends Component {
                     </ClickAwayListener>
                 </Popper>
 
-
                 <Popper open={this.state.reminderPoper} anchorEl={this.state.AnchorEl} >
                     <Paper>
                         <ClickAwayListener onClickAway={event => this.setState({ reminderPoper: false, AnchorEl: null })}>
@@ -462,7 +541,6 @@ class DashBoard extends Component {
                             </MuiPickersUtilsProvider>
                         </ClickAwayListener>
                     </Paper>
-
                 </Popper>
                 <Snackbar
                     anchorOrigin={{
@@ -470,29 +548,24 @@ class DashBoard extends Component {
                         horizontal: "left"
                     }}
                     open={this.state.stackBar}
-                    autoHideDuration={3000}
+                    autoHideDuration={10}
                     message={this.state.stackBarMessage}
-                    // onClose={this.snackbarClose}
                     action={
-                        <UndoOutlined onClick={this.undoArchive} />
+                        <UndoOutlined titleAccess="Undo " onClick={this.undoArchive} />
                     }
                 />
-                <Popper open={this.state.OptionsPoper} anchorEl={this.state.AnchorEl}  >
-                    <Card className="Options">
-                        <div>
-                            <label>Delete Note</label>
-                        </div>
-
-                        <label onClick={event => this.setState({ LabelPoper: true })
-
-                        }>  Add Label  </label>
-
-
-                    </Card>
-
+                <Popper open={this.state.OptionsPoper} anchorEl={this.state.AnchorEl} placement={'bottom'} >
+                    <ClickAwayListener onClickAway={event => this.setState({ OptionsPoper: !this.state.OptionsPoper })} >
+                        <Card className="Options">
+                            <label onClick={this.NoteTrash}>
+                                <IconButton style={{ borderRadius: '0px', fontSize: '10pt' }}><DeleteOutline /> Trash</IconButton></label>
+                            <label onClick={event => this.setState({ OptionsPoper: !this.state.OptionsPoper, labelListPoper: !this.state.labelListPoper })}>
+                                <IconButton style={{ borderRadius: '0px', fontSize: '10pt' }}> <AddCircleOutline />    Add Label</IconButton>  </label>
+                        </Card>
+                    </ClickAwayListener>
                 </Popper>
-                <Dialog open={this.state.LabelPoper} >
-                    <ClickAwayListener onClickAway={event => this.setState({ LabelPoper: !this.state.LabelPoper, AnchorEl: null })} >
+                <Popper open={this.state.labelListPoper} anchorEl={this.state.AnchorEl}>
+                    <ClickAwayListener onClickAway={event => this.setState({ labelListPoper: !this.state.labelListPoper, AnchorEl: null, cardId: '' })} >
                         <Card className="Options-labels">
                             <label>Label List</label>
                             <TextField
@@ -511,8 +584,7 @@ class DashBoard extends Component {
 
                         </Card>
                     </ClickAwayListener>
-                </Dialog>
-
+                </Popper>
             </div>
 
         )

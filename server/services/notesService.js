@@ -135,7 +135,7 @@ exports.noteTrash = (req) => {
     try {
         return new Promise((resolve, reject) => {
             noteSchema.notes.updateOne({
-                '_id': req.body.id
+                '_id': req.body.noteId
             }, {
                 isTrash: true
             }, (err, updated) => {
@@ -159,7 +159,7 @@ exports.noteUnTrash = (req) => {
         return new Promise((resolve, reject) => {
             // console.log(req.body.trash)
             noteSchema.notes.update({
-                '_id': req.body.id
+                '_id': req.body.noteId
             }, {
                 isTrash: false
             }, (err, updated) => {
