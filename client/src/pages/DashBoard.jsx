@@ -4,7 +4,7 @@ import TakeNote from '../components/DashBoard/TakeNote';
 import Notes from '../components/DashBoard/Notes';
 import { withRouter } from 'react-router-dom';
 import { Popper, Paper, ClickAwayListener, IconButton, Snackbar, Card, TextField, Checkbox, Dialog, Menu, MenuItem } from "@material-ui/core";
-import { UndoOutlined, DeleteOutline, AddCircleOutline } from '@material-ui/icons'
+import { UndoOutlined, DeleteOutline, AddCircleOutline, Message } from '@material-ui/icons'
 import {
     getLabels, getNotes, searchText, updateColor, updateArchive, createNote, UndoArchive, updateReminder, undoReminder,
     removeNoteLabel, addNoteLabel, NoteTrash, undoTrash, createLabel
@@ -12,7 +12,7 @@ import {
 import '../App.css'
 import DateFnsUtils from '@date-io/date-fns';
 import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-
+import { messageService } from '../minddleware/middleWareServices'
 var Alllabels;
 var AllNotes;
 var UndoTakeNote;
@@ -26,8 +26,12 @@ class DashBoard extends Component {
             notesArray: [],
             noteLabel: [],
             labels: [],
+            newReminder: '',
+            filterstateLabel: false,
             newLabel: '',
+            labelValue: '',
             View: false,
+            searchLabels: [],
             filterState: false,
             colorPoper: false,
             cardId: '',
@@ -42,6 +46,7 @@ class DashBoard extends Component {
             labelListPoper: false,
             reminderPoper: false,
             trashState: false,
+            foundLabel: true,
             colorPalette: [
                 { name: 'default', colorCode: '#FDFEFE' },
                 { name: 'Red', colorCode: '#ef9a9a' },
@@ -60,6 +65,21 @@ class DashBoard extends Component {
         }
         this.open = this.open.bind(this);
         this.search = this.search.bind(this);
+        messageService.getMessage().subscribe(message => {
+            console.log("in dbgdhfdfhd", message.text);
+
+            if (message.text.key === 'updateNotes' && message.text.key !== undefined) {
+                console.log("in constructor", message.text.title);
+                let index = this.state.notesArray.map(ele => ele._id).indexOf(message.text.value.noteId)
+                let array = this.state.notesArray;
+                array[index].title = message.text.value.title
+                array[index].content = message.text.value.content
+                this.setState({
+                    notesArray: array
+                })
+            }
+        })
+
     }
 
 
@@ -116,6 +136,7 @@ class DashBoard extends Component {
     }
 
 
+
     search = (searchValue) => {
 
         let payload = {
@@ -147,6 +168,7 @@ class DashBoard extends Component {
             })
 
     }
+
 
     setValue = async (cardId, anchorEl, poper, Archive) => {
         try {
@@ -293,12 +315,13 @@ class DashBoard extends Component {
                 let index = this.state.notesArray.map(ele => ele._id).indexOf(this.state.cardId)
                 let array = this.state.notesArray;
                 array[index].reminder = new Date(dateTime + 1).toString().slice(0, 15);
+                messageService.sendMessage({ key: 'reminder', value: (new Date(dateTime + 1).toString().slice(0, 15)) })
                 this.setState({
                     notesArray: array,
                     cardId: '',
                     dateTime: '',
                     AnchorEl: null,
-
+                    newReminder: array[index].reminder
                 })
                 // console.log('rem ', reminder);
             })
@@ -383,13 +406,27 @@ class DashBoard extends Component {
 
     addNoteLabel = (event) => {
         try {
-            console.log(event.target.id, event.target.value, this.state.cardId);
+            let data = {}
+            console.log(event);
+
+            if (event.target !== undefined) {
+
+                data = {
+                    id: event.target.id,
+                    value: event.target.value
+                }
+            } else {
+                data = {
+                    id: event._id,
+                    value: event.labelName
+                }
+            }
+
             let array = this.state.noteLabel;
             let remove = false;
-            let data = {
-                id: event.target.id,
-                value: event.target.value
-            }
+            console.log("card", this.state.cardId)
+
+
             this.state.noteLabel.forEach((element, index) => {
                 if (element.id === data.id) {
                     this.removeNoteLabel(this.state.cardId, element.id)
@@ -400,7 +437,7 @@ class DashBoard extends Component {
             })
             if (remove == false) {
                 console.log("data", data);
-
+                console.log("state", this.state.cardId)
                 let payload = {
                     noteId: this.state.cardId,
                     label: data
@@ -477,19 +514,26 @@ class DashBoard extends Component {
             })
 
     }
+    createLabelNote = async () => {
+        await this.createLabel(this.state.labelValue)
+        console.log("this state", this.state.newLabel);
+        await this.addNoteLabel(this.state.newLabel)
 
-    createLabel = (labelName) => {
+    }
+
+    createLabel = async (labelName) => {
         let payload = {
             labelName: labelName
         }
-        createLabel(payload)
+        await createLabel(payload)
             .then(createdLabel => {
                 this.setState({ newLabel: createdLabel.data.data })
                 let Labels = this.state.labels
-                // console.log("new Label", newLabel);
+                console.log("new Label", this.state.newLabel);
 
                 Labels.push(this.state.newLabel)
-                this.setState({ labels: Labels })
+                this.setState({ labels: Labels, labelListPoper: '' })
+
             })
             .catch(err => {
                 console.log(err);
@@ -497,9 +541,47 @@ class DashBoard extends Component {
             })
 
     }
+    handelDeleteNewLabel = () => {
+        this.setState({ newLabel: '' })
+    }
 
+    filterLabel = async (event) => {
+        await this.setState({ labelValue: event.target.value, searchLabels: [] })
+        let filterLabel = []
+        let special = /[!@#$%^&*(),.?":{}|<>]/
+        // console.log("this", (this.state.labelValue.length));
+
+        if (this.state.labelValue.length <= 0) {
+            this.setState({ foundLabel: true, filterstateLabel: false })
+
+        } else {
+            if (!special.test(this.state.labelValue)) {
+                let patt = new RegExp(`${this.state.labelValue}`)
+                this.state.labels.forEach((element) => {
+
+                    if (patt.test(element.labelName)) {
+                        console.log("search", element.labelName);
+                        filterLabel.push(element)
+                    }
+                })
+                // console.log(filterLabel.length, this.state.labelValue.length, filterLabel[0].labelName);
+                if (filterLabel.length === 0) {
+                    this.setState({ foundLabel: false })
+
+                } else {
+                    if (filterLabel.length === 1 && filterLabel[0].labelName.length === this.state.labelValue.length) {
+                        this.setState({ foundLabel: true }
+                        )
+                    } else {
+                        this.setState({ foundLabel: false })
+                    }
+                    this.setState({ filterstateLabel: true, searchLabels: filterLabel })
+                }
+            }
+        }
+    }
     render() {
-        console.log("props", this.props.newLabel);
+        // console.log("props", this.props.newLabel);
 
         return (
             <div className="Container" >
@@ -508,15 +590,16 @@ class DashBoard extends Component {
                         open={this.open} refresh={this.refresh} onSearch={this.search} />
                 </div>
                 <div className="NotesScroll">
-                    <TakeNote createNote={this.createNote} NoteArchived={this.NoteArchived} labels={this.state.labels} createLabel={this.createLabel} newLabel={this.state.newLabel} />
+                    <TakeNote createNote={this.createNote} NoteArchived={this.NoteArchived} labels={this.state.labels} createLabel={this.createLabel}
+                        newLabel={this.state.newLabel} handelDeleteNewLabel={this.handelDeleteNewLabel} />
                     <Notes notes={this.state.filterState ? this.state.filterArray : this.state.notesArray} view={this.state.View}
                         setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}
-                        LabelPoper={this.LabelPoper}
+                        LabelPoper={this.LabelPoper} newReminder={this.state.newReminder}
                     />
                 </div>
                 <Popper open={this.state.colorPoper} anchorEl={this.state.AnchorEl}
                     placement={'top-start'}
-                    style={{ width: '100px' }} >
+                    style={{ width: '100px', zIndex: '1300' }} >
                     <ClickAwayListener onClickAway={event => this.setState({ colorPoper: false })}>
                         <Paper  >  {this.state.colorPalette.map((code, index) =>
                             <IconButton
@@ -529,7 +612,7 @@ class DashBoard extends Component {
                     </ClickAwayListener>
                 </Popper>
 
-                <Popper open={this.state.reminderPoper} anchorEl={this.state.AnchorEl} >
+                <Popper open={this.state.reminderPoper} anchorEl={this.state.AnchorEl} style={{ zIndex: '1300' }}>
                     <Paper>
                         <ClickAwayListener onClickAway={event => this.setState({ reminderPoper: false, AnchorEl: null })}>
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -542,7 +625,7 @@ class DashBoard extends Component {
                         </ClickAwayListener>
                     </Paper>
                 </Popper>
-                <Snackbar
+                <Snackbar style={{ zIndex: '1300' }}
                     anchorOrigin={{
                         vertical: "bottom",
                         horizontal: "left"
@@ -554,7 +637,7 @@ class DashBoard extends Component {
                         <UndoOutlined titleAccess="Undo " onClick={this.undoArchive} />
                     }
                 />
-                <Popper open={this.state.OptionsPoper} anchorEl={this.state.AnchorEl} placement={'bottom'} >
+                <Popper open={this.state.OptionsPoper} anchorEl={this.state.AnchorEl} placement={'bottom'} style={{ zIndex: '1300' }} >
                     <ClickAwayListener onClickAway={event => this.setState({ OptionsPoper: !this.state.OptionsPoper })} >
                         <Card className="Options">
                             <label onClick={this.NoteTrash}>
@@ -564,22 +647,35 @@ class DashBoard extends Component {
                         </Card>
                     </ClickAwayListener>
                 </Popper>
-                <Popper open={this.state.labelListPoper} anchorEl={this.state.AnchorEl}>
-                    <ClickAwayListener onClickAway={event => this.setState({ labelListPoper: !this.state.labelListPoper, AnchorEl: null, cardId: '' })} >
+                <Popper open={this.state.labelListPoper} anchorEl={this.state.AnchorEl} style={{ zIndex: '1300' }} style={{ zIndex: '1300' }}>
+                    <ClickAwayListener onClickAway={event => this.setState({ labelListPoper: !this.state.labelListPoper, AnchorEl: null, cardId: '', labelValue: '' })} >
                         <Card className="Options-labels">
                             <label>Label List</label>
                             <TextField
                                 type="text"
                                 placeholder='Enter Label'
+                                value={this.state.labelValue}
+                                onChange={this.filterLabel}
                             />
                             <div className="listLabels">
                                 {
-                                    this.state.labels.map((label) =>
-                                        <div key={label._id} className="labelsCheckBox">
-                                            <Checkbox color="primary" value={label.labelName} id={label._id} onChange={this.addNoteLabel} />
-                                            <p>{label.labelName}</p> </div>
-                                    )
+                                    this.state.filterstateLabel ?
+                                        this.state.searchLabels.length > 0 ? this.state.searchLabels.map((label) =>
+                                            <div key={label._id} className="labelsCheckBox">
+                                                <Checkbox color="primary" value={label.labelName} id={label._id} onChange={this.addNoteLabel} />
+                                                <p></p>{label.labelName} </div>) : <label> No Label Found!!</label>
+                                        :
+                                        this.state.labels.map((label) =>
+                                            <div key={label._id} className="labelsCheckBox">
+                                                <Checkbox color="primary" value={label.labelName} id={label._id} onChange={this.addNoteLabel} />
+                                                <p>{label.labelName}</p> </div>
+                                        )
                                 }
+                            </div>
+                            <div hidden={this.state.foundLabel}>
+                                <hr />
+                                <IconButton onClick={() => this.createLabelNote(this.state.labelValue)} > <AddCircleOutline />Create Label</IconButton>
+                                <p>"{this.state.labelValue}"</p>
                             </div>
 
                         </Card>

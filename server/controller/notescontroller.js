@@ -157,7 +157,7 @@ exports.updateNotes = (req, res) => {
             res.status(status.UnprocessableEntity).send(response)
         } else {
             elastic.Documentdelete(req)
-            details.id = req.body.userId
+            details.id = req.decoded.id
             redisCache.delRedis(details, (err, dele) => {
                 if (err) {
                     throw new "error  in catch"

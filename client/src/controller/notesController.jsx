@@ -1,7 +1,36 @@
 import axios from 'axios'
+import { messageService } from '../minddleware/middleWareServices'
 
 
+messageService.getMessage().subscribe(message => {
+    if (message.text.key = 'updateNotes')
+        updateNotes(message.text.value)
+})
 
+let updateNotes = (payload) => {
+    try {
+        const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
+        const headers = {
+            "Content-Type": "application/json",
+            token: sessionValue.token
+        }
+
+        axios.put(`${process.env.REACT_APP_BASE_URL}/note/updateNotes`, payload, { headers: headers })
+            .then(notes => {
+                console.log(notes);
+
+            })
+            .catch(err => {
+                console.log(err);
+
+            })
+
+    } catch (err) {
+        console.log(err);
+
+    }
+
+}
 let getNotes = () => {
     try {
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
@@ -323,6 +352,8 @@ let addNoteLabel = (payload) => {
 
     }
 }
+
+
 
 let createLabel = (payload) => {
     try {

@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import {
-    InputBase, Card, Button, Popper, Paper, Fade, Fab, createMuiTheme, MuiThemeProvider, IconButton, ClickAwayListener, Chip, TextField, Checkbox
+    InputBase, Card, Button, Popper, Paper, Fade, Fab, createMuiTheme, MuiThemeProvider, IconButton, ClickAwayListener, Chip, TextField, Checkbox, Dialog
 } from '@material-ui/core';
 import pin from '../../assets/afterPin.svg'
 import { ImageOutlined, Alarm, NotificationImportantOutlined, PersonAddOutlined, ColorLensOutlined, ArchiveOutlined, Label, MoreVertOutlined } from "@material-ui/icons";
-
+import { messageService } from '../../minddleware/middleWareServices'
+import { async } from 'rxjs/internal/scheduler/async';
+import { log } from 'util';
 
 
 const theme = createMuiTheme({
@@ -13,6 +15,19 @@ const theme = createMuiTheme({
             root: {
                 width: '25px',
                 height: '25px'
+            }
+        }, MuiPaper: {
+            elevation24: {
+                boxShadow: 'none'
+            },
+            rounded: {
+                borderRadius: '20px'
+
+            }
+        },
+        MuiBackdrop: {
+            root: {
+                backgroundColor: 'rgba(0, 0, 0, 0.1)'
             }
         }
     }
@@ -23,6 +38,9 @@ class Notes extends Component {
         super(props)
         // console.log('Allnotes', this.props)
         this.state = {
+            dailogTitleValue: '',
+            dailogDescvalue: '',
+            cardDailog: false,
             cards: [],
             poper: false,
             anchorEl: null,
@@ -31,11 +49,23 @@ class Notes extends Component {
             CardIdRequired: false,
             open: true,
             OptionsPoper: false,
-            labelListPoper: false
-
+            labelListPoper: false,
+            dailogReminder: '',
+            dailogLabels: [],
+            dailogNoteId: '',
+            dailogColor: ''
 
         }
         this.LabelList = this.LabelList.bind(this);
+        messageService.getMessage().subscribe(message => {
+            console.log('in notes controller', message.text.key);
+
+            if (message.text.key === 'updateReminder') {
+                this.setState({
+                    dailogReminder: message.text.value
+                })
+            }
+        })
     }
 
     setNoteColor = async (event, cardId) => {
@@ -63,6 +93,9 @@ class Notes extends Component {
         try {
             let AnchorEl = event.currentTarget
             this.props.NoteReminder(true, AnchorEl, cardId)
+            messageService.getMessage().subscribe(message => {
+                console.log("reminder", message.text);
+            })
         } catch (err) {
             console.log(err);
         }
@@ -82,25 +115,82 @@ class Notes extends Component {
 
         }
     }
+    handleDailog = async (Element, event) => {
+        await this.setState({
+            dailogNoteId: Element._id,
+            dailogTitleValue: Element.title,
+            dailogDescvalue: Element.content,
+            cardDailog: !this.state.cardDailog,
+            dailogReminder: Element.reminder,
+            dailogLabels: Element.labels,
+            dailogColor: Element.color
+        })
+
+    }
+
+    handleDailogClose = () => {
+        this.setState({
+            dailogNoteId: '',
+            dailogTitleValue: '',
+            dailogDescvalue: '',
+            cardDailog: !this.state.cardDailog,
+            dailogReminder: '',
+            dailogLabels: '',
+            dailogColor: ''
+        })
+    }
+
+    handleTitle = async (event) => {
+        await this.setState({ dailogTitleValue: event.target.value })
+    }
+
+
+    updateNote = () => {
+        let payload = {
+            id: this.state.dailogNoteId,
+            title: this.state.dailogTitleValue,
+            content: this.state.dailogDescvalue
+        }
+
+    }
+
+    updateNotes = async () => {
+        let payload = {
+            noteId: this.state.dailogNoteId,
+            title: this.state.dailogTitleValue,
+            content: this.state.dailogDescvalue,
+
+        }
+        messageService.sendMessage({ key: 'updateNotes', value: payload })
+        this.setState({
+            cardDailog: !this.state.cardDailog
+        })
+
+    }
     render() {
         let cardCss = this.props.view ? 'ListView' : 'notesCard'
+
         return (
             <MuiThemeProvider theme={theme}>
                 <div className="notesContainer">
+
                     {this.props.notes.length <= 0 ?
                         <div className="searchNote">
+
                             No Note Found!!!!
                         </div> :
                         this.props.notes.map((Element) =>
                             <Card className={cardCss} key={Element._id} id={Element._id}
-
-                                style={{ backgroundColor: Element.color }}>
+                                style={{ backgroundColor: Element.color, height: 'auto', padding: '10px' }}>
                                 <div className="titleIcon">
-                                    <div>
+                                    <div >
                                         <InputBase
                                             name="title"
                                             type="text"
-                                            value={Element.title} />
+                                            value={Element.title}
+                                            tabIndex='1'
+                                            onClick={(event) => this.handleDailog(Element, event)}
+                                        />
                                     </div>
                                     <div >
                                         <img className='IconPin' src={pin} />
@@ -111,7 +201,9 @@ class Notes extends Component {
                                         <InputBase
                                             name="description"
                                             type="text"
-                                            value={Element.content} />
+                                            value={Element.content}
+                                            onClick={(event) => this.handleDailog(Element, event)}
+                                            multiline />
                                     </div>
                                     {Element.reminder !== null ?
                                         <div >
@@ -133,31 +225,100 @@ class Notes extends Component {
                                             onDelete={() => this.removeNoteLabel(Element._id, labelvalue.id)}
                                         />
                                     ) : ''}
-                                    <div className="IconsList">
-                                        <div className="decsIcon">
-                                            <NotificationImportantOutlined titleAccess="Remind me" onClick={(event) => this.addReminder(Element._id, event)} />
-                                            <PersonAddOutlined titleAccess="Collaborate" />
-                                            <ColorLensOutlined titleAccess="change Color"
-                                                onClick={(event) => this.setNoteColor(event, Element._id)} />
-                                            <ImageOutlined titleAccess=" Add Image" />
-                                            <ArchiveOutlined titleAccess=" Archive Note"
-                                                onClick={() => this.NoteArchived(Element._id)} />
-                                            <MoreVertOutlined titleAccess="More"
-                                                onClick={(event) => this.LabelList(Element._id, event)}
+                                </div>
+                                <div className="IconsList">
+                                    <div className="decsIcon">
+                                        <NotificationImportantOutlined titleAccess="Remind me" style={{ zIndex: '999' }} onClick={(event) => this.addReminder(Element._id, event)} />
+                                        <PersonAddOutlined titleAccess="Collaborate" />
+                                        <ColorLensOutlined titleAccess="change Color"
+                                            onClick={(event) => this.setNoteColor(event, Element._id)} />
+                                        <ImageOutlined titleAccess=" Add Image" />
+                                        <ArchiveOutlined titleAccess=" Archive Note"
+                                            onClick={() => this.NoteArchived(Element._id)} />
+                                        <MoreVertOutlined titleAccess="More"
+                                            onClick={(event) => this.LabelList(Element._id, event)}
 
-                                            />
-                                        </div>
-
+                                        />
                                     </div>
 
                                 </div>
-                            </Card>
 
+                            </Card>
                         )}
+
 
                 </div>
 
+                <Dialog open={this.state.cardDailog} onClose={this.handleDailogClose} >
+                    <div className='DailogCard' style={{ backgroundColor: this.state.dailogColor }}>
+                        <div className="titleIcon">
+                            <div >
+                                <InputBase
+                                    name="title"
+                                    type="text"
+                                    value={this.state.dailogTitleValue}
+                                    onChange={this.handleTitle}
+                                    tabIndex='1'
 
+                                />
+                            </div>
+                            <div >
+                                <img className='IconPin' src={pin} />
+                            </div>
+                        </div>
+                        <div style={{ width: "100%" }}>
+                            <div>
+                                <InputBase
+                                    name="description"
+                                    type="text"
+                                    value={this.state.dailogDescvalue}
+                                    onChange={event => this.setState({ dailogDescvalue: event.target.value })}
+                                    multiline />
+                            </div>
+                            {this.state.dailogReminder !== null ?
+                                <div >
+                                    <Chip
+                                        style={{ width: 'auto' }}
+                                        icon={<Alarm />}
+                                        label={(this.state.dailogReminder !== null ? new Date(this.state.dailogReminder).toString().slice(0, 15) : null)
+                                        }
+                                        onDelete={event => this.undoReminder(this.state.dailogNoteId, event)}
+
+                                    />
+                                </div> : ''}
+                            {this.state.dailogLabels.length > 0 ? this.state.dailogLabels.map((labelvalue) =>
+                                <Chip
+                                    key={labelvalue.id}
+                                    style={{ width: 'auto' }}
+                                    label={labelvalue.value
+                                    }
+                                    onDelete={() => this.removeNoteLabel(this.state.dailogNoteId, labelvalue.id)}
+                                />
+                            ) : ''}
+                        </div>
+                        <div className="IconsList">
+                            <div className="decsIcon">
+                                <NotificationImportantOutlined titleAccess="Remind me" onClick={(event) => this.addReminder(this.state.dailogNoteId, event)} />
+                                <PersonAddOutlined titleAccess="Collaborate" />
+                                <ColorLensOutlined titleAccess="change Color"
+                                    onClick={(event) => this.setNoteColor(event, this.state.dailogNoteId)} />
+                                <ImageOutlined titleAccess=" Add Image" />
+                                <ArchiveOutlined titleAccess=" Archive Note"
+                                    onClick={() => this.NoteArchived(this.state.dailogNoteId)} />
+                                <MoreVertOutlined titleAccess="More"
+                                    onClick={(event) => this.LabelList(this.state.dailogNoteId, event)}
+                                />
+                            </div>
+                            <div>
+                                <Button onClick={this.updateNotes} >
+                                    Close
+                                </Button>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </Dialog>
             </MuiThemeProvider>
         );
     }

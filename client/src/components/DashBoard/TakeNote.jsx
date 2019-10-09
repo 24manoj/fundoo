@@ -39,6 +39,7 @@ import {
 import pin from "../../assets/afterPin.svg";
 import DateFnsUtils from "@date-io/date-fns";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import { log } from "util";
 
 class Notes extends Component {
   constructor() {
@@ -215,17 +216,19 @@ class Notes extends Component {
   }
   removeLabel = (id, event) => {
     try {
-      if (this.state.newLabel._id === id) {
-        this.setState({ newLabel: '' })
-      }
-      let array = this.state.noteLabel;
-      this.state.noteLabel.forEach((element, index) => {
-        if (element.id === id) {
-          array.splice(index, 1)
-          this.setState({ noteLabel: array })
-        }
+      if (this.props.newLabel._id === id) {
+        console.log("in");
+        this.removeNewLabel()
+      } else {
+        let array = this.state.noteLabel;
+        this.state.noteLabel.forEach((element, index) => {
+          if (element.id === id) {
+            array.splice(index, 1)
+            this.setState({ noteLabel: array })
+          }
 
-      })
+        })
+      }
     } catch (err) {
       console.log(err);
 
@@ -271,15 +274,12 @@ class Notes extends Component {
   }
   createLabel = async (event) => {
     await this.props.createLabel(this.state.labelValue)
-    this.setState({ labelValue: '', filterState: false, found: true })
-
-
+    this.setState({ labelValue: '', filterState: false, found: true, labelListPoper: false })
+  }
+  removeNewLabel = () => {
+    this.props.handelDeleteNewLabel()
   }
 
-
-  componentWillMount() {
-    this.setState({ newLabel: this.props.newLabel })
-  }
   render() {
 
     return (
@@ -360,9 +360,9 @@ class Notes extends Component {
                     />
                   </div>
                   <div>
-                    {this.state.newLabel !== undefined && this.state.newLabel != '' ?
-                      <Chip key={this.state.newLabel._id} label={this.state.newLabel.labelName} onDelete={(event) => this.removeLabel(this.state.newLabel._id, event)} />
-                      :
+                    {this.props.newLabel !== undefined && this.props.newLabel != '' ?
+                      <Chip key={this.props.newLabel._id} label={this.props.newLabel.labelName} onDelete={(event) => this.removeLabel(this.props.newLabel._id, event)} />
+                      : ''}{
                       this.state.noteLabel.length > 0 ? this.state.noteLabel.map((element) =>
                         <Chip key={element.id} label={element.value} onDelete={(event) => this.removeLabel(element.id, event)} />
                       ) : ''}
@@ -464,7 +464,6 @@ class Notes extends Component {
               </ClickAwayListener>
             )}
         </div>
-
         <Popper open={this.state.reminderPoper} anchorEl={this.state.anchorEl}>
           <Paper>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -478,10 +477,8 @@ class Notes extends Component {
                 onChange={this.dateSet}
               />
             </MuiPickersUtilsProvider>
-
           </Paper>
         </Popper>
-
         <Popper open={this.state.OptionsPoper} anchorEl={this.state.anchorEl} placement={'bottom'} >
           <ClickAwayListener onClickAway={event => this.setState({ OptionsPoper: !this.state.OptionsPoper })} >
             <Card className="Options">
@@ -519,7 +516,6 @@ class Notes extends Component {
                 <hr />
                 <IconButton onClick={this.createLabel} > <AddCircleOutline />Create Label</IconButton>
                 <p>"{this.state.labelValue}"</p>
-
               </div>
 
             </Card>
