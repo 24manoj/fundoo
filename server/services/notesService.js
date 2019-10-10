@@ -56,6 +56,52 @@ exports.getNotes = (id) => {
     }
 }
 
+
+/**
+ * @desc gets validated request from services,performs database operations needed
+ * returns notes data present in database,based on conditions given
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
+exports.getArchiveNotes = (id) => {
+    try {
+        return new Promise((resolve, reject) => {
+            noteSchema.notes.find({
+                "userId": id,
+                "isTrash": false,
+                "isArchive": true,
+            }, (err, notes) => {
+                (err) ? reject(err) : resolve(notes)
+            })
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+
+/**
+ * @desc gets validated request from services,performs database operations needed
+ * returns notes data present in database,based on conditions given
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
+exports.getTrashNotes = (id) => {
+    try {
+        return new Promise((resolve, reject) => {
+            noteSchema.notes.find({
+                "userId": id,
+                "isTrash": true,
+                "isArchive": false,
+            }, (err, notes) => {
+                (err) ? reject(err) : resolve(notes)
+            })
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
+
 /**
  * @desc gets validated request from services,performs database operations needed
  * updates collection data for given condition

@@ -4,6 +4,8 @@ let notesController = require('../controller/notescontroller')
 /** @description routes to specified endPoints */
 noteRouter.post('/createNotes', auth.verifyUser, notesController.createNotes);
 noteRouter.get('/getNotes', auth.verifyUser, notesController.getNotes)
+noteRouter.get('/getArchiveNotes', auth.verifyUser, notesController.getArchiveNotes)
+noteRouter.get('/getTrashNotes', auth.verifyUser, notesController.getTrashNotes)
 noteRouter.put('/updateNotes', auth.verifyUser, notesController.updateNotes);
 noteRouter.delete('/deleteNotes', auth.verifyUser, notesController.deleteNotes)
 noteRouter.put('/noteTrash', auth.verifyUser, notesController.noteTrash);

@@ -5,8 +5,7 @@ import {
 import pin from '../../assets/afterPin.svg'
 import { ImageOutlined, Alarm, NotificationImportantOutlined, PersonAddOutlined, ColorLensOutlined, ArchiveOutlined, Label, MoreVertOutlined } from "@material-ui/icons";
 import { messageService } from '../../minddleware/middleWareServices'
-import { async } from 'rxjs/internal/scheduler/async';
-import { log } from 'util';
+
 
 
 const theme = createMuiTheme({
@@ -27,7 +26,7 @@ const theme = createMuiTheme({
         },
         MuiBackdrop: {
             root: {
-                backgroundColor: 'rgba(0, 0, 0, 0.1)'
+                backgroundColor: 'rgba(0, 0, 0, 0.3)'
             }
         }
     }
@@ -38,6 +37,7 @@ class Notes extends Component {
         super(props)
         // console.log('Allnotes', this.props)
         this.state = {
+            NotePoper: false,
             dailogTitleValue: '',
             dailogDescvalue: '',
             cardDailog: false,
@@ -53,8 +53,9 @@ class Notes extends Component {
             dailogReminder: '',
             dailogLabels: [],
             dailogNoteId: '',
-            dailogColor: ''
-
+            dailogColor: '',
+            iconsVisible: true,
+            visibleCard: ''
         }
         this.LabelList = this.LabelList.bind(this);
         messageService.getMessage().subscribe(message => {
@@ -65,12 +66,18 @@ class Notes extends Component {
                     dailogReminder: message.text.value
                 })
             }
+            if (message.text.key === 'updateColor') {
+                this.setState({
+                    dailogColor: message.text.value
+                })
+            }
+
         })
     }
 
     setNoteColor = async (event, cardId) => {
         await this.setState({ poper: true, anchorEl: event.currentTarget })
-
+        this.setState({ NotePoper: true })
         this.props.setValue(cardId, this.state.anchorEl, this.state.poper, false)
     }
 
@@ -92,17 +99,15 @@ class Notes extends Component {
     addReminder = (cardId, event) => {
         try {
             let AnchorEl = event.currentTarget
+            this.setState({ NotePoper: true })
             this.props.NoteReminder(true, AnchorEl, cardId)
-            messageService.getMessage().subscribe(message => {
-                console.log("reminder", message.text);
-            })
+
         } catch (err) {
             console.log(err);
         }
     }
     LabelList(cardId, event) {
-
-
+        this.setState({ NotePoper: true })
         this.props.LabelPoper(cardId, true, event.target)
     }
 
@@ -140,6 +145,7 @@ class Notes extends Component {
         })
     }
 
+
     handleTitle = async (event) => {
         await this.setState({ dailogTitleValue: event.target.value })
     }
@@ -169,21 +175,23 @@ class Notes extends Component {
     }
     render() {
         let cardCss = this.props.view ? 'ListView' : 'notesCard'
+        console.log("notes", this.props.notes);
 
         return (
             <MuiThemeProvider theme={theme}>
-                <div className="notesContainer">
-
+                <div className="notesContainer" >
                     {this.props.notes.length <= 0 ?
                         <div className="searchNote">
-
                             No Note Found!!!!
                         </div> :
                         this.props.notes.map((Element) =>
                             <Card className={cardCss} key={Element._id} id={Element._id}
-                                style={{ backgroundColor: Element.color, height: 'auto', padding: '10px' }}>
+                                style={{ backgroundColor: Element.color, padding: '10px' }} onMouseEnter={event => this.setState({ visibleCard: Element._id })}
+                                onMouseLeave={event => this.state.NotePoper ? '' : this.setState({ visibleCard: '' })}>
+
                                 <div className="titleIcon">
                                     <div >
+                                     
                                         <InputBase
                                             name="title"
                                             type="text"
@@ -192,7 +200,9 @@ class Notes extends Component {
                                             onClick={(event) => this.handleDailog(Element, event)}
                                         />
                                     </div>
-                                    <div >
+
+                                    <div hidden={this.state.visibleCard === Element._id ? false : true} >
+
                                         <img className='IconPin' src={pin} />
                                     </div>
                                 </div>
@@ -226,24 +236,29 @@ class Notes extends Component {
                                         />
                                     ) : ''}
                                 </div>
-                                <div className="IconsList">
-                                    <div className="decsIcon">
-                                        <NotificationImportantOutlined titleAccess="Remind me" style={{ zIndex: '999' }} onClick={(event) => this.addReminder(Element._id, event)} />
-                                        <PersonAddOutlined titleAccess="Collaborate" />
-                                        <ColorLensOutlined titleAccess="change Color"
-                                            onClick={(event) => this.setNoteColor(event, Element._id)} />
-                                        <ImageOutlined titleAccess=" Add Image" />
-                                        <ArchiveOutlined titleAccess=" Archive Note"
-                                            onClick={() => this.NoteArchived(Element._id)} />
-                                        <MoreVertOutlined titleAccess="More"
-                                            onClick={(event) => this.LabelList(Element._id, event)}
+                                <div hidden={this.state.visibleCard === Element._id ? false : true} >
+                                    <div className="IconsList" >
+                                        <div className='decsIcon' >
+                                            <NotificationImportantOutlined titleAccess="Remind me" style={{ zIndex: '999' }} onClick={(event) => this.addReminder(Element._id, event)} />
+                                            <PersonAddOutlined titleAccess="Collaborate" />
+                                            <ColorLensOutlined titleAccess="change Color"
+                                                onClick={(event) => this.setNoteColor(event, Element._id)} />
+                                            <ImageOutlined titleAccess=" Add Image" />
+                                            <ArchiveOutlined titleAccess=" Archive Note"
+                                                onClick={() => this.NoteArchived(Element._id)} />
+                                            <MoreVertOutlined titleAccess="More"
+                                                onClick={(event) => this.LabelList(Element._id, event)}
 
-                                        />
+                                            />
+                                        </div>
+
+
                                     </div>
-
                                 </div>
 
                             </Card>
+
+
                         )}
 
 

@@ -3,7 +3,7 @@ import { messageService } from '../minddleware/middleWareServices'
 
 
 messageService.getMessage().subscribe(message => {
-    if (message.text.key = 'updateNotes')
+    if (message.text.key === 'updateNotes')
         updateNotes(message.text.value)
 })
 
@@ -378,7 +378,56 @@ let createLabel = (payload) => {
 
     }
 }
+
+let getTrashNotes = () => {
+    try {
+        const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
+        console.log(sessionValue.token)
+        const headers = {
+            "Content-Type": "application/json",
+            token: sessionValue.token
+        }
+        return new Promise((resolve, reject) => {
+            axios.get(`${process.env.REACT_APP_BASE_URL}/note/getTrashNotes`, { headers: headers })
+                .then(created => {
+                    resolve(created)
+                })
+                .catch(err => {
+                    reject(err)
+                })
+        })
+
+    } catch (err) {
+        console.log(err);
+
+    }
+}
+
+
+let getArchiveNotes = () => {
+    try {
+        const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
+        console.log(sessionValue.token)
+        const headers = {
+            "Content-Type": "application/json",
+            token: sessionValue.token
+        }
+        return new Promise((resolve, reject) => {
+            axios.get(`${process.env.REACT_APP_BASE_URL}/note/getArchiveNotes`, { headers: headers })
+                .then(created => {
+                    resolve(created)
+                })
+                .catch(err => {
+                    reject(err)
+                })
+        })
+
+    } catch (err) {
+        console.log(err);
+
+    }
+}
 export {
     getNotes, getLabels, searchText, createNote, updateColor, updateArchive, UndoArchive, updateReminder, undoReminder,
-    removeNoteLabel, addNoteLabel, NoteTrash, undoTrash, createLabel
+    removeNoteLabel, addNoteLabel, NoteTrash, undoTrash, createLabel, getArchiveNotes, getTrashNotes
 }

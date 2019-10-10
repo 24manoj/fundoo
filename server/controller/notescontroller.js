@@ -98,6 +98,100 @@ exports.updateColor = async (req, res) => {
  * @return return respose sucess or failure
  */
 
+exports.getTrashNotes = (req, res) => {
+    try {
+        // details.id = req.decoded.id
+        // details.value = []
+        // redisCache.getRedis(details, (err, data) => {
+        //     if (data) {
+        //         response.sucess = true,
+        //             response.data = data,
+        //             response.errors = null
+        //         res.status(status.sucess).send(response)
+        //     } else {
+        noteService.getTrashNotes(req.decoded.id)
+            .then(notes => {
+                // elastic.addDocument(notes)
+                // details.id = req.decoded.id
+                // details.value = notes
+                // redisCache.setRedis(details, (err, data) => {
+                //     if (data) {
+                response.sucess = true,
+                    response.data = notes,
+                    response.errors = null
+                res.status(status.sucess).send(response)
+                //     }
+                // })
+            })
+            .catch(err => {
+                response.sucess = false,
+                    response.data = null,
+                    response.errors = err
+                res.status(status.notfound).send(response)
+            })
+        //     }
+        // })
+
+    } catch (e) {
+        console.log(e)
+    }
+}
+/**
+ * @desc takes input as http req ,error validation is done,passes request data to  next services,
+ * respoonses with array of notes
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @return return respose sucess or failure
+ */
+
+exports.getArchiveNotes = (req, res) => {
+    try {
+        // details.id = req.decoded.id
+        // details.value = []
+        // redisCache.getRedis(details, (err, data) => {
+        //     if (data) {
+        //         response.sucess = true,
+        //             response.data = data,
+        //             response.errors = null
+        //         res.status(status.sucess).send(response)
+        //     } else {
+        noteService.getArchiveNotes(req.decoded.id)
+            .then(notes => {
+                // elastic.addDocument(notes)
+                // details.id = `${req.decoded.id}Archive`
+                // details.value = notes
+                // redisCache.setRedis(details, (err, data) => {
+                //     if (data) {
+                response.sucess = true,
+                    response.data = notes,
+                    response.errors = null
+                res.status(status.sucess).send(response)
+                //     }
+                // })
+
+
+            })
+            .catch(err => {
+                response.sucess = false,
+                    response.data = null,
+                    response.errors = err
+                res.status(status.notfound).send(response)
+            })
+        //     }
+        // })
+
+    } catch (e) {
+        console.log(e)
+    }
+}
+/**
+ * @desc takes input as http req ,error validation is done,passes request data to  next services,
+ * respoonses with array of notes
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @return return respose sucess or failure
+ */
+
 exports.getNotes = (req, res) => {
     try {
         details.id = req.decoded.id

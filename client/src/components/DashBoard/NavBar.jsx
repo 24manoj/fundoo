@@ -87,17 +87,19 @@ class NavBar extends Component {
         this.props.onSearch(this.state.search)
     }
 
-
     render() {
         let animateClass = this.state.animate ? 'rotate' : ''
+        const activeClass = this.props.title !== undefined ? this.props.title : undefined
+        console.log("active", activeClass);
+
         return (
             <MuiThemeProvider theme={theme}>
                 <AppBar>
                     <Toolbar>
                         <div className="NavContent-Left">
-                            <SideNav labels={this.props.labels} />
+                            <SideNav labels={this.props.labels} active={activeClass} />
                             <img src={Icon} width="50px" height="50px" alt="fundoo Icon" title="Fundoo Icon" />
-                            <div>  Fundoo</div>
+                            <div>  {this.props.title !== undefined ? this.props.title : 'Fundoo'}</div>
                         </div>
                         <div className="appBar">
                             <div className="NavContent">
