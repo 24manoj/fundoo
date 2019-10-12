@@ -8,18 +8,24 @@ import Login from "./components/Login";
 import Register from "./components/Registration";
 import ResetPassword from "./components/ResetPassword";
 import Archive from './pages/Archive'
+import Trash from './pages/Trash'
+import Labels from './pages/labels'
 
-function App() {
-  return (
-    <Router>
-      <Route path="/" exact component={Login} />
-      <Route path="/register" component={Register} />
-      <Route path="/resetPassword" component={ResetPassword} />
-      <Route path="/Dashboard" component={DashBoard} />
-      <Route path='/reminder' component={reminder} />
-      <Route path='/archive' component={Archive}/>
-    </Router>
-    );
+class App extends React.Component {
+  render() {
+    return (
+      <Router>
+        <Route path="/" exact component={Login} />
+        <Route path="/register" component={Register} />
+        <Route path="/resetPassword" component={ResetPassword} />
+        <Route path="/Dashboard" component={DashBoard} />
+        <Route path='/reminder' component={reminder} />
+        <Route path='/archive' component={Archive} />
+        <Route path='/trash' component={Trash} />
+        <Route path='/labels' component={Labels} />
+
+      </Router>
+    )
   }
-  
-  export default App;
+}
+export default App;

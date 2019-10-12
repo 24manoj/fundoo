@@ -313,6 +313,8 @@ let removeNoteLabel = (payload) => {
             "Content-Type": "application/json",
             token: sessionValue.token
         }
+        console.log("payload", payload);
+
         return new Promise((resolve, reject) => {
             axios.put(`${process.env.REACT_APP_BASE_URL}/note/noteUndoLabel`, payload, { headers: headers })
                 .then(removed => {
@@ -332,7 +334,6 @@ let removeNoteLabel = (payload) => {
 let addNoteLabel = (payload) => {
     try {
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
-        console.log(sessionValue.token)
         const headers = {
             "Content-Type": "application/json",
             token: sessionValue.token
@@ -358,7 +359,6 @@ let addNoteLabel = (payload) => {
 let createLabel = (payload) => {
     try {
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
-        console.log(sessionValue.token)
         const headers = {
             "Content-Type": "application/json",
             token: sessionValue.token
@@ -382,7 +382,6 @@ let createLabel = (payload) => {
 let getTrashNotes = () => {
     try {
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
-        console.log(sessionValue.token)
         const headers = {
             "Content-Type": "application/json",
             token: sessionValue.token
@@ -403,8 +402,33 @@ let getTrashNotes = () => {
     }
 }
 
+let deleteNotes = (payload) => {
+    try {
+        const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
+        const headers = {
+            "Content-Type": "application/json",
+            token: sessionValue.token
+        }
 
-let getArchiveNotes = () => {
+
+        return new Promise((resolve, reject) => {
+            axios.put(`${process.env.REACT_APP_BASE_URL}/note/deleteNotes`, payload, { headers: headers })
+                .then(deletd => {
+                    resolve(deletd)
+                })
+                .catch(err => {
+                    reject(err)
+                })
+        })
+
+    } catch (err) {
+        console.log(err);
+
+    }
+
+}
+
+let getArchiveNotes = (payload) => {
     try {
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
         console.log(sessionValue.token)
@@ -427,7 +451,80 @@ let getArchiveNotes = () => {
 
     }
 }
+let restoreNotes = (payload) => {
+    try {
+        const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
+        const headers = {
+            "Content-Type": "application/json",
+            token: sessionValue.token
+        }
+        console.log("payload 1 ", payload);
+
+        return new Promise((resolve, reject) => {
+            axios.put(`${process.env.REACT_APP_BASE_URL}/note/noteUnTrash`, payload, { headers: headers })
+                .then(created => {
+                    resolve(created)
+                })
+                .catch(err => {
+                    reject(err)
+                })
+        })
+
+    } catch (err) {
+        console.log(err);
+
+    }
+
+}
+let updateLabel = (payload) => {
+    try {
+        const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
+        const headers = {
+            "Content-Type": "application/json",
+            token: sessionValue.token
+        }
+        console.log("payload", payload);
+
+
+        return new Promise((resolve, reject) => {
+            axios.put(`${process.env.REACT_APP_BASE_URL}/note/updateLabel`, payload, { headers: headers })
+                .then(created => {
+                    resolve(created)
+                })
+                .catch(err => {
+                    reject(err)
+                })
+        })
+
+    } catch (err) {
+        console.log(err);
+
+    }
+
+}
+let deleteLabel = (payload) => {
+    try {
+        const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
+        const headers = {
+            "Content-Type": "application/json",
+            token: sessionValue.token
+        }
+        return new Promise((resolve, reject) => {
+            axios.post(`${process.env.REACT_APP_BASE_URL}/note/deleteLabel`, payload, { headers: headers })
+                .then(created => {
+                    resolve(created)
+                })
+                .catch(err => {
+                    reject(err)
+                })
+        })
+
+    } catch (err) {
+        console.log(err);
+
+    }
+}
 export {
     getNotes, getLabels, searchText, createNote, updateColor, updateArchive, UndoArchive, updateReminder, undoReminder,
-    removeNoteLabel, addNoteLabel, NoteTrash, undoTrash, createLabel, getArchiveNotes, getTrashNotes
+    removeNoteLabel, addNoteLabel, NoteTrash, undoTrash, createLabel, getArchiveNotes, getTrashNotes, deleteNotes, restoreNotes, updateLabel, deleteLabel
 }

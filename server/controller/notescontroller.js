@@ -19,6 +19,7 @@ exports.createNotes = (req, res) => {
         if (req.body.title != null || req.body.content != null) {
             elastic.Documentdelete(req)
             details.id = req.decoded.id
+
             redisCache.delRedis(details, (err, cacheDelete) => {
                 if (err) {
                     console.log(err)
@@ -206,12 +207,13 @@ exports.getNotes = (req, res) => {
                 noteService.getNotes(req.decoded.id)
                     .then(notes => {
                         elastic.addDocument(notes)
+                        let array = notes.filter(ele => ele.isTrash !== true && ele.isArchive !== true)
                         details.id = req.decoded.id
-                        details.value = notes
+                        details.value = array
                         redisCache.setRedis(details, (err, data) => {
                             if (data) {
                                 response.sucess = true,
-                                    response.data = notes,
+                                    response.data = array,
                                     response.errors = null
                                 res.status(status.sucess).send(response)
                             }
@@ -286,7 +288,7 @@ exports.updateNotes = (req, res) => {
 
 exports.deleteNotes = (req, res) => {
     try {
-        req.check('id', 'id invalid').notEmpty()
+        req.check('noteId', 'id invalid').notEmpty()
         let errors = req.validationErrors()
         if (errors) {
             response.errors = errors
@@ -295,7 +297,7 @@ exports.deleteNotes = (req, res) => {
             res.status(status.UnprocessableEntity).send(response)
         }
         else {
-            details.id = req.body.userId
+            details.id = req.decoded.id
             redisCache.delRedis(details, (err, del) => {
                 if (err) {
                     throw new err
@@ -439,19 +441,28 @@ exports.noteUnArchive = (req, res) => {
             res.status(status.UnprocessableEntity).send(response)
         }
         else {
-            noteService.noteUnArchive(req)
-                .then(data => {
-                    response.errors = null
-                    response.data = data
-                    response.sucess = true
-                    res.status(status.sucess).send(response)
-                })
-                .catch(err => {
-                    response.errors = err
-                    response.data = null
-                    response.sucess = false
-                    res.status(status.notfound).send(response)
-                })
+            details.id = req.decoded.id
+            redisCache.delRedis(details, (err, deleted) => {
+                if (err) {
+                    throw new "error in radis", err;
+                } else {
+                    elastic.Documentdelete(req)
+
+                    noteService.noteUnArchive(req)
+                        .then(data => {
+                            response.errors = null
+                            response.data = data
+                            response.sucess = true
+                            res.status(status.sucess).send(response)
+                        })
+                        .catch(err => {
+                            response.errors = err
+                            response.data = null
+                            response.sucess = false
+                            res.status(status.notfound).send(response)
+                        })
+                }
+            })
         }
     } catch (e) {
         console.log(e)
@@ -741,7 +752,6 @@ exports.createLabel = async (req, res) => {
 
 exports.updateLabel = async (req, res) => {
     try {
-        req.check('userId', "id invalid").notEmpty()
         req.check('id', 'Id invalid').notEmpty()
         req.check('labelName', 'labelName invalid').notEmpty()
         let errors = req.validationErrors()
@@ -752,6 +762,8 @@ exports.updateLabel = async (req, res) => {
             res.status(status.UnprocessableEntity).send(response)
         }
         else {
+
+
             details.id = details.id = `${req.decoded.id}Labels`
 
             await redisCache.delRedis(details, (err, del) => {
@@ -788,7 +800,7 @@ exports.updateLabel = async (req, res) => {
  */
 exports.deleteLabel = async (req, res) => {
     try {
-        req.check('userId', 'userId invalid').notEmpty()
+
         req.check('id', "label id invalid").notEmpty()
         //req.check('lableName', 'lableName invalid').notEmpty()
         let errors = req.validationErrors()

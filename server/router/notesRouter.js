@@ -7,7 +7,7 @@ noteRouter.get('/getNotes', auth.verifyUser, notesController.getNotes)
 noteRouter.get('/getArchiveNotes', auth.verifyUser, notesController.getArchiveNotes)
 noteRouter.get('/getTrashNotes', auth.verifyUser, notesController.getTrashNotes)
 noteRouter.put('/updateNotes', auth.verifyUser, notesController.updateNotes);
-noteRouter.delete('/deleteNotes', auth.verifyUser, notesController.deleteNotes)
+noteRouter.put('/deleteNotes', auth.verifyUser, notesController.deleteNotes)
 noteRouter.put('/noteTrash', auth.verifyUser, notesController.noteTrash);
 noteRouter.put('/noteUnTrash', auth.verifyUser, notesController.noteUnTrash);
 noteRouter.put('/noteArchive', auth.verifyUser, notesController.noteArchive);
@@ -17,7 +17,7 @@ noteRouter.put('/noteUndoReminder', auth.verifyUser, notesController.noteUndoRem
 noteRouter.put('/noteLabel', auth.verifyUser, notesController.noteLabel);
 noteRouter.put('/noteUndoLabel', auth.verifyUser, notesController.noteUndoLabel);
 noteRouter.post('/createLabel', auth.verifyUser, notesController.createLabel)
-noteRouter.delete('/deleteLabel', auth.verifyUser, notesController.deleteLabel)
+noteRouter.post('/deleteLabel', auth.verifyUser, notesController.deleteLabel)
 noteRouter.put('/updateLabel', auth.verifyUser, notesController.updateLabel)
 noteRouter.get('/getLabels', auth.verifyUser, notesController.getLabels)
 noteRouter.post('/addCollaborate', auth.verifyUser, notesController.addCollaborate)

@@ -11,10 +11,30 @@ const client = new elasticsearch.Client({
  * @param callback passes request back to invoked function
  * @return callback function err or data
  */
+exports.checkExist = (req, callback) => {
+    try {
+
+        let index = req.decoded.id
+        client.indices.exists({ index: index })
+            .then(exist => callback(null, exist))
+            .catch(err => console.log("indexerr")
+            )
+
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+/**
+ * @desc creates index for search
+ * @param req request contains http request from frontend
+ * @param callback passes request back to invoked function
+ * @return callback function err or data
+ */
 exports.createIndex = (req, callback) => {
     try {
 
-        let index = req._id
+        let index = req.decoded.id
         client.indices.create({
             'index': index
         }, ((err, result, status) => {
@@ -31,7 +51,11 @@ exports.createIndex = (req, callback) => {
 exports.Documentdelete = (req) => {
     try {
         client.indices.delete({ index: req.decoded.id })
-            .then(data => console.log("document deleted"))
+            .then(data => {
+                console.log("document deleted")
+                this.createIndex(req, (err, created) => {
+                })
+            })
             .catch(err => console.log("no documents to delete"))
     } catch (e) {
         console.log(e)
@@ -56,7 +80,11 @@ exports.addDocument = (req) => {
                 "id": element._id,
                 "title": element.title,
                 "content": element.content,
-                "labels": element.labels
+                "labels": element.labels,
+                "color": element.color,
+                "reminder": element.reminder,
+                "isTrash": element.isTrash,
+                "isArchive": element.isArchive
             }
             bulk.push(data)
 
@@ -76,26 +104,23 @@ exports.addDocument = (req) => {
  */
 exports.searchkey = (req, callback) => {
     try {
-        console.log("in elastic search", req.body.search)
         let body = {
             query: {
                 query_string: {
                     query: `*${req.body.search}*`,
                     analyze_wildcard: true,
-                    fields: ["title", "content", "labels", "id", "reminder"]
+                    fields: ["title", "content", "labels", "id", "reminder", "color"]
                 }
             }
         }
         client.search({ index: req.decoded.id, body: body, type: 'notes' })
             .then(searchresult => {
-                console.log(searchresult.hits.hits.length)
                 callback(null, searchresult)
             })
             .catch(err => {
-                console.log(err)
-                callback(err)
+                callback(null,[])
             })
     } catch (e) {
-        console.log(e)
+        // console.log(e)
     }
 }

@@ -5,7 +5,7 @@ import Notes from '../components/DashBoard/Notes';
 
 import { withRouter } from 'react-router-dom';
 import { Popper, Paper, ClickAwayListener, IconButton, Snackbar, Card, TextField, Checkbox, Dialog, Menu, MenuItem } from "@material-ui/core";
-import { UndoOutlined, DeleteOutline, AddCircleOutline, Message } from '@material-ui/icons'
+import { UndoOutlined, DeleteOutline, AddCircleOutline, Message, LabelOutlined } from '@material-ui/icons'
 import {
     getLabels, getNotes, searchText, updateColor, updateArchive, createNote, UndoArchive, updateReminder, undoReminder,
     removeNoteLabel, addNoteLabel, NoteTrash, undoTrash, createLabel
@@ -18,6 +18,7 @@ import { messageService } from '../minddleware/middleWareServices'
 var Alllabels;
 var AllNotes;
 var UndoTakeNote;
+let ArchiveNote;
 
 class DashBoard extends Component {
     constructor(props) {
@@ -28,6 +29,8 @@ class DashBoard extends Component {
             notesArray: [],
             noteLabel: [],
             labels: [],
+            filterTrash: [],
+            filterArchive:[],
             newReminder: '',
             trashArray: [],
             archiveArray: [],
@@ -43,6 +46,7 @@ class DashBoard extends Component {
             AnchorEl: null,
             NoteColor: '',
             Archive: '',
+            unArchive: '',
             stackBar: false,
             found: true,
             stackBarMessage: '',
@@ -80,6 +84,15 @@ class DashBoard extends Component {
                     notesArray: array
                 })
             }
+            if (message.text.key === 'labelDeleted') {
+                this.setState({ labels: message.text.value })
+            }
+            if (message.text.key === 'labelEdited') {
+                this.setState({ labels: message.text.value })
+            }
+            if (message.text.key === 'labelCreated') {
+                this.setState({ labels: message.text.value })
+            }
         })
 
 
@@ -106,9 +119,11 @@ class DashBoard extends Component {
             console.log(err);
 
         })
-
-
     }
+
+
+
+
 
     open(toggle) {
         this.setState({ View: toggle })
@@ -145,31 +160,38 @@ class DashBoard extends Component {
         let payload = {
             search: searchValue
         }
-        searchText(payload)
-            .then(searchData => {
-                var filt = [];
-                console.log(searchData.data.data.hits.hits.length);
+        if (searchValue === "") {
+            this.setState({
+                filterState: false,
 
+            })
 
-                searchData.data.data.hits.hits.map((element) => {
-                    filt.push(element._source);
+        } else {
+            searchText(payload)
+                .then(searchData => {
+                    var filt = [];
+                    let trash = [];
+                    let archive = [];
+                    searchData.data.data.hits.hits.map((element) => {
+                        if (element._source.isTrash === false && element._source.isArchive === false)
+                            filt.push(element._source);
+                        else if (element._source.isTrash === true)
+                            trash.push(element._source)
+                        else
+                            archive.push(element._source)
+                    })
+                    console.log("filt array", filt);
+
+                    this.setState({ filterArray: filt, filterState: true, filterArchive: archive, filterTrash:trash })
+
 
                 })
-                this.setState({ filterArray: filt, filterState: true })
+                .catch(err => {
+                    console.log(err);
 
-                if (searchValue === '') {
-                    this.setState({
-                        filterState: false
-                    })
+                })
 
-                }
-
-            })
-            .catch(err => {
-                console.log(err);
-
-            })
-
+        }
     }
 
 
@@ -181,11 +203,13 @@ class DashBoard extends Component {
                 this.noteArchive()
             }
 
+
         } catch (err) {
             console.log(err);
 
         }
     }
+
     noteArchive = () => {
         try {
             let payload = {
@@ -338,7 +362,6 @@ class DashBoard extends Component {
     }
 
     undoArchive = () => {
-        console.log(UndoTakeNote);
 
         let payload = {
             noteId: UndoTakeNote._id
@@ -412,7 +435,6 @@ class DashBoard extends Component {
     addNoteLabel = (event) => {
         try {
             let data = {}
-            console.log(event);
 
             if (event.target !== undefined) {
 
@@ -429,8 +451,6 @@ class DashBoard extends Component {
 
             let array = this.state.noteLabel;
             let remove = false;
-            console.log("card", this.state.cardId)
-
 
             this.state.noteLabel.forEach((element, index) => {
                 if (element.id === data.id) {
@@ -441,13 +461,10 @@ class DashBoard extends Component {
                 }
             })
             if (remove == false) {
-                console.log("data", data);
-                console.log("state", this.state.cardId)
                 let payload = {
                     noteId: this.state.cardId,
                     label: data
                 }
-                console.log(payload);
 
                 addNoteLabel(payload)
                     .then(updated => {
@@ -456,7 +473,6 @@ class DashBoard extends Component {
                             if (element._id === this.state.cardId) {
                                 element.labels.push(data)
                                 this.setState({ notesArray: arrayNotes })
-                                console.log("updated", updated);
                                 this.setState({ noteLabel: [...this.state.noteLabel, data] })
                             }
 
@@ -584,39 +600,83 @@ class DashBoard extends Component {
         }
     }
     getReminderNotes = () => {
-
         let array = this.state.notesArray.filter(ele => ele.reminder !== null)
         return array
     }
-    getArchiveNotes = () => {
-        let array = this.state.archiveArray
+    getLabelNotes = () => {
+        console.log("get lab2els in");
+
+        let array = []
+        this.state.notesArray.map(ele => {
+            console.log(ele.labels);
+
+
+            ele.labels.forEach(label => {
+                if (label.value === this.props.LabelsState.title)
+                    array.push(ele)
+            })
+        }
+        )
+        console.log("labels array", array);
         return array
+
     }
+    updatedArray = () => {
+        let array = this.state.notesArray
+        array.push(this.props.updatedArray)
+        this.setState({
+            notesArray: array
+        })
+        return this.state.notesArray
+    }
+
     render() {
-        const title = this.props.reminder !== undefined ? this.props.reminder.title : (this.props.ArchiveState !== undefined ? this.props.ArchiveState.title : undefined)
-        const reminder = this.props.reminder !== undefined ? this.props.reminder.reminder : undefined
+        const title = this.props.reminder !== undefined ? this.props.reminder.title :
+            (this.props.ArchiveState !== undefined ? this.props.ArchiveState.title : (this.props.TrashState !== undefined ? this.props.TrashState.title :
+                (this.props.LabelsState !== undefined ? this.props.LabelsState.title : undefined)))
+        const stateReminder = this.props.reminder !== undefined ? this.props.reminder.reminder : undefined
         const stateArchive = this.props.ArchiveState !== undefined ? this.props.ArchiveState.archive : undefined
-        console.log('archive dash',this.props.drawerNotes);
-
-
+        const stateTrash = this.props.TrashState !== undefined ? this.props.TrashState.Trash : undefined
+        const stateLabel = this.props.LabelsState !== undefined ? this.props.LabelsState.labels : undefined
         return (
             <div className="Container" >
+
                 <div>
                     <NavBar labels={this.state.labels}
                         open={this.open} refresh={this.refresh} onSearch={this.search} title={title} />
                 </div>
 
-                <div className="NotesScroll" hidden={stateArchive}>
-                    <TakeNote createNote={this.createNote} NoteArchived={this.NoteArchived} labels={this.state.labels} createLabel={this.createLabel}
-                        newLabel={this.state.newLabel} handelDeleteNewLabel={this.handelDeleteNewLabel} />
-                    {stateArchive ?
-                        <Notes notes={this.props.drawerNotes} view={this.state.View}
+                <div className="NotesScroll" >
+                    <div hidden={stateArchive}>
+                        <TakeNote createNote={this.createNote} NoteArchived={this.NoteArchived} labels={this.state.labels} createLabel={this.createLabel}
+                            newLabel={this.state.newLabel} handelDeleteNewLabel={this.handelDeleteNewLabel} />
+                    </div>
+
+                    {stateReminder ?
+                        <Notes notes={this.state.filterState ? this.state.filterArray : this.getReminderNotes()} view={this.state.View}
                             setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}
                             LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} />
-                        :
-                        <Notes notes={this.state.filterState ? this.state.filterArray : this.state.notesArray} view={this.state.View}
-                            setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}
-                            LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} />
+                        : (stateArchive ?
+
+                            <Notes notes={this.state.filterState ? this.state.filterArchive:this.props.ArchiveNotes} view={this.state.View} ArchiveState={stateArchive}
+                                setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}
+                                LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} />
+                            :
+                            (stateTrash ?
+
+                                <Notes notes={this.state.filterState ? this.state.filterTrash :this.props.TrashNotes} view={this.state.View} TrashState={stateTrash}
+
+                                />
+                                : (
+                                    stateLabel ?
+
+                                        <Notes notes={this.getLabelNotes()} view={this.state.View}
+                                            setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}
+                                            LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} />
+                                        :
+                                        <Notes notes={this.state.filterState ? this.state.filterArray : (this.props.updatedArray !== undefined ? this.updateArray : this.state.notesArray)} view={this.state.View}
+                                            setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}
+                                            LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} />)))
                     }
                 </div>
                 }

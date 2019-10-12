@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import {
-    InputBase, Card, Button, Popper, Paper, Fade, Fab, createMuiTheme, MuiThemeProvider, IconButton, ClickAwayListener, Chip, TextField, Checkbox, Dialog
+    InputBase, Card, Button, Popper, Paper, Fade, Fab, createMuiTheme, MuiThemeProvider, IconButton, ClickAwayListener, Chip, TextField, Checkbox, Dialog, MenuItem
 } from '@material-ui/core';
 import pin from '../../assets/afterPin.svg'
-import { ImageOutlined, Alarm, NotificationImportantOutlined, PersonAddOutlined, ColorLensOutlined, ArchiveOutlined, Label, MoreVertOutlined } from "@material-ui/icons";
+import { ImageOutlined, Alarm, NotificationImportantOutlined, PersonAddOutlined, ColorLensOutlined, ArchiveOutlined, Label, MoreVertOutlined, UnarchiveOutlined } from "@material-ui/icons";
 import { messageService } from '../../minddleware/middleWareServices'
 
 
@@ -55,7 +55,9 @@ class Notes extends Component {
             dailogNoteId: '',
             dailogColor: '',
             iconsVisible: true,
-            visibleCard: ''
+            visibleCard: '',
+            trashAnchorEl: null,
+            trashPoper: false
         }
         this.LabelList = this.LabelList.bind(this);
         messageService.getMessage().subscribe(message => {
@@ -81,6 +83,14 @@ class Notes extends Component {
         this.props.setValue(cardId, this.state.anchorEl, this.state.poper, false)
     }
 
+    NoteUnArchive = (card) => {
+        try {
+            messageService.sendMessage({ key: 'UnArchiveNote', value: card })
+        } catch (err) {
+            console.log(err);
+
+        }
+    }
     NoteArchived = (cardId) => {
         try {
             this.props.setValue(cardId, false, false, true)
@@ -171,11 +181,25 @@ class Notes extends Component {
         this.setState({
             cardDailog: !this.state.cardDailog
         })
+    }
+    handleTrashOPtions = async (cardId, event) => {
+
+        await this.setState({ trashAnchorEl: event.currentTarget, trashPoper: !this.state.trashPoper, cardId: cardId })
+
+    }
+    handleTrashRestore = async () => {
+        await messageService.sendMessage({ key: 'MoreOptionsRestore', cardId: this.state.cardId })
+        this.setState({ cardId: '', trashPoper: false, trashAnchorEl: null })
+
+    }
+    handleTrashDelete = async () => {
+
+        await messageService.sendMessage({ key: 'MoreTrashOPtions', cardId: this.state.cardId })
+        this.setState({ cardId: '', trashPoper: false, trashAnchorEl: null })
 
     }
     render() {
         let cardCss = this.props.view ? 'ListView' : 'notesCard'
-        console.log("notes", this.props.notes);
 
         return (
             <MuiThemeProvider theme={theme}>
@@ -187,11 +211,11 @@ class Notes extends Component {
                         this.props.notes.map((Element) =>
                             <Card className={cardCss} key={Element._id} id={Element._id}
                                 style={{ backgroundColor: Element.color, padding: '10px' }} onMouseEnter={event => this.setState({ visibleCard: Element._id })}
-                                onMouseLeave={event => this.state.NotePoper ? '' : this.setState({ visibleCard: '' })}>
+                                onMouseLeave={event => this.state.NotePoper ? '' : this.state.trashPoper ? '' : this.setState({ visibleCard: '' })}>
 
                                 <div className="titleIcon">
                                     <div >
-                                     
+
                                         <InputBase
                                             name="title"
                                             type="text"
@@ -201,7 +225,7 @@ class Notes extends Component {
                                         />
                                     </div>
 
-                                    <div hidden={this.state.visibleCard === Element._id ? false : true} >
+                                    <div hidden={this.props.TrashState !== undefined ? this.props.TrashState : (this.state.visibleCard === Element._id ? false : true)} >
 
                                         <img className='IconPin' src={pin} />
                                     </div>
@@ -236,7 +260,7 @@ class Notes extends Component {
                                         />
                                     ) : ''}
                                 </div>
-                                <div hidden={this.state.visibleCard === Element._id ? false : true} >
+                                <div hidden={this.props.TrashState !== undefined ? this.props.TrashState : (this.state.visibleCard === Element._id ? false : true)} >
                                     <div className="IconsList" >
                                         <div className='decsIcon' >
                                             <NotificationImportantOutlined titleAccess="Remind me" style={{ zIndex: '999' }} onClick={(event) => this.addReminder(Element._id, event)} />
@@ -244,26 +268,36 @@ class Notes extends Component {
                                             <ColorLensOutlined titleAccess="change Color"
                                                 onClick={(event) => this.setNoteColor(event, Element._id)} />
                                             <ImageOutlined titleAccess=" Add Image" />
-                                            <ArchiveOutlined titleAccess=" Archive Note"
-                                                onClick={() => this.NoteArchived(Element._id)} />
+                                            {this.props.ArchiveState ?
+                                                <UnarchiveOutlined titleAccess='Unarchive Note' onClick={() => this.NoteUnArchive(Element)} />
+                                                :
+                                                <ArchiveOutlined titleAccess=" Archive Note"
+                                                    onClick={() => this.NoteArchived(Element._id)} />
+                                            }
                                             <MoreVertOutlined titleAccess="More"
                                                 onClick={(event) => this.LabelList(Element._id, event)}
 
                                             />
                                         </div>
-
-
                                     </div>
                                 </div>
-
+                                <div hidden={this.props.TrashState !== undefined ? (this.state.visibleCard === Element._id ? false : this.state.trashPoper && this.state.visibleCard === Element._id ? false : true) : true}>
+                                    <MoreVertOutlined titleAccess="More" onClick={(event) => this.handleTrashOPtions(Element._id, event)} />
+                                </div>
                             </Card>
 
-
                         )}
-
-
                 </div>
-
+                <div>
+                    <Popper open={this.state.trashPoper} anchorEl={this.state.trashAnchorEl} placement={'bottom'} >
+                        <ClickAwayListener onClickAway={event => this.setState({ trashAnchorEl: null, trashPoper: false, visibleCard: '' })}>
+                            <Paper>
+                                <MenuItem onClick={this.handleTrashDelete} > Delete Forever </MenuItem>
+                                <MenuItem onClick={this.handleTrashRestore}> Restore</MenuItem>
+                            </Paper>
+                        </ClickAwayListener>
+                    </Popper>
+                </div>
                 <Dialog open={this.state.cardDailog} onClose={this.handleDailogClose} >
                     <div className='DailogCard' style={{ backgroundColor: this.state.dailogColor }}>
                         <div className="titleIcon">

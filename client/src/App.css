@@ -71,13 +71,26 @@
 .labels {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
-  padding: 10px;
+  justify-content: space-between;
+  padding: 5px;
   margin: 5px;
   height: fit-content;
   max-height: 250px;
   overflow-y: scroll;
+}
 
+.editLabels {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  align-content: center;
+  margin: 5px;
+}
+
+
+.activeClass {
+  background-color: '#F5EEC3';
+  border-radius: '0px 50px 50px 0px'
 }
 
 .labelList {
@@ -158,6 +171,41 @@
   justify-content: space-between;
 }
 
+.labelContent {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center
+}
+
+.createLabel {
+  display: flex;
+  align-items: center;
+
+}
+
+.editLabel-options {
+  overflow-y: scroll;
+  height: fit-content;
+  max-height: 250px;
+  display: flex;
+  padding: 5px;
+  margin: 5px;
+  flex-direction: column;
+  color: slategrey;
+  justify-content: space-between;
+}
+
+.EditLabel {
+  width: 250px;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
+  padding: 5px;
+}
+
 .DailogCard {
   padding: 10px;
   width: 35vw;
@@ -181,13 +229,7 @@
 
 }
 
-h1,
-h2,
-h5,
-p {
-  font-family: Georgia, 'Times New Roman', Times, serif;
-  font-style: italic;
-}
+
 
 img {
   border-radius: 50px;
@@ -284,12 +326,7 @@ img {
   justify-content: center;
   flex-direction: row;
   flex-flow: wrap;
-  /* display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  grid-gap: 10px;
-  grid-auto-rows: minmax(180px, auto);
-  grid-auto-flow: dense;
-  padding: 10px; */
+
 }
 
 .NotesScroll {
@@ -307,25 +344,8 @@ img {
   grid-auto-flow: dense;
   min-width: 200px;
   height: fit-content;
-  /* padding: 1rem;
-  font-size: 14px;
-  font-weight: bold;
-  text-transform: uppercase;
-  color: #929796;
-  background-color: #333;
-  border-radius: 5px; */
-  /* height: fit-content; */
-}
 
-/* .notesCard-2 {
-  grid-column-end: notesCard 2;
-  grid-row-end: notesCard 2;
 }
-
-.notesCard-3 {
-  grid-column-end: notesCard 3;
-  grid-row-end: notesCard 4;
-} */
 
 .rotate {
   animation: rotate-spin 1s linear;
@@ -396,36 +416,19 @@ img {
 
 }
 
-/* .noHover {
-  pointer-events: none;
+/* .editLabel {
+  display: flex;
 }
 
-.IconPin {
-  display: none;
-}
-
-.colorPoper:hover .decsIcon {
-  display: flex
-}
-
-.ListView:hover .decsIcon {
-  display: flex
+.editDelete {
+  display: none
 }
 
 
-.notesCard:hover .decsIcon {
-  display: flex
-}
-
-.notesCard:hover .IconPin {
-  display: flex
-}
-
-.ListView:hover .IconPin {
-  display: flex
-}
-
-*/
+.editLabel:hover .editDelete {
+  display: flex;
+  background-color: aqua
+} */
 
 
 @keyframes rotate-spin {

@@ -3,6 +3,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import { Drawer, MenuItem, MuiThemeProvider, createMuiTheme, IconButton } from '@material-ui/core'
 import { EmojiObjectsOutlined, NotificationsOutlined, LabelOutlined, EditOutlined, ArchiveOutlined, DeleteOutline } from '@material-ui/icons'
 import { withRouter, Link } from "react-router-dom";
+import DailogLabel from './DailogLabel'
 const theme = createMuiTheme({
     overrides: {
         MuiDrawer: {
@@ -22,7 +23,8 @@ class SideNav extends Component {
         super(props);
         this.state = {
             sideToggle: false,
-            activeClass: this.props.active !== undefined ? this.props.active : 'notes'
+            activeClass: this.props.active !== undefined ? this.props.active : 'notes',
+            editLabeldailog: false
         }
 
     }
@@ -43,6 +45,33 @@ class SideNav extends Component {
             pathname: '/archive',
             state: { archive: true, title: event.currentTarget.id }
         })
+
+    }
+    handleTrash = (event) => {
+        this.setState({ activeClass: event.currentTarget.id })
+        this.props.history.push({
+            pathname: '/trash',
+            state: { Trash: true, title: event.currentTarget.id }
+        })
+    }
+    handleLabels = (event) => {
+        this.setState({ activeClass: event.currentTarget.id })
+        this.props.history.push({
+            pathname: '/labels',
+            state: { labels: true, title: event.currentTarget.id }
+        })
+    }
+    handleEditLabels = () => {
+        try {
+            this.setState({ editLabeldailog: !this.state.editLabelPoper })
+
+        } catch (err) {
+            console.log(err);
+
+        }
+    }
+    DailogClose = (toogle) => {
+        this.setState({ editLabeldailog: toogle })
 
     }
     render() {
@@ -70,16 +99,16 @@ class SideNav extends Component {
 
                             {this.props.labels.map((element) =>
 
-                                <div style={{
+                                <div id={element.labelName} style={{
                                     backgroundColor: this.state.activeClass === element.labelName ? '#F5EEC3' : ''
                                     , borderRadius: '0px 50px 50px 0px'
-                                }} onClick={event => this.setState({ activeClass: element.labelName })} key={element._id}> <MenuItem className="labelList"> <LabelOutlined titleAccess="Notes" /><div style={{ paddingLeft: "30px" }}> {element.labelName} </div></MenuItem></div>
+                                }} onClick={this.handleLabels} key={element._id}> <MenuItem className="labelList"> <LabelOutlined titleAccess="Notes" /><div style={{ paddingLeft: "30px" }}> {element.labelName} </div></MenuItem></div>
                             )}
                         </div>
                         <div style={{
                             backgroundColor: this.state.activeClass === 'editLabel' ? '#F5EEC3' : ''
                             , borderRadius: '0px 50px 50px 0px'
-                        }} onClick={event => this.setState({ activeClass: 'editLabel' })}><MenuItem className="labelList"> <EditOutlined titleAccess="Edit Label" /><div style={{ paddingLeft: "30px" }}> Edit Labels </div></MenuItem></div>
+                        }} onClick={this.handleEditLabels}><MenuItem className="labelList"> <EditOutlined titleAccess="Edit Label" /><div style={{ paddingLeft: "30px" }}> Edit Labels </div></MenuItem></div>
 
                         <hr style={{ width: "100%" }} />
                         <div>
@@ -88,15 +117,19 @@ class SideNav extends Component {
                                     backgroundColor: this.state.activeClass === 'archive' ? '#F5EEC3' : ''
                                     , borderRadius: '0px 50px 50px 0px'
                                 }} onClick={this.handleArchive}><MenuItem className="labelList"> <ArchiveOutlined titleAccess="Edit Label" /><div style={{ paddingLeft: "30px" }}> Archive </div></MenuItem></div>
-                            <div style={{
-                                backgroundColor: this.state.activeClass === 'trash' ? '#F5EEC3' : ''
-                                , borderRadius: '0px 50px 50px 0px'
-                            }} onClick={event => this.setState({ activeClass: 'trash' })}><MenuItem className="labelList"> <DeleteOutline titleAccess="Edit Label" /><div style={{ paddingLeft: "30px" }}> Trash</div></MenuItem></div>
+                            <div id='trash'
+                                style={{
+                                    backgroundColor: this.state.activeClass === 'trash' ? '#F5EEC3' : ''
+                                    , borderRadius: '0px 50px 50px 0px'
+                                }} onClick={this.handleTrash}>
+                                <MenuItem className="labelList"> <DeleteOutline titleAccess="Edit Label" />
+                                    <div style={{ paddingLeft: "30px" }}> Trash</div></MenuItem></div>
 
                         </div>
                         <hr style={{ width: "100%" }} />
-
                     </Drawer>
+                    {this.state.editLabeldailog ?
+                        <DailogLabel Dailog={this.state.editLabeldailog} DailogClose={this.DailogClose} /> : ''}
                 </div>
             </MuiThemeProvider>
 

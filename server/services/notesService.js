@@ -44,9 +44,7 @@ exports.getNotes = (id) => {
     try {
         return new Promise((resolve, reject) => {
             noteSchema.notes.find({
-                "userId": id,
-                "isTrash": false,
-                "isArchive": false,
+                "userId": id
             }, (err, notes) => {
                 (err) ? reject(err) : resolve(notes)
             })
@@ -158,10 +156,9 @@ exports.updateColor = (req) => {
  */
 exports.deleteNotes = (req) => {
     try {
-        console.log("delete api", req.body)
         return new Promise((resolve, reject) => {
             noteSchema.notes.deleteOne({
-                _id: req.body.id
+                _id: req.body.noteId
             }, (err, deletd) => {
                 if (err) reject(err)
                 else resolve(deletd)
@@ -471,6 +468,8 @@ exports.createLabel = async (req, callback) => {
  */
 exports.updateLabel = (req) => {
     try {
+        console.log("body", req.body);
+
         return new Promise((resolve, reject) => {
             labelSchema.labels.updateOne({
                 '_id': req.body.id

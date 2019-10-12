@@ -94,14 +94,6 @@ exports.login = (req, res) => {
                     res.status(status.notfound).send(response);
 
                 } else {
-                    elasticSearch.createIndex(data, (err, data) => {
-                        if (err) {
-                            console.log('index exist');
-                        }
-                        else {
-                            console.log("index Created sucessfully");
-                        }
-                    })
                     let log = {}
                     log.data = data
                     token.generateToken(data._id, (err, token) => {
@@ -116,12 +108,12 @@ exports.login = (req, res) => {
                             console.log('login in user Id', data._id);
                             model.getNotes(userId)
                                 .then(noteData => {
-                                    console.log(noteData);
 
                                     if (noteData.length > 0) {
                                         elastic.addDocument(noteData)
+                                        let array = noteData.filter(ele => ele.isTrash !== true && ele.isArchive !== true)
                                         details.id = noteData[0].userId
-                                        details.value = noteData
+                                        details.value = array
                                         rediscache.setRedis(details, (err, set) => {
                                             if (err) {
                                                 console.log("cache not stored")
