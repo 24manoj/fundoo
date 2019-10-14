@@ -14,7 +14,7 @@ import {
   Chip,
   Checkbox
 } from "@material-ui/core";
-import "../../App.css";
+import "../../App.scss";
 import {
   Alarm,
   BrushOutlined,
@@ -287,18 +287,16 @@ class Notes extends Component {
         <div className="NoteCreate">
           {!this.state.NoteTake ? (
             <Card className="TakeNote" hidden={this.state.NoteTake}>
-              <div>
-                <InputBase
-                  onClick={event =>
-                    this.setState({
-                      NoteTake: true
-                    })
-                  }
-                  title="Title"
-                  type="text"
-                  placeholder="Take a note..."
-                />
-              </div>
+              <InputBase
+                style={{ width: '80%' }}
+                onClick={event =>
+                  this.setState({
+                    NoteTake: true
+                  })
+                }
+                title="Title"
+                placeholder="Take a note..."
+              />
               <div>
                 <CheckBoxOutlined titleAccess="New List" />
                 <BrushOutlined titleAccess=" new Note with Drawing" />
@@ -345,7 +343,7 @@ class Notes extends Component {
                       <img src={pin} className="Iconpin" />
                     </div>
                   </div>
-                  <div>
+                  <div >
                     <InputBase
                       title="Description"
                       type="text"

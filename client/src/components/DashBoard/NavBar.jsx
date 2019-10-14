@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { SearchRounded, RefreshSharp, ViewAgendaOutlined, ClearAll, GridOnOutlined, Settings } from '@material-ui/icons'
 import Icon from '../../assets/icons8-google-keep.svg';
-import { AppBar, Toolbar, InputBase, Card, createMuiTheme, MuiThemeProvider, Menu, MenuItem, ClickAwayListener, Avatar, Paper, Popper, Button } from '@material-ui/core';
-import '../../App.css';
+import { AppBar, Toolbar, Card, createMuiTheme, MuiThemeProvider, Menu, MenuItem, ClickAwayListener, Avatar, Paper, Popper, Button } from '@material-ui/core';
+import '../../App.scss';
 import { withRouter } from 'react-router-dom'
 import SideNav from './sideNav';
+import Search from './Search'
 import { ProfileUpload } from '../../controller/userController.jsx'
 const theme = createMuiTheme({
     overrides: {
@@ -16,9 +17,6 @@ const theme = createMuiTheme({
         }
     }
 })
-const WAIT_INTERVAL = 1000;
-
-
 class NavBar extends Component {
     sessionValue = JSON.parse(sessionStorage.getItem('UserSession'))
     Fname = this.sessionValue.data.firstName.slice(0, 1)
@@ -41,21 +39,14 @@ class NavBar extends Component {
         this.state.popOver === true ? this.setState({ popOver: false }) : this.setState({ popOver: true })
     }
     NoteToogle = () => {
-        console.log("in");
 
         this.setState({ View: !this.state.View })
         this.props.open(this.state.View)
 
     }
     refresh = async () => {
-        console.log(("before", this.state.animate));
-
         await this.setState({ animate: !this.state.animate })
-        // event.currentTarget.style.animation = 'rotation 2s linea
-        console.log("after", this.state.animate);
-
         this.props.refresh(this.state.animate)
-
     }
 
 
@@ -65,7 +56,6 @@ class NavBar extends Component {
 
     }
     profile = (event) => {
-
         this.setState({
             profileUrl: URL.createObjectURL(event.target.files[0])
         })
@@ -87,10 +77,12 @@ class NavBar extends Component {
         this.props.onSearch(this.state.search)
     }
 
+    search = (state, filt, trash, archive) => {
+        this.props.search(state, filt, trash, archive)
+    }
     render() {
         let animateClass = this.state.animate ? 'rotate' : ''
         const activeClass = this.props.title !== undefined ? this.props.title : undefined
-        console.log("active", activeClass);
 
         return (
             <MuiThemeProvider theme={theme}>
@@ -103,22 +95,7 @@ class NavBar extends Component {
                         </div>
                         <div className="appBar">
                             <div className="NavContent">
-                                <Card className="NavCard" onKeyPress={this.search}>
-                                    <SearchRounded style={{ marginTop: "13px" }} />
-                                    <InputBase
-                                        placeholder="Search"
-                                        rowsMax="10"
-                                        type="string"
-                                        margin="dense"
-                                        autoComplete="true"
-                                        fullWidth
-                                        value={this.state.search}
-
-                                        onChange={(event) => this.setState({ search: event.target.value })}
-                                        onKeyUp={() => { this.searchData(this.state.search) }}
-                                    />
-                                    <div>{this.state.search !== '' ? <ClearAll style={{ marginTop: "12px" }} onClick={(event) => this.setState({ search: '' })} /> : ''}</div>
-                                </Card>
+                                <Search search={this.search} />
                                 <RefreshSharp className={animateClass} onClick={this.refresh} />
                                 {this.state.View ? <ViewAgendaOutlined titleAccess="List View" className="" onClick={this.NoteToogle} /> : <GridOnOutlined titleAccess="Grid View" className="" onClick={this.NoteToogle} />}
                                 <ClickAwayListener onClickAway={event => this.setState({ popOver: false })} >
@@ -169,12 +146,10 @@ class NavBar extends Component {
                                                 <Button variant='contained' type="reset" onClick={this.SignOut}>SignOut
                                         </Button></div>
                                         </div>
-
                                     </Card>
                                 </ClickAwayListener>
                             </Paper>
                         </Popper>
-
                     </Toolbar>
                 </AppBar>
             </MuiThemeProvider>

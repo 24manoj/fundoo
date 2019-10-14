@@ -31,20 +31,19 @@ class Archive extends Component {
                         array.splice(index, 1)
                         this.setState({ ArchiveArray: array, snackBar: true, snackBarMessage: 'Note UnArchived Sucess' })
                         console.log("archive array", this.state.ArchiveArray);
-
-                        // messageService.sendMessage({ key: 'ArchiveNoteUndo', value: ArchiveNote })
                     })
 
             }
         })
     }
-    componentDidMount() {
-        
+    componentWillMount() {
+
         getArchiveNotes()
             .then(archivedNotes => {
                 this.setState(({
                     ArchiveArray: archivedNotes.data.data
                 }))
+
             })
             .catch(err => {
                 console.log(err);
@@ -67,13 +66,14 @@ class Archive extends Component {
                     snackBarMessage: 'Undo Archive Sucess'
                 })
 
+
             })
     }
     render() {
 
         return (
             <div>
-                <DashBoard ArchiveState={this.props.location.state} ArchiveNotes={this.state.ArchiveArray}  />
+                <DashBoard ArchiveState={this.props.location.state} ArchiveNotes={this.state.ArchiveArray} />
                 <Snackbar anchorOrigin={{
                     vertical: "bottom",
                     horizontal: "left"

@@ -4,7 +4,7 @@ import Glogo from '../assets/google_icon.png'
 import { Link, withRouter } from 'react-router-dom';
 import { Cancel } from '@material-ui/icons'
 import { Card, Fab, Button, MuiThemeProvider, TextField, Snackbar, DialogContent, Dialog, DialogTitle, DialogContentText, DialogActions } from '@material-ui/core';
-import '../App.css'
+import '../App.scss'
 import { loginControl, SocialLogin, forgotPassword } from '../controller/userController'
 
 /**

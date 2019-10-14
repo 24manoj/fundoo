@@ -1,8 +1,7 @@
 import React from 'react'
 import { Dialog, TextField, MenuItem } from '@material-ui/core'
 import { getLabels, createLabel, updateLabel, deleteLabel } from '../../controller/notesController'
-import { Label, Edit, Done, LabelOutlined, EditOutlined, DoneOutline, Add, DeleteOutline } from '@material-ui/icons'
-import { create } from 'jss'
+import {  LabelOutlined, EditOutlined, DoneOutline, Add, DeleteOutline } from '@material-ui/icons'
 import { messageService } from '../../minddleware/middleWareServices'
 class DailogLabel extends React.Component {
     constructor(props) {
@@ -71,8 +70,6 @@ class DailogLabel extends React.Component {
                 id: element._id,
                 labelName: this.state.labelValue
             }
-            console.log("payload", payload);
-
             updateLabel(payload)
                 .then(updated => {
                     let array = this.state.Labels;

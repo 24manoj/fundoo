@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import {
     TextField, Button, MuiThemeProvider, Card, Snackbar, createMuiTheme
 } from "@material-ui/core";
-import '../App.css';
+import '../App.scss';
 import { Register } from '../controller/userController'
 import { Cancel } from '@material-ui/icons';
 const theme = createMuiTheme({

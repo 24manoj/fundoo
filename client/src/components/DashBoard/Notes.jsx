@@ -6,8 +6,6 @@ import pin from '../../assets/afterPin.svg'
 import { ImageOutlined, Alarm, NotificationImportantOutlined, PersonAddOutlined, ColorLensOutlined, ArchiveOutlined, Label, MoreVertOutlined, UnarchiveOutlined } from "@material-ui/icons";
 import { messageService } from '../../minddleware/middleWareServices'
 
-
-
 const theme = createMuiTheme({
     overrides: {
         MuiFab: {
@@ -15,12 +13,16 @@ const theme = createMuiTheme({
                 width: '25px',
                 height: '25px'
             }
-        }, MuiPaper: {
+        },
+        MuiPaper: {
             elevation24: {
                 boxShadow: 'none'
             },
+            elevation1:{
+        boxShadow: ' 5px 8px 14px 1px rgba(0,0,0,0.2), 1px 2px 0px 0.5px rgba(0,0,0,0.14), -2px 2px 1px -1px rgba(0,0,0,0.12)'
+            },
             rounded: {
-                borderRadius: '20px'
+                borderRadius: '7px'
 
             }
         },
@@ -61,7 +63,6 @@ class Notes extends Component {
         }
         this.LabelList = this.LabelList.bind(this);
         messageService.getMessage().subscribe(message => {
-            console.log('in notes controller', message.text.key);
 
             if (message.text.key === 'updateReminder') {
                 this.setState({
@@ -215,7 +216,6 @@ class Notes extends Component {
 
                                 <div className="titleIcon">
                                     <div >
-
                                         <InputBase
                                             name="title"
                                             type="text"
@@ -225,10 +225,8 @@ class Notes extends Component {
                                         />
                                     </div>
 
-                                    <div hidden={this.props.TrashState !== undefined ? this.props.TrashState : (this.state.visibleCard === Element._id ? false : true)} >
+                                    <img className={this.props.TrashState !== undefined ? 'IconPin-hide' : (this.state.visibleCard === Element._id ? '' : 'IconPin-hide')} src={pin} />
 
-                                        <img className='IconPin' src={pin} />
-                                    </div>
                                 </div>
                                 <div style={{ width: "100%" }}>
                                     <div>
@@ -260,114 +258,114 @@ class Notes extends Component {
                                         />
                                     ) : ''}
                                 </div>
-                                <div hidden={this.props.TrashState !== undefined ? this.props.TrashState : (this.state.visibleCard === Element._id ? false : true)} >
-                                    <div className="IconsList" >
-                                        <div className='decsIcon' >
-                                            <NotificationImportantOutlined titleAccess="Remind me" style={{ zIndex: '999' }} onClick={(event) => this.addReminder(Element._id, event)} />
-                                            <PersonAddOutlined titleAccess="Collaborate" />
-                                            <ColorLensOutlined titleAccess="change Color"
-                                                onClick={(event) => this.setNoteColor(event, Element._id)} />
-                                            <ImageOutlined titleAccess=" Add Image" />
-                                            {this.props.ArchiveState ?
-                                                <UnarchiveOutlined titleAccess='Unarchive Note' onClick={() => this.NoteUnArchive(Element)} />
-                                                :
-                                                <ArchiveOutlined titleAccess=" Archive Note"
-                                                    onClick={() => this.NoteArchived(Element._id)} />
-                                            }
-                                            <MoreVertOutlined titleAccess="More"
-                                                onClick={(event) => this.LabelList(Element._id, event)}
-
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div hidden={this.props.TrashState !== undefined ? (this.state.visibleCard === Element._id ? false : this.state.trashPoper && this.state.visibleCard === Element._id ? false : true) : true}>
-                                    <MoreVertOutlined titleAccess="More" onClick={(event) => this.handleTrashOPtions(Element._id, event)} />
-                                </div>
-                            </Card>
-
-                        )}
-                </div>
-                <div>
-                    <Popper open={this.state.trashPoper} anchorEl={this.state.trashAnchorEl} placement={'bottom'} >
-                        <ClickAwayListener onClickAway={event => this.setState({ trashAnchorEl: null, trashPoper: false, visibleCard: '' })}>
-                            <Paper>
-                                <MenuItem onClick={this.handleTrashDelete} > Delete Forever </MenuItem>
-                                <MenuItem onClick={this.handleTrashRestore}> Restore</MenuItem>
-                            </Paper>
-                        </ClickAwayListener>
-                    </Popper>
-                </div>
-                <Dialog open={this.state.cardDailog} onClose={this.handleDailogClose} >
-                    <div className='DailogCard' style={{ backgroundColor: this.state.dailogColor }}>
-                        <div className="titleIcon">
-                            <div >
-                                <InputBase
-                                    name="title"
-                                    type="text"
-                                    value={this.state.dailogTitleValue}
-                                    onChange={this.handleTitle}
-                                    tabIndex='1'
-
-                                />
-                            </div>
-                            <div >
-                                <img className='IconPin' src={pin} />
-                            </div>
-                        </div>
-                        <div style={{ width: "100%" }}>
-                            <div>
-                                <InputBase
-                                    name="description"
-                                    type="text"
-                                    value={this.state.dailogDescvalue}
-                                    onChange={event => this.setState({ dailogDescvalue: event.target.value })}
-                                    multiline />
-                            </div>
-                            {this.state.dailogReminder !== null ?
-                                <div >
-                                    <Chip
-                                        style={{ width: 'auto' }}
-                                        icon={<Alarm />}
-                                        label={(this.state.dailogReminder !== null ? new Date(this.state.dailogReminder).toString().slice(0, 15) : null)
-                                        }
-                                        onDelete={event => this.undoReminder(this.state.dailogNoteId, event)}
+                                {this.props.TrashState === undefined ?
+                                    <div  className={this.state.visibleCard === Element._id ? "IconsList" : "IconsList-hide"}>
+                                    <div className='decsIcon' >
+                                    <NotificationImportantOutlined titleAccess="Remind me" style={{ zIndex: '999' }} onClick={(event) => this.addReminder(Element._id, event)} />
+                                    <PersonAddOutlined titleAccess="Collaborate" />
+                                    <ColorLensOutlined titleAccess="change Color"
+                                        onClick={(event) => this.setNoteColor(event, Element._id)} />
+                                    <ImageOutlined titleAccess=" Add Image" />
+                                    {this.props.ArchiveState ?
+                                        <UnarchiveOutlined titleAccess='Unarchive Note' onClick={() => this.NoteUnArchive(Element)} />
+                                        :
+                                        <ArchiveOutlined titleAccess=" Archive Note"
+                                            onClick={() => this.NoteArchived(Element._id)} />
+                                    }
+                                    <MoreVertOutlined titleAccess="More"
+                                        onClick={(event) => this.LabelList(Element._id, event)}
 
                                     />
-                                </div> : ''}
-                            {this.state.dailogLabels.length > 0 ? this.state.dailogLabels.map((labelvalue) =>
-                                <Chip
-                                    key={labelvalue.id}
-                                    style={{ width: 'auto' }}
-                                    label={labelvalue.value
-                                    }
-                                    onDelete={() => this.removeNoteLabel(this.state.dailogNoteId, labelvalue.id)}
-                                />
-                            ) : ''}
-                        </div>
-                        <div className="IconsList">
-                            <div className="decsIcon">
-                                <NotificationImportantOutlined titleAccess="Remind me" onClick={(event) => this.addReminder(this.state.dailogNoteId, event)} />
-                                <PersonAddOutlined titleAccess="Collaborate" />
-                                <ColorLensOutlined titleAccess="change Color"
-                                    onClick={(event) => this.setNoteColor(event, this.state.dailogNoteId)} />
-                                <ImageOutlined titleAccess=" Add Image" />
-                                <ArchiveOutlined titleAccess=" Archive Note"
-                                    onClick={() => this.NoteArchived(this.state.dailogNoteId)} />
-                                <MoreVertOutlined titleAccess="More"
-                                    onClick={(event) => this.LabelList(this.state.dailogNoteId, event)}
-                                />
-                            </div>
-                            <div>
-                                <Button onClick={this.updateNotes} >
-                                    Close
-                                </Button>
-                            </div>
+                                </div>
+                                </div>
+:
+                                <div className={ this.state.visibleCard === Element._id ? 'IconsList' : this.state.trashPoper && this.state.visibleCard === Element._id ? 'IconsList' : 'IconsList-hide'}>
+                        <MoreVertOutlined titleAccess="More" onClick={(event) => this.handleTrashOPtions(Element._id, event)} />
+                    </div>}
+                            </Card>
 
+                )}
+                </div>
+            <div>
+                <Popper open={this.state.trashPoper} anchorEl={this.state.trashAnchorEl} placement={'bottom'} >
+                    <ClickAwayListener onClickAway={event => this.setState({ trashAnchorEl: null, trashPoper: false, visibleCard: '' })}>
+                        <Paper>
+                            <MenuItem onClick={this.handleTrashDelete} > Delete Forever </MenuItem>
+                            <MenuItem onClick={this.handleTrashRestore}> Restore</MenuItem>
+                        </Paper>
+                    </ClickAwayListener>
+                </Popper>
+            </div>
+            <Dialog open={this.state.cardDailog} onClose={this.handleDailogClose} >
+                <div className='DailogCard' style={{ backgroundColor: this.state.dailogColor }}>
+                    <div className="titleIcon">
+                        <div >
+                            <InputBase
+                                name="title"
+                                type="text"
+                                value={this.state.dailogTitleValue}
+                                onChange={this.handleTitle}
+                                tabIndex='1'
+
+                            />
+                        </div>
+                        <div >
+                            <img className='IconPin' src={pin} />
+                        </div>
+                    </div>
+                    <div style={{ width: "100%" }}>
+                        <div>
+                            <InputBase
+                                name="description"
+                                type="text"
+                                value={this.state.dailogDescvalue}
+                                onChange={event => this.setState({ dailogDescvalue: event.target.value })}
+                                multiline />
+                        </div>
+                        {this.state.dailogReminder !== null ?
+                            <div >
+                                <Chip
+                                    style={{ width: 'auto' }}
+                                    icon={<Alarm />}
+                                    label={(this.state.dailogReminder !== null ? new Date(this.state.dailogReminder).toString().slice(0, 15) : null)
+                                    }
+                                    onDelete={event => this.undoReminder(this.state.dailogNoteId, event)}
+
+                                />
+                            </div> : ''}
+                        {this.state.dailogLabels.length > 0 ? this.state.dailogLabels.map((labelvalue) =>
+                            <Chip
+                                key={labelvalue.id}
+                                style={{ width: 'auto' }}
+                                label={labelvalue.value
+                                }
+                                onDelete={() => this.removeNoteLabel(this.state.dailogNoteId, labelvalue.id)}
+                            />
+                        ) : ''}
+                    </div>
+                    <div className="IconsList">
+                        <div className="decsIcon">
+                            <NotificationImportantOutlined titleAccess="Remind me" onClick={(event) => this.addReminder(this.state.dailogNoteId, event)} />
+                            <PersonAddOutlined titleAccess="Collaborate" />
+                            <ColorLensOutlined titleAccess="change Color"
+                                onClick={(event) => this.setNoteColor(event, this.state.dailogNoteId)} />
+                            <ImageOutlined titleAccess=" Add Image" />
+                            <ArchiveOutlined titleAccess=" Archive Note"
+                                onClick={() => this.NoteArchived(this.state.dailogNoteId)} />
+                            <MoreVertOutlined titleAccess="More"
+                                onClick={(event) => this.LabelList(this.state.dailogNoteId, event)}
+                            />
+                        </div>
+                        <div>
+                            <Button onClick={this.updateNotes} >
+                                Close
+                                </Button>
                         </div>
 
                     </div>
-                </Dialog>
+
+                </div>
+            </Dialog>
             </MuiThemeProvider>
         );
     }
