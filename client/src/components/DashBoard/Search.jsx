@@ -36,7 +36,7 @@ class Search extends React.Component {
         return (
 
             <Card className="NavCard" onKeyPress={this.search}>
-                <SearchRounded style={{ marginTop: "13px" }} />
+                <SearchRounded  />
                 <InputBase
                     placeholder="Search"
                     rowsMax="10"

@@ -197,7 +197,7 @@ exports.getNotes = (req, res) => {
     try {
         details.id = req.decoded.id
         details.value = []
-        redisCache.getRedis(details, (err, data) => {
+=        redisCache.getRedis(details, (err, data) => {
             if (data) {
                 response.sucess = true,
                     response.data = data,

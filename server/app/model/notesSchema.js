@@ -28,6 +28,9 @@ const note = new mongoose.Schema({
     }],
     color: {
         type: String
+    },
+    index: {
+        type:Number
     }
 }, {
     timestamps: true

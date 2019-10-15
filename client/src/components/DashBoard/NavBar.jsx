@@ -13,8 +13,14 @@ const theme = createMuiTheme({
             colorPrimary: {
                 backgroundColor: 'white',
                 color: "#4D5656"
-            }
+            },
+            positionFixed: {
+                position: 'unset'
+            },
+
         }
+
+
     }
 })
 class NavBar extends Component {
@@ -134,9 +140,10 @@ class NavBar extends Component {
                                             <div className="Avatar-text">
                                                 <h1>{this.sessionValue.data.firstName}</h1>
                                                 <h4>{this.sessionValue.data.email}</h4>
+
                                             </div>
                                         </div>
-
+                                        <span style={{ marginLeft: '2px' }}>Number of notes created ::{this.props.count}</span>
                                         <hr style={{ width: "100%" }} />
                                         <div className="Avatar-button">
                                             <div>

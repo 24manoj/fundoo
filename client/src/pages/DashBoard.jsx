@@ -105,6 +105,12 @@ class DashBoard extends Component {
             })
         getNotes().then(notes => {
             AllNotes = notes.data.data;
+            AllNotes.sort((a, b) => {
+                return ((a.index < b.index) ? -1 : ((a.index > b.index) ? 1 : 0));
+            })
+
+            console.log("sorted array",AllNotes);
+            
             this.setState({
                 notesArray: AllNotes
             })
@@ -195,7 +201,7 @@ class DashBoard extends Component {
             }
             updateColor(payload)
                 .then(updated => {
-                
+
                     let index = this.state.notesArray.map(ele => ele._id).indexOf(this.state.cardId)
                     let array = this.state.notesArray;
                     array[index].color = this.state.NoteColor;
@@ -547,13 +553,9 @@ class DashBoard extends Component {
             if (this.props.ArchiveNotes !== undefined) {
                 this.setState({
                     notesArray: this.props.ArchiveNotes
-
                 })
                 return this.props.ArchiveNotes
             }
-
-
-
         } catch (err) {
             console.log(err);
 
@@ -562,8 +564,17 @@ class DashBoard extends Component {
     search = (state, filt, trash, archive) => {
         this.setState({ filterState: state, filterArray: filt, filterTrash: trash, filterArchive: archive })
         console.log("filter state", this.state.filterState);
-
-
+    }
+    count = () => {
+        let count = 0;
+        if (this.props.TashNotes !== undefined) {
+            count += this.props.TrashNotes.length
+        } else if (this.props.ArchiveNotes !== undefined) {
+            count += this.props.ArchiveNotes.length
+        } else {
+            count += this.state.notesArray.length
+        }
+        return count
     }
     render() {
         const title = this.props.reminder !== undefined ? this.props.reminder.title :
@@ -577,13 +588,11 @@ class DashBoard extends Component {
             <div className="Container" >
                 <div>
                     <NavBar labels={this.state.labels}
-                        open={this.open} refresh={this.refresh} search={this.search} title={title} />
+                        open={this.open} refresh={this.refresh} search={this.search} title={title} count={this.count()} />
                 </div>
                 <div className="NotesScroll" >
-                    <div hidden={stateArchive}>
-                        <TakeNote createNote={this.createNote} NoteArchived={this.NoteArchived} labels={this.state.labels} createLabel={this.createLabel}
-                            newLabel={this.state.newLabel} handelDeleteNewLabel={this.handelDeleteNewLabel} />
-                    </div>
+                    <TakeNote ArchiveState={stateArchive} createNote={this.createNote} NoteArchived={this.NoteArchived} labels={this.state.labels} createLabel={this.createLabel}
+                        newLabel={this.state.newLabel} handelDeleteNewLabel={this.handelDeleteNewLabel} />
 
                     {stateReminder ?
                         <Notes notes={this.state.filterState ? this.state.filterArray : this.getReminderNotes()} view={this.state.View}

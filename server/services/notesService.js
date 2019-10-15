@@ -6,10 +6,13 @@ const noteSchema = require('../app/model/notesSchema')
  * @param req request contains http request
  * @return returns  promise data resolve or reject
  */
-exports.createNotes = (req) => {
+exports.createNotes = async (req) => {
     try {
-        console.log("in controler", req.body.reminder)
+        let countNotes = 0;
+        await noteSchema.notes.find().countDocuments((err, count) => {
+            countNotes = count + 1;
 
+        })
         return new Promise((resolve, reject) => {
             let noteDetails = new noteSchema.notes({
                 "userId": req.decoded.id,
@@ -18,8 +21,8 @@ exports.createNotes = (req) => {
                 "color": req.body.color,
                 "isArchive": req.body.Archive,
                 "labels": req.body.label,
-                "reminder": (req.body.reminder !== undefined ? req.body.reminder + 1 : null)
-
+                "reminder": (req.body.reminder !== undefined ? req.body.reminder + 1 : null),
+                "index": countNotes
             });
             //save data in collection
             noteDetails.save(noteDetails, (err, data) => {

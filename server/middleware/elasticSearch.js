@@ -84,7 +84,8 @@ exports.addDocument = (req) => {
                 "color": element.color,
                 "reminder": element.reminder,
                 "isTrash": element.isTrash,
-                "isArchive": element.isArchive
+                "isArchive": element.isArchive,
+                "index": element.inddex
             }
             bulk.push(data)
 
@@ -109,7 +110,7 @@ exports.searchkey = (req, callback) => {
                 query_string: {
                     query: `*${req.body.search}*`,
                     analyze_wildcard: true,
-                    fields: ["title", "content", "labels", "id", "reminder", "color"]
+                    fields: ["title", "content", "labels", "id", "reminder", "color", "index"]
                 }
             }
         }
@@ -118,7 +119,7 @@ exports.searchkey = (req, callback) => {
                 callback(null, searchresult)
             })
             .catch(err => {
-                callback(null,[])
+                callback(null, [])
             })
     } catch (e) {
         // console.log(e)

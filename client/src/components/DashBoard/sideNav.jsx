@@ -4,18 +4,24 @@ import { Drawer, MenuItem, MuiThemeProvider, createMuiTheme, IconButton } from '
 import { EmojiObjectsOutlined, NotificationsOutlined, LabelOutlined, EditOutlined, ArchiveOutlined, DeleteOutline } from '@material-ui/icons'
 import { withRouter, Link } from "react-router-dom";
 import DailogLabel from './DailogLabel'
+import { messageService } from '../../minddleware/middleWareServices';
+import { async } from 'rxjs/internal/scheduler/async';
 const theme = createMuiTheme({
     overrides: {
         MuiDrawer: {
             paper: {
                 top: "71px",
-                width: "20%",
                 zIndex: 1000,
                 overflowY: 'scroll'
             },
 
-        }
+        },
+        MuiIconButton: {
+            root: {
+                padding: '0px'
 
+            }
+        }
     }
 })
 class SideNav extends Component {
@@ -74,11 +80,17 @@ class SideNav extends Component {
         this.setState({ editLabeldailog: toogle })
 
     }
+    toogle = async () => {
+        await this.setState({
+            sideToggle: !this.state.sideToggle
+        })
+        messageService.sendMessage({ key: 'sideNav', value: this.state.sideToggle })
+    }
     render() {
         return (
             <MuiThemeProvider theme={theme}>
                 <div className="NavSideBar">
-                    <IconButton onClick={event => this.state.sideToggle === true ? this.setState({ sideToggle: false }) : this.setState({ sideToggle: true })}>
+                    <IconButton onClick={this.toogle}>
                         <MenuIcon />
                     </IconButton>
                     <Drawer className="sideNav" anchor="left" open={this.state.sideToggle} variant="persistent" onClose={event => this.setState({ sideToggle: false })} >

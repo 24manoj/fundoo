@@ -12,25 +12,28 @@ class Trash extends Component {
             cardId: ''
         }
 
-        messageService.getMessage().subscribe(async message => {
+        messageService.getMessage().subscribe( async message => {
             if (message.text.key === 'MoreTrashOPtions') {
-                this.setState({ cardId: message.text.cardId })
-                let payload = await { 
+                await this.setState({ cardId: message.text.cardId })
+
+                let payload =  { 
                     noteId: this.state.cardId,
                 }
+                console.log("cardId", payload);
+
 
                 deleteNotes(payload)
                     .then(async deltedNote => {
                         let array = this.state.TrashArray
                         let index = array.map(ele => ele._id).indexOf(this.state.cardId)
                         array.splice(index, 1)
-                        await this.setState({ TrashArray: array, cardId: '' })
+                         this.setState({ TrashArray: array, cardId: '' })
                     })
                     .catch(err => console.log(err)
                     )
             }
             if (message.text.key === 'MoreOptionsRestore') {
-                await this.setState({ cardId: message.text.cardId })
+                await  this.setState({ cardId: message.text.cardId })
                 let payload = {
                     noteId: this.state.cardId,
                 }
