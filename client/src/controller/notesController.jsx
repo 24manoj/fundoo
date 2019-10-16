@@ -488,7 +488,7 @@ let updateLabel = (payload) => {
 
         return new Promise((resolve, reject) => {
             axios.put(`${process.env.REACT_APP_BASE_URL}/note/updateLabel`, payload, { headers: headers })
-                .then(created => {
+                .thenupdateIndex(created => {
                     resolve(created)
                 })
                 .catch(err => {
@@ -524,7 +524,28 @@ let deleteLabel = (payload) => {
 
     }
 }
+let updateIndex = (payload) => {
+    try {
+        const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
+        const headers = {
+            "Content-Type": "application/json",
+            token: sessionValue.token
+        }
+        return new Promise((resolve, reject) => {
+            axios.put(`${process.env.REACT_APP_BASE_URL}/note/updateIndex`, payload, { headers: headers })
+                .then(updated => {
+                    resolve(updated)
+                })
+                .catch(err => {
+                    reject(err)
+                })
+        })
+    } catch (err) {
+        console.log(err)
+
+    }
+}
 export {
-    getNotes, getLabels, searchText, createNote, updateColor, updateArchive, UndoArchive, updateReminder, undoReminder,
+    getNotes, getLabels, searchText, createNote, updateColor, updateArchive, UndoArchive, updateReminder, undoReminder, updateIndex,
     removeNoteLabel, addNoteLabel, NoteTrash, undoTrash, createLabel, getArchiveNotes, getTrashNotes, deleteNotes, restoreNotes, updateLabel, deleteLabel
 }

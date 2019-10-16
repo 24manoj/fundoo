@@ -618,7 +618,7 @@ class DashBoard extends Component {
                                             LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} />)))
                     }
                 </div>
-                }
+                
                 <Popper open={this.state.colorPoper} anchorEl={this.state.AnchorEl}
                     placement={'top-start'}
                     style={{ width: '100px', zIndex: '1300' }} >
@@ -697,7 +697,6 @@ class DashBoard extends Component {
                                 <IconButton onClick={() => this.createLabelNote(this.state.labelValue)} > <AddCircleOutline />Create Label</IconButton>
                                 <p>"{this.state.labelValue}"</p>
                             </div>
-
                         </Card>
                     </ClickAwayListener>
                 </Popper>

@@ -81,6 +81,43 @@ exports.getArchiveNotes = (id) => {
 }
 
 
+
+
+/**
+ * @desc gets validated request from services,performs database operations needed
+ * returns notes data present in database,based on conditions given
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
+exports.updateIndex = (req, res) => {
+    try {
+        console.log("source", req.body.source, "destination", req.body.destination);
+
+        noteSchema.notes.updateOne({
+            _id: req.body.source.id
+        }, {
+            'index': req.body.source.index
+        }, (err, updated) => {
+            if (err) res.status(500).send(err)
+            else {
+                noteSchema.notes.updateOne({
+                    _id: req.body.destination.id
+                }, {
+                    'index': req.body.destination.index
+                }, (err, updated) => {
+                    if (err) res.status(500).send(err)
+                    else
+                        res.status(200).send(updated)
+                })
+            }
+
+        })
+
+    } catch (e) {
+        console.log(e)
+    }
+}
+
 /**
  * @desc gets validated request from services,performs database operations needed
  * returns notes data present in database,based on conditions given

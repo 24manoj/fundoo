@@ -1,6 +1,7 @@
 let noteRouter = require('express').Router();
 let auth = require('../middleware/auth')
 let notesController = require('../controller/notescontroller')
+let services = require('../services/notesService')
 /** @description routes to specified endPoints */
 noteRouter.post('/createNotes', auth.verifyUser, notesController.createNotes);
 noteRouter.get('/getNotes', auth.verifyUser, notesController.getNotes)
@@ -23,4 +24,6 @@ noteRouter.get('/getLabels', auth.verifyUser, notesController.getLabels)
 noteRouter.post('/addCollaborate', auth.verifyUser, notesController.addCollaborate)
 noteRouter.delete('/removeCollaborate', notesController.removeCollaborate)
 noteRouter.put('/updateColor', auth.verifyUser, notesController.updateColor)
+noteRouter.put('/updateIndex', auth.verifyUser, services.updateIndex)
+
 module.exports = noteRouter
