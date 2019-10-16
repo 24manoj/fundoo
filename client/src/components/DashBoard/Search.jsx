@@ -24,7 +24,8 @@ class Search extends React.Component {
         } else {
             searchNotes(payload)
                 .then(result => {
-                    this.props.search(true, result.filt, result.Trash, result.Archive)
+
+                    this.props.search(true, result.filt, result.trash, result.archive)
                 })
                 .catch(err => console.log(err)
                 )
@@ -36,7 +37,7 @@ class Search extends React.Component {
         return (
 
             <Card className="NavCard" onKeyPress={this.search}>
-                <SearchRounded  />
+                <SearchRounded />
                 <InputBase
                     placeholder="Search"
                     rowsMax="10"

@@ -391,17 +391,23 @@
  }
 
 
-//  .sideToggle {
-//    margin-left: 50px;
-//    transition: margin-left 0.25s;
+ //  .sideToggle {
+ //    margin-left: 50px;
+ //    transition: margin-left 0.25s;
 
-//  }
-
- .noteAlign {
-   width: 80%;
-   justify-content: center;
+ //  }
+ .noteAlign-count {
    display: flex;
    flex-direction: row;
+   flex-wrap: wrap;
+   justify-content: center;
+ }
+
+ .noteAlign {
+   width: 90%;
+   justify-content: center;
+   display: flex;
+   flex-direction: column;
    flex-wrap: wrap;
  }
 

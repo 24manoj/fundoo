@@ -40,9 +40,16 @@ class Archive extends Component {
 
         getArchiveNotes()
             .then(archivedNotes => {
-                this.setState(({
-                    ArchiveArray: archivedNotes.data.data
-                }))
+                let AllNotes = archivedNotes.data.data
+                AllNotes.sort((a, b) => {
+                    return ((a.index < b.index) ? -1 : ((a.index > b.index) ? 1 : 0));
+                })
+                // let newArray = AllNotes.filter(ele => ele.index!==undefined).sort()
+                this.setState({
+                    notesArray: AllNotes
+                })
+
+              
 
             })
             .catch(err => {

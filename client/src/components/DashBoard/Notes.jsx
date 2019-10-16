@@ -227,7 +227,7 @@ class Notes extends Component {
             return;
         }
 
-        if (source.droppableId === destination.droppableId) {
+        if (source.droppableId === destination.droppableId && destination !== null) {
             const items = await reorder(
                 this.props.notes,
                 source.index,
@@ -237,11 +237,11 @@ class Notes extends Component {
                 source: { id: this.props.notes[source.index]._id, index: destination.index },
                 destination: { id: this.props.notes[destination.index]._id, index: source.index }
             }
-            console.log("drag",payload);
+            console.log("drag", payload);
             updateIndex(payload)
                 .then(updated => {
-                    console.log("updated", updated
-                    );
+
+                    messageService.sendMessage({ key: 'updateIndex', value: payload })
 
                 })
                 .catch(err => {
@@ -259,105 +259,118 @@ class Notes extends Component {
         return (
             <MuiThemeProvider theme={theme}>
                 <div className={view} >
+
                     {this.props.notes.length <= 0 ?
                         <div className="searchNote">
                             No Note Found!!!!
                         </div> :
+
                         <DragDropContext onDragEnd={this.onDragEnd}>
+
                             <Droppable droppableId="droppable">
                                 {(provided, snapshot) => (
                                     <div
                                         ref={provided.innerRef}
-                                        className='noteAlign' style={{ transform: this.state.sideNav ? 'translate(8rem,0px)' : '' }}
-                                    // style={getListStyle(snapshot.isDraggingOver)}>
+                                        className='noteAlign' style={{ transform: this.state.sideNav ? 'translate(10rem,0px)' : '' }}
                                     >
 
-                                        {this.props.notes.map((Element, index) =>
-                                            <Draggable
-                                                key={Element._id}
-                                                draggableId={Element._id}
-                                                index={Element.index}>
 
-                                                {(provided, snapshot) => (
-                                                    <div
-                                                        ref={provided.innerRef}
-                                                        {...provided.draggableProps}
-                                                        {...provided.dragHandleProps}
-                                                    // style={{ position: 'relative', display: 'inline-block' }}
-                                                    >
-                                                        <Card className={cardCss} key={Element.index} id={Element._id}
-                                                            style={{ backgroundColor: Element.color, padding: '10px' }} onMouseEnter={event => this.setState({ visibleCard: Element._id })}
-                                                            onMouseLeave={event => this.state.NotePoper ? '' : this.state.trashPoper ? '' : this.setState({ visibleCard: '' })}>
-                                                            <div className="titleIcon">
-                                                                <div >
-                                                                    <InputBase
-                                                                        name="title"
-                                                                        value={Element.title}
-                                                                        tabIndex='1'
-                                                                        onClick={(event) => this.handleDailog(Element, event)}
-                                                                    />
-                                                                </div>
+                                        <div >
+                                            <p> Notes in dashboard::{this.props.notes.length}</p>
+                                        </div>
+                                        <div>
+                                            {this.props.notes.map((Element, index) =>
+                                                <Draggable
+                                                    key={Element._id}
+                                                    draggableId={Element._id}
+                                                    index={Element.index}>
 
-                                                                <img className={this.props.TrashState !== undefined ? 'IconPin-hide' : (this.state.visibleCard === Element._id ? '' : 'IconPin-hide')} src={pin} />
-
-                                                            </div>
-                                                            <div style={{ width: "100%" }}>
-                                                                <div>
-                                                                    <InputBase
-                                                                        name="description"
-                                                                        value={Element.content}
-                                                                        onClick={(event) => this.handleDailog(Element, event)}
-                                                                        multiline />
-                                                                </div>
-                                                                {Element.reminder !== null ?
+                                                    {(provided, snapshot) => (
+                                                        <div
+                                                            ref={provided.innerRef}
+                                                            {...provided.draggableProps}
+                                                            {...provided.dragHandleProps}
+                                                        // style={{ position: 'relative', display: 'inline-block' }}
+                                                        >
+                                                            <Card className={cardCss} key={Element.index} id={Element._id}
+                                                                style={{ backgroundColor: Element.color, padding: '10px' }} onMouseEnter={event => this.setState({ visibleCard: Element._id })}
+                                                                onMouseLeave={event => this.state.NotePoper ? '' : this.state.trashPoper ? '' : this.setState({ visibleCard: '' })}>
+                                                                <div className="titleIcon">
                                                                     <div >
-                                                                        <Chip
-                                                                            style={{ width: 'auto' }}
-                                                                            icon={<Alarm />}
-                                                                            label={(Element.reminder !== null ? new Date(Element.reminder).toString().slice(0, 15) : null)
-                                                                            }
-                                                                            onDelete={event => this.undoReminder(Element._id, event)}
-
-                                                                        />
-                                                                    </div> : ''}
-                                                                {Element.labels.length > 0 ? Element.labels.map((labelvalue) =>
-                                                                    <Chip
-                                                                        key={labelvalue.id}
-                                                                        style={{ width: 'auto' }}
-                                                                        label={labelvalue.value
-                                                                        }
-                                                                        onDelete={() => this.removeNoteLabel(Element._id, labelvalue.id)}
-                                                                    />
-                                                                ) : ''}
-                                                            </div>
-                                                            {this.props.TrashState === undefined ?
-                                                                <div className={this.state.visibleCard === Element._id ? "IconsList" : "IconsList-hide"}>
-                                                                    <div className='decsIcon' >
-                                                                        <NotificationImportantOutlined titleAccess="Remind me" style={{ zIndex: '999' }} onClick={(event) => this.addReminder(Element._id, event)} />
-                                                                        <PersonAddOutlined titleAccess="Collaborate" />
-                                                                        <ColorLensOutlined titleAccess="change Color"
-                                                                            onClick={(event) => this.setNoteColor(event, Element._id)} />
-                                                                        <ImageOutlined titleAccess=" Add Image" />
-                                                                        {this.props.ArchiveState ?
-                                                                            <UnarchiveOutlined titleAccess='Unarchive Note' onClick={() => this.NoteUnArchive(Element)} />
-                                                                            :
-                                                                            <ArchiveOutlined titleAccess=" Archive Note"
-                                                                                onClick={() => this.NoteArchived(Element._id)} />
-                                                                        }
-                                                                        <MoreVertOutlined titleAccess="More"
-                                                                            onClick={(event) => this.LabelList(Element._id, event)}
-
+                                                                        <InputBase
+                                                                            name="title"
+                                                                            value={Element.title}
+                                                                            tabIndex='1'
+                                                                            onClick={(event) => this.handleDailog(Element, event)}
                                                                         />
                                                                     </div>
+
+                                                                    <img className={this.props.TrashState !== undefined ? 'IconPin-hide' : (this.state.visibleCard === Element._id ? '' : 'IconPin-hide')} src={pin} />
+
                                                                 </div>
-                                                                :
-                                                                <div className={this.state.visibleCard === Element._id ? 'IconsList' : this.state.trashPoper && this.state.visibleCard === Element._id ? 'IconsList' : 'IconsList-hide'}>
-                                                                    <MoreVertOutlined titleAccess="More" onClick={(event) => this.handleTrashOPtions(Element._id, event)} />
-                                                                </div>}
-                                                        </Card>
-                                                    </div>)}
-                                            </Draggable>
-                                        )}</div>)}</Droppable></DragDropContext>} </div>
+                                                                <div style={{ width: "100%" }}>
+                                                                    <div>
+                                                                        <InputBase
+                                                                            name="description"
+                                                                            value={Element.content}
+                                                                            onClick={(event) => this.handleDailog(Element, event)}
+                                                                            multiline />
+                                                                    </div>
+                                                                    {Element.reminder !== null ?
+                                                                        <div >
+                                                                            <Chip
+                                                                                style={{ width: 'auto' }}
+                                                                                icon={<Alarm />}
+                                                                                label={(Element.reminder !== null ? new Date(Element.reminder).toString().slice(0, 15) : null)
+                                                                                }
+                                                                                onDelete={event => this.undoReminder(Element._id, event)}
+
+                                                                            />
+                                                                        </div> : ''}
+                                                                    {Element.labels.length > 0 ? Element.labels.map((labelvalue) =>
+                                                                        <Chip
+                                                                            key={labelvalue.id}
+                                                                            style={{ width: 'auto' }}
+                                                                            label={labelvalue.value
+                                                                            }
+                                                                            onDelete={() => this.removeNoteLabel(Element._id, labelvalue.id)}
+                                                                        />
+                                                                    ) : ''}
+                                                                </div>
+                                                                {this.props.TrashState === undefined ?
+                                                                    <div className={this.state.visibleCard === Element._id ? "IconsList" : "IconsList-hide"}>
+                                                                        <div className='decsIcon' >
+                                                                            <NotificationImportantOutlined titleAccess="Remind me" style={{ zIndex: '999' }} onClick={(event) => this.addReminder(Element._id, event)} />
+                                                                            <PersonAddOutlined titleAccess="Collaborate" />
+                                                                            <ColorLensOutlined titleAccess="change Color"
+                                                                                onClick={(event) => this.setNoteColor(event, Element._id)} />
+                                                                            <ImageOutlined titleAccess=" Add Image" />
+                                                                            {this.props.ArchiveState ?
+                                                                                <UnarchiveOutlined titleAccess='Unarchive Note' onClick={() => this.NoteUnArchive(Element)} />
+                                                                                :
+                                                                                <ArchiveOutlined titleAccess=" Archive Note"
+                                                                                    onClick={() => this.NoteArchived(Element._id)} />
+                                                                            }
+                                                                            <MoreVertOutlined titleAccess="More"
+                                                                                onClick={(event) => this.LabelList(Element._id, event)}
+
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                    :
+                                                                    <div className={this.state.visibleCard === Element._id ? 'IconsList' : this.state.trashPoper && this.state.visibleCard === Element._id ? 'IconsList' : 'IconsList-hide'}>
+                                                                        <MoreVertOutlined titleAccess="More" onClick={(event) => this.handleTrashOPtions(Element._id, event)} />
+                                                                    </div>}
+                                                            </Card>
+                                                        </div>)}
+                                                </Draggable>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </Droppable>
+                        </DragDropContext>
+                    } </div>
 
                 <div>
                     <Popper open={this.state.trashPoper} anchorEl={this.state.trashAnchorEl} placement={'bottom'} >

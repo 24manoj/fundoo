@@ -84,6 +84,7 @@ class NavBar extends Component {
     }
 
     search = (state, filt, trash, archive) => {
+
         this.props.search(state, filt, trash, archive)
     }
     render() {
@@ -143,7 +144,6 @@ class NavBar extends Component {
 
                                             </div>
                                         </div>
-                                        <span style={{ marginLeft: '2px' }}>Number of notes created ::{this.props.count}</span>
                                         <hr style={{ width: "100%" }} />
                                         <div className="Avatar-button">
                                             <div>

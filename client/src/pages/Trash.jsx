@@ -54,9 +54,15 @@ class Trash extends Component {
     componentDidMount() {
         getTrashNotes()
             .then(TrashNotes => {
-                this.setState(({
-                    TrashArray: TrashNotes.data.data
-                }))
+                let AllNotes = TrashNotes.data.data
+                AllNotes.sort((a, b) => {
+                    return ((a.index < b.index) ? -1 : ((a.index > b.index) ? 1 : 0));
+                })
+                // let newArray = AllNotes.filter(ele => ele.index!==undefined).sort()
+                this.setState({
+                    notesArray: AllNotes
+                })
+               
             })
             .catch(err => {
                 console.log(err);

@@ -1,6 +1,8 @@
 const labelSchema = require('../app/model/labelSchema')
 const collSchema = require('../app/model/collaboraterSchema')
 const noteSchema = require('../app/model/notesSchema')
+let redisCache = require('../middleware/redisService')
+let elastic = require('../middleware/elasticSearch')
 /**
  * @desc gets validated request from services,performs database operations needed
  * @param req request contains http request
@@ -91,8 +93,18 @@ exports.getArchiveNotes = (id) => {
  */
 exports.updateIndex = (req, res) => {
     try {
+        let details = {}
         console.log("source", req.body.source, "destination", req.body.destination);
+        elastic.Documentdelete(req)
+        details.id = req.decoded.id
 
+        redisCache.delRedis(details, (err, cacheDelete) => {
+            if (err) {
+                console.log(err)
+            } else {
+                console.log(cacheDelete)
+            }
+        })
         noteSchema.notes.updateOne({
             _id: req.body.source.id
         }, {

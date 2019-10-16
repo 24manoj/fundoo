@@ -90,6 +90,24 @@ class DashBoard extends Component {
             if (message.text.key === 'labelCreated') {
                 this.setState({ labels: message.text.value })
             }
+            if (message.text.key === 'updateIndex') {
+                let array = this.state.notesArray
+
+
+
+                let index1 = array.map(ele => ele._id).indexOf(message.text.value.source.id)
+                array[index1].index = message.text.value.source.index
+                let index2 = array.map(ele => ele._id).indexOf(message.text.value.destination.id)
+                array[index2].index = message.text.value.destination.index
+                let newArray2 = array.sort((a, b) => {
+                    return ((a.index < b.index) ? -1 : ((a.index > b.index) ? 1 : 0));
+                })
+                console.log("dash sort ", newArray2, index1, index2);
+                console.log("dash sort ", array);
+
+                this.setState({ notesArray: newArray2 })
+
+            }
         })
     }
     componentDidMount() {
@@ -108,9 +126,6 @@ class DashBoard extends Component {
             AllNotes.sort((a, b) => {
                 return ((a.index < b.index) ? -1 : ((a.index > b.index) ? 1 : 0));
             })
-
-            console.log("sorted array",AllNotes);
-            
             this.setState({
                 notesArray: AllNotes
             })
@@ -136,9 +151,14 @@ class DashBoard extends Component {
                 })
             getNotes().then(notes => {
                 AllNotes = notes.data.data;
+                AllNotes.sort((a, b) => {
+                    return ((a.index < b.index) ? -1 : ((a.index > b.index) ? 1 : 0));
+                })
+                // let newArray = AllNotes.filter(ele => ele.index!==undefined).sort()
                 this.setState({
                     notesArray: AllNotes
                 })
+
             }).catch(err => {
                 console.log(err);
 
@@ -562,20 +582,20 @@ class DashBoard extends Component {
         }
     }
     search = (state, filt, trash, archive) => {
+        
         this.setState({ filterState: state, filterArray: filt, filterTrash: trash, filterArchive: archive })
-        console.log("filter state", this.state.filterState);
     }
-    count = () => {
-        let count = 0;
-        if (this.props.TashNotes !== undefined) {
-            count += this.props.TrashNotes.length
-        } else if (this.props.ArchiveNotes !== undefined) {
-            count += this.props.ArchiveNotes.length
-        } else {
-            count += this.state.notesArray.length
-        }
-        return count
-    }
+    // count = () => {
+    //     let count = 0;
+    //     if (this.props.TashNotes !== undefined) {
+    //         count += this.props.TrashNotes.length
+    //     } else if (this.props.ArchiveNotes !== undefined) {
+    //         count += this.props.ArchiveNotes.length
+    //     } else {
+    //         count += this.state.notesArray.length
+    //     }
+    //     return count
+    // }
     render() {
         const title = this.props.reminder !== undefined ? this.props.reminder.title :
             (this.props.ArchiveState !== undefined ? this.props.ArchiveState.title : (this.props.TrashState !== undefined ? this.props.TrashState.title :
@@ -588,7 +608,7 @@ class DashBoard extends Component {
             <div className="Container" >
                 <div>
                     <NavBar labels={this.state.labels}
-                        open={this.open} refresh={this.refresh} search={this.search} title={title} count={this.count()} />
+                        open={this.open} refresh={this.refresh} search={this.search} title={title}  />
                 </div>
                 <div className="NotesScroll" >
                     <TakeNote ArchiveState={stateArchive} createNote={this.createNote} NoteArchived={this.NoteArchived} labels={this.state.labels} createLabel={this.createLabel}
@@ -618,7 +638,7 @@ class DashBoard extends Component {
                                             LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} />)))
                     }
                 </div>
-                
+
                 <Popper open={this.state.colorPoper} anchorEl={this.state.AnchorEl}
                     placement={'top-start'}
                     style={{ width: '100px', zIndex: '1300' }} >
