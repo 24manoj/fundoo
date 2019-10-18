@@ -9,6 +9,9 @@
  *******************************************************************************************************************/
 //importing  modules
 require('dotenv').config();
+const reminderNotes = require('./services/notesService')
+const scheduler = require('node-schedule')
+const authverify = require('./middleware/auth')
 const express = require('express');
 const expressvalidator = require('express-validator');
 const mongoose = require('mongoose');
@@ -57,6 +60,5 @@ mongoose.connection.on("error", () => {
 app.listen(process.env.PORT, () => {
     console.log("Running sucessfully on port ", process.env.PORT)
 })
-console.log("process", process.env.KEY);
 
 module.exports = app;

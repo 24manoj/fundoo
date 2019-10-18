@@ -195,7 +195,7 @@ class Notes extends Component {
      */
     handleDailog = async (Element, event) => {
         await this.setState({
-            dailogNoteId: Element._id,
+            dailogNoteId: this.props.filterValue ? Element.id : Element._id,
             dailogTitleValue: Element.title,
             dailogDescvalue: Element.content,
             cardDailog: !this.state.cardDailog,
@@ -339,9 +339,8 @@ class Notes extends Component {
                                 {(provided, snapshot) => (
                                     <div
                                         ref={provided.innerRef}
-                                        className='noteAlign' style={{ transform: this.state.sideNav ? 'translate(10rem,0px)' : '' }}
-                                    >
-                                        <div className='note-count' >
+                                        className='noteAlign' id={this.state.sideNav ? "transitionLeft" : ''} >
+                                        <div className='noteAlign-count' >
                                             <p> Notes in {this.props.title !== undefined ? this.props.title : 'Dashboard'}::{this.props.notes.length}</p>
                                         </div>
                                         <div className="notes">

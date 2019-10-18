@@ -16,6 +16,7 @@ import { messageService } from '../minddleware/middleWareServices';
 import { Snackbar } from '@material-ui/core';
 import { UndoOutlined } from '@material-ui/icons';
 let ArchiveNote;
+let UndoTakeNote;
 class Archive extends Component {
     constructor(props) {
         super(props)

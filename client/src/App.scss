@@ -385,13 +385,18 @@
  }
 
 
+ #transitionLeft {
+   margin-left: 24%;
+   width: calc(100% - 30%) !important;
+   transition: margin-left 0.25s;
+ }
 
  .notes {
-
    display: flex;
    flex-direction: row;
    flex-wrap: wrap;
-   justify-content: center;
+   width: 80%;
+   align-items: center;
  }
 
  .space-notes {
@@ -399,15 +404,12 @@
  }
 
  .noteAlign-count {
-   display: flex;
-   flex-direction: row;
-   width: 100%
+   width: 76%
  }
 
  .noteAlign {
    width: 90%;
-   margin-left: 5rem;
-   margin-right: 5rem;
+
    justify-content: center;
    display: flex;
    flex-direction: column;

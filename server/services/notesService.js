@@ -1,3 +1,4 @@
+const scheduler = require('node-schedule')
 const labelSchema = require('../app/model/labelSchema')
 const collSchema = require('../app/model/collaboraterSchema')
 const noteSchema = require('../app/model/notesSchema')
@@ -348,7 +349,10 @@ exports.noteReminder = (req) => {
                 reminder: date,
             }, (err, updated) => {
                 if (err) reject(err)
-                else resolve(updated)
+                else {
+
+                    resolve(updated)
+                }
             })
         })
     } catch (e) {

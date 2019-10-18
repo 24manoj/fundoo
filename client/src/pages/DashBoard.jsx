@@ -84,13 +84,16 @@ class DashBoard extends Component {
         /** @description rxjs Observer  for data sharing*/
         messageService.getMessage().subscribe(message => {
             if (message.text.key === 'updateNotes' && message.text.key !== undefined) {
-                let index = this.state.notesArray.map(ele => ele._id).indexOf(message.text.value.noteId)
-                let array = this.state.notesArray;
+                let index = this.state.filterState ? this.state.filterArray.map(ele => ele.id).indexOf(message.text.value.noteId) :
+                    this.state.notesArray.map(ele => ele._id).indexOf(message.text.value.noteId)
+                let array = this.state.filterState ? this.state.filterArray : this.state.notesArray;
                 array[index].title = message.text.value.title
                 array[index].content = message.text.value.content
-                this.setState({
-                    notesArray: array
-                })
+
+                this.state.filterState ? this.setState({ filterArray: array }) :
+                    this.setState({
+                        notesArray: array
+                    })
             }
             if (message.text.key === 'labelDeleted') {
                 this.setState({ labels: message.text.value })
@@ -370,6 +373,7 @@ class DashBoard extends Component {
                             cardId: '',
                             dateTime: '',
                             AnchorEl: null,
+                            reminderPoper: false
                         })
                     } else {
                         let index = (this.state.filterState ? this.state.filterArray : this.state.notesArray).map(ele => this.state.filterState ? ele.id : ele._id).indexOf(this.state.cardId)
@@ -378,20 +382,22 @@ class DashBoard extends Component {
                         messageService.sendMessage({ key: 'updateReminder', value: (new Date(dateTime + 1).toString().slice(0, 15)) })
                         if (this.state.filterState) {
                             this.setState({
+                                reminderPoper: false,
                                 filterArray: array,
                                 cardId: '',
                                 dateTime: '',
                                 AnchorEl: null,
                                 newReminder: array[index].reminder
                             })
+                        } else {
+                            this.setState({
+                                notesArray: array,
+                                cardId: '',
+                                dateTime: '',
+                                AnchorEl: null,
+                                newReminder: array[index].reminder
+                            })
                         }
-                        this.setState({
-                            notesArray: array,
-                            cardId: '',
-                            dateTime: '',
-                            AnchorEl: null,
-                            newReminder: array[index].reminder
-                        })
                     }
                 })
                 .catch(err => {

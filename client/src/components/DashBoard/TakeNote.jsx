@@ -8,6 +8,8 @@
  * @since :15-oct-2019
  *******************************************************************************************************************/
 import React, { Component } from "react";
+import { messageService } from '../../minddleware/middleWareServices'
+
 import {
   TextField,
   Card,
@@ -67,6 +69,7 @@ class Notes extends Component {
       reminderPoper: false,
       labelListPoper: false,
       filterState: false,
+      sideNav: false,
       colorPalette: [
         {
           name: "default",
@@ -118,6 +121,21 @@ class Notes extends Component {
         }
       ]
     };
+    messageService.getMessage().subscribe(message => {
+      try {
+        if (message.text.key === 'sideNav') {
+
+
+          this.setState({
+            sideNav: message.text.value
+          })
+
+        }
+      } catch (err) {
+        console.log(err);
+
+      }
+    })
   }
 
   /**
@@ -312,7 +330,7 @@ class Notes extends Component {
 
   render() {
     return (
-      <div className={this.props.ArchiveState !== undefined ? 'hideDiv' : "NoteCreate"}>
+      <div id = { this.state.sideNav ? 'transitionLeft' : '' } className={this.props.ArchiveState !== undefined ? 'hideDiv' : "NoteCreate"}>
         {!this.state.NoteTake ? (
           <Card className="TakeNote" hidden={this.state.NoteTake}>
             <InputBase
@@ -347,6 +365,7 @@ class Notes extends Component {
             >
               <Card
                 className="TakeDetails"
+
                 hidden={!this.state.NoteTake}
                 style={{
                   backgroundColor: this.state.NoteColor

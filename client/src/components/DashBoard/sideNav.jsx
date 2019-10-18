@@ -154,7 +154,7 @@ class SideNav extends Component {
                     <IconButton onClick={this.toogle}>
                         <MenuIcon />
                     </IconButton>
-                    <Drawer className="sideNav" anchor="left" open={this.state.sideToggle} variant="persistent" onClose={event => this.setState({ sideToggle: false })} >
+                    <Drawer anchor="left" open={this.state.sideToggle} variant="persistent" onClose={event => this.setState({ sideToggle: false })} >
                         <div id='notes'
                             style={{
                                 backgroundColor: this.state.activeClass === 'notes' ? '#F5EEC3' : ''
