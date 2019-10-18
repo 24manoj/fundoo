@@ -54,6 +54,12 @@ exports.Documentdelete = (req) => {
             .then(data => {
                 console.log("document deleted")
                 this.createIndex(req, (err, created) => {
+                    if (err) {
+                        console.log("document");
+                    }
+                    else {
+                        console.log("created")
+                    }
                 })
             })
             .catch(err => console.log("no documents to delete"))
@@ -85,14 +91,16 @@ exports.addDocument = (req) => {
                 "reminder": element.reminder,
                 "isTrash": element.isTrash,
                 "isArchive": element.isArchive,
-                "index": element.inddex
+                "index": element.index
             }
             bulk.push(data)
 
         });
         //perform bulk indexing of the data passed
+
         client.bulk({ body: bulk }, (err, response) => {
-            err ? console.log("failed operation", err) : console.log("sucessfully inserted to search")
+            err ? console.log("failed operation", err) : console.log("sucessfully inserted to search", response.items
+            )
         });
     } catch (e) {
         console.log(e)
@@ -105,12 +113,14 @@ exports.addDocument = (req) => {
  */
 exports.searchkey = (req, callback) => {
     try {
+        console.log("search", req.body);
+
         let body = {
             query: {
                 query_string: {
                     query: `*${req.body.search}*`,
                     analyze_wildcard: true,
-                    fields: ["title", "content", "labels", "id", "reminder", "color", "index"]
+                    fields: ["title", "content", "labels", "id", "reminder", "color"]
                 }
             }
         }

@@ -4,14 +4,14 @@ import {
 
 let searchNotes = (payload) => {
     var filt = [];
-    console.log("search text", payload);
-
     let trash = [];
     let archive = [];
     return new Promise((resolve, reject) => {
         searchText(payload)
             .then(searchData => {
+
                 searchData.data.data.hits.hits.map((element) => {
+
                     if (element._source.isTrash === false && element._source.isArchive === false)
                         filt.push(element._source);
                     else if (element._source.isTrash === true)

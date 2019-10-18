@@ -12,11 +12,11 @@ class Trash extends Component {
             cardId: ''
         }
 
-        messageService.getMessage().subscribe( async message => {
+        messageService.getMessage().subscribe(async message => {
             if (message.text.key === 'MoreTrashOPtions') {
                 await this.setState({ cardId: message.text.cardId })
 
-                let payload =  { 
+                let payload = {
                     noteId: this.state.cardId,
                 }
                 console.log("cardId", payload);
@@ -27,24 +27,24 @@ class Trash extends Component {
                         let array = this.state.TrashArray
                         let index = array.map(ele => ele._id).indexOf(this.state.cardId)
                         array.splice(index, 1)
-                         this.setState({ TrashArray: array, cardId: '' })
+                        this.setState({ TrashArray: array, cardId: '' })
                     })
                     .catch(err => console.log(err)
                     )
             }
             if (message.text.key === 'MoreOptionsRestore') {
-                await  this.setState({ cardId: message.text.cardId })
+                await this.setState({ cardId: message.text.cardId })
                 let payload = {
                     noteId: this.state.cardId,
                 }
-            
-                
+
+
                 restoreNotes(payload)
-                    .then( restored => {
+                    .then(restored => {
                         let array = this.state.TrashArray
                         let index = array.map(ele => ele._id).indexOf(this.state.cardId)
                         array.splice(index, 1)
-                     this.setState({ TrashArray: array, cardId: '' })
+                        this.setState({ TrashArray: array, cardId: '' })
                     })
                     .catch(err => console.log(err)
                     )
@@ -60,9 +60,9 @@ class Trash extends Component {
                 })
                 // let newArray = AllNotes.filter(ele => ele.index!==undefined).sort()
                 this.setState({
-                    notesArray: AllNotes
+                    TrashArray: AllNotes
                 })
-               
+
             })
             .catch(err => {
                 console.log(err);

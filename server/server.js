@@ -8,6 +8,7 @@
  * @since : 21-aug-2019
  *******************************************************************************************************************/
 //importing  modules
+require('dotenv').config();
 const express = require('express');
 const expressvalidator = require('express-validator');
 const mongoose = require('mongoose');
@@ -15,7 +16,6 @@ const bodyparser = require('body-parser');
 const routes = require('./router/router');
 const notesRoutes = require('./router/notesRouter')
 let search = require('./router/elasticSearchRouter')
-require('dotenv').config();
 let cors = require('cors')
 const passport = require('passport')
 let auth = require('./router/auth');
@@ -35,7 +35,6 @@ app.use(passport.session());
 
 //allow OPTIONS on all resources
 // app.options('*', cors())
-
 app.use('/auth', auth);
 app.use('/', routes)
 app.use('/elastic', search)
@@ -58,4 +57,6 @@ mongoose.connection.on("error", () => {
 app.listen(process.env.PORT, () => {
     console.log("Running sucessfully on port ", process.env.PORT)
 })
+console.log("process", process.env.KEY);
+
 module.exports = app;

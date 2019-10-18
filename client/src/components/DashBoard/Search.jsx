@@ -24,7 +24,7 @@ class Search extends React.Component {
         } else {
             searchNotes(payload)
                 .then(result => {
-
+                   
                     this.props.search(true, result.filt, result.trash, result.archive)
                 })
                 .catch(err => console.log(err)

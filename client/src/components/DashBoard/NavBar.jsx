@@ -128,7 +128,8 @@ class NavBar extends Component {
                                     <Card className='profileCard' >
                                         <div className="Avatar">
                                             <label htmlFor='file'>
-                                                <Avatar alt='profile img' src={this.state.profileUrl} style={{
+
+                                                <Avatar alt='profile img' src={this.state.profileUrl} titleAccess="change Profile" style={{
                                                     width: '100px',
                                                     height: '100px',
 

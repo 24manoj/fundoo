@@ -52,6 +52,7 @@ class DashBoard extends Component {
             labelListPoper: false,
             reminderPoper: false,
             trashState: false,
+            archiveStateComponent: false,
             foundLabel: true,
             colorPalette: [
                 { name: 'default', colorCode: '#FDFEFE' },
@@ -173,6 +174,9 @@ class DashBoard extends Component {
             if (this.state.Archive == true) {
                 this.noteArchive()
             }
+            if (this.props.ArchiveComponent !== undefined) {
+                this.setState({ archiveStateComponent: this.props.ArchiveComponent.archive })
+            }
         } catch (err) {
             console.log(err);
 
@@ -221,19 +225,31 @@ class DashBoard extends Component {
             }
             updateColor(payload)
                 .then(updated => {
+                    if (this.state.archiveStateComponent) {
+                        this.props.color(this.state.NoteColor, this.state.cardId)
+                        this.setState({
+                            NoteColor: '',
+                            AnchorEl: null,
+                            cardId: '',
+                            reminderPoper: false,
+                            colorPoper: false
+                        })
+                    }
+                    else {
 
-                    let index = this.state.notesArray.map(ele => ele._id).indexOf(this.state.cardId)
-                    let array = this.state.notesArray;
-                    array[index].color = this.state.NoteColor;
-                    this.setState({ notesArray: array })
-                    this.setState({
-                        NoteColor: '',
-                        AnchorEl: null,
-                        cardId: '',
-                        reminderPoper: false,
-                        colorPoper: false
-                    })
-                    messageService.sendMessage({ key: 'updateColor', value: array[index].color })
+                        let index = this.state.notesArray.map(ele => ele._id).indexOf(this.state.cardId)
+                        let array = this.state.notesArray;
+                        array[index].color = this.state.NoteColor;
+                        this.setState({ notesArray: array })
+                        this.setState({
+                            NoteColor: '',
+                            AnchorEl: null,
+                            cardId: '',
+                            reminderPoper: false,
+                            colorPoper: false
+                        })
+                        messageService.sendMessage({ key: 'updateColor', value: array[index].color })
+                    }
                 })
 
         } catch (err) {
@@ -267,7 +283,6 @@ class DashBoard extends Component {
     }
     NoteReminder = async (reminderPoper, anchorEl, noteId) => {
         try {
-            console.log(reminderPoper, anchorEl, noteId);
             await this.setState({ reminderPoper: reminderPoper, AnchorEl: anchorEl, cardId: noteId })
             if (!this.state.reminderPoper) {
                 let payload = {
@@ -275,11 +290,14 @@ class DashBoard extends Component {
                 }
                 undoReminder(payload)
                     .then(removedReminder => {
-                        let index = this.state.notesArray.map(ele => ele._id).indexOf(this.state.cardId)
-                        let array = this.state.notesArray;
-                        array[index].reminder = null;
-                        this.setState({ notesArray: array, cardId: '' })
-                        console.log(removedReminder);
+                        if (this.state.archiveStateComponent) {
+                            this.props.reminder(this.state.notesArray, null, this.state.cardId)
+                        } else {
+                            let index = this.state.notesArray.map(ele => ele._id).indexOf(this.state.cardId)
+                            let array = this.state.notesArray;
+                            array[index].reminder = null;
+                            this.setState({ notesArray: array, cardId: '' })
+                        }
 
                     })
                     .catch(err => {
@@ -302,17 +320,28 @@ class DashBoard extends Component {
         }
         updateReminder(payload)
             .then(reminder => {
-                let index = this.state.notesArray.map(ele => ele._id).indexOf(this.state.cardId)
-                let array = this.state.notesArray;
-                array[index].reminder = new Date(dateTime + 1).toString().slice(0, 15);
-                messageService.sendMessage({ key: 'updateReminder', value: (new Date(dateTime + 1).toString().slice(0, 15)) })
-                this.setState({
-                    notesArray: array,
-                    cardId: '',
-                    dateTime: '',
-                    AnchorEl: null,
-                    newReminder: array[index].reminder
-                })
+                if (this.state.archiveStateComponent) {
+                    this.props.reminder(this.state.notesArray, dateTime, this.state.cardId)
+                    this.setState({
+                        // notesArray: array,
+                        cardId: '',
+                        dateTime: '',
+                        AnchorEl: null,
+                        // newReminder: array[index].reminder
+                    })
+                } else {
+                    let index = this.state.notesArray.map(ele => ele._id).indexOf(this.state.cardId)
+                    let array = this.state.notesArray;
+                    array[index].reminder = new Date(dateTime + 1).toString().slice(0, 15);
+                    messageService.sendMessage({ key: 'updateReminder', value: (new Date(dateTime + 1).toString().slice(0, 15)) })
+                    this.setState({
+                        notesArray: array,
+                        cardId: '',
+                        dateTime: '',
+                        AnchorEl: null,
+                        newReminder: array[index].reminder
+                    })
+                }
             })
             .catch(err => {
                 console.log(err);
@@ -369,16 +398,21 @@ class DashBoard extends Component {
             }
             removeNoteLabel(payload)
                 .then(removed => {
-                    let array = this.state.notesArray
-                    array.forEach((element) => {
-                        element.labels.forEach((ele, index) => {
-                            if (ele.id === labelId) {
-                                element.labels.splice(index, 1)
-                                this.setState({ notesArray: array })
-                            }
-                        })
+                    if (this.state.archiveStateComponent) {
+                        this.props.removeNoteLabel(labelId)
+                    }
+                    else {
+                        let array = this.state.notesArray
+                        array.forEach((element) => {
+                            element.labels.forEach((ele, index) => {
+                                if (ele.id === labelId) {
+                                    element.labels.splice(index, 1)
+                                    this.setState({ notesArray: array })
+                                }
+                            })
 
-                    })
+                        })
+                    }
                     console.log("labelremoved", removed);
                 })
                 .catch(err => {
@@ -428,14 +462,22 @@ class DashBoard extends Component {
 
                 addNoteLabel(payload)
                     .then(updated => {
-                        let arrayNotes = this.state.notesArray
-                        arrayNotes.forEach((element) => {
-                            if (element._id === this.state.cardId) {
-                                element.labels.push(data)
-                                this.setState({ notesArray: arrayNotes })
-                                this.setState({ noteLabel: [...this.state.noteLabel, data] })
-                            }
-                        })
+                        if (this.state.archiveStateComponent) {
+                            this.props.addNoteLabel(data, this.state.cardId)
+                            this.setState({ noteLabel: [...this.state.noteLabel, data] })
+
+
+                        } else {
+                            let arrayNotes = this.state.notesArray
+                            arrayNotes.forEach((element) => {
+                                if (element._id === this.state.cardId) {
+                                    element.labels.push(data)
+                                    this.setState({ notesArray: arrayNotes })
+                                    this.setState({ noteLabel: [...this.state.noteLabel, data] })
+                                }
+                            })
+                        }
+
                     })
                     .catch(err => {
                         console.log(err);
@@ -471,10 +513,17 @@ class DashBoard extends Component {
             .then(deleted => {
                 let arrayNotes = this.state.notesArray
                 arrayNotes.forEach((element) => {
-                    if (element._id === this.state.cardId) {
-                        let index = arrayNotes.indexOf(element)
-                        UndoTakeNote = arrayNotes.splice(index, 1)[0]
-                        this.setState({ notesArray: arrayNotes, stackBar: true, stackBarMessage: 'Note Trashed Sucessfully', trashState: true })
+                    if (this.state.archiveStateComponent) {
+                        this.props.Trash(element)
+                        this.setState({ stackBar: true, stackBarMessage: 'Note Trashed Sucessfully', trashState: true })
+
+                    } else {
+
+                        if (element._id === this.state.cardId) {
+                            let index = arrayNotes.indexOf(element)
+                            UndoTakeNote = arrayNotes.splice(index, 1)[0]
+                            this.setState({ notesArray: arrayNotes, stackBar: true, stackBarMessage: 'Note Trashed Sucessfully', trashState: true })
+                        }
                     }
                 })
                 console.log(deleted);
@@ -483,8 +532,8 @@ class DashBoard extends Component {
                 console.log(err);
 
             })
-
     }
+
     createLabelNote = async () => {
         await this.createLabel(this.state.labelValue)
         console.log("this state", this.state.newLabel);
@@ -582,33 +631,31 @@ class DashBoard extends Component {
         }
     }
     search = (state, filt, trash, archive) => {
-        
+        console.log("state", state, filt, trash, archive);
+
+
         this.setState({ filterState: state, filterArray: filt, filterTrash: trash, filterArchive: archive })
     }
-    // count = () => {
-    //     let count = 0;
-    //     if (this.props.TashNotes !== undefined) {
-    //         count += this.props.TrashNotes.length
-    //     } else if (this.props.ArchiveNotes !== undefined) {
-    //         count += this.props.ArchiveNotes.length
-    //     } else {
-    //         count += this.state.notesArray.length
-    //     }
-    //     return count
-    // }
+
     render() {
+
+
         const title = this.props.reminder !== undefined ? this.props.reminder.title :
-            (this.props.ArchiveState !== undefined ? this.props.ArchiveState.title : (this.props.TrashState !== undefined ? this.props.TrashState.title :
-                (this.props.LabelsState !== undefined ? this.props.LabelsState.title : undefined)))
+            (this.props.ArchiveComponent !== undefined ? this.props.ArchiveComponent.title
+                : (this.props.TrashState !== undefined ? this.props.TrashState.title :
+                    (this.props.LabelsState !== undefined ? this.props.LabelsState.title : undefined)))
         const stateReminder = this.props.reminder !== undefined ? this.props.reminder.reminder : undefined
-        const stateArchive = this.props.ArchiveState !== undefined ? this.props.ArchiveState.archive : undefined
+        const stateArchive = this.props.ArchiveComponent !== undefined ? this.props.ArchiveComponent.archive : undefined
         const stateTrash = this.props.TrashState !== undefined ? this.props.TrashState.Trash : undefined
         const stateLabel = this.props.LabelsState !== undefined ? this.props.LabelsState.labels : undefined
+        const arciveTitle = this.props.ArchiveComponent !== undefined ? this.props.ArchiveComponent.title : undefined
+
+
         return (
             <div className="Container" >
                 <div>
                     <NavBar labels={this.state.labels}
-                        open={this.open} refresh={this.refresh} search={this.search} title={title}  />
+                        open={this.open} refresh={this.refresh} search={this.search} title={this.props.ArchiveComponent !== undefined ? arciveTitle : title} />
                 </div>
                 <div className="NotesScroll" >
                     <TakeNote ArchiveState={stateArchive} createNote={this.createNote} NoteArchived={this.NoteArchived} labels={this.state.labels} createLabel={this.createLabel}
@@ -617,12 +664,12 @@ class DashBoard extends Component {
                     {stateReminder ?
                         <Notes notes={this.state.filterState ? this.state.filterArray : this.getReminderNotes()} view={this.state.View}
                             setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}
-                            LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} />
+                            LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} filter={this.state.filterState} />
                         : (stateArchive ?
 
                             <Notes notes={this.state.filterState ? this.state.filterArchive : this.props.ArchiveNotes} view={this.state.View} ArchiveState={stateArchive}
                                 setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}
-                                LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} />
+                                LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} filter={this.state.filterState} />
                             :
                             (stateTrash ?
                                 <Notes notes={this.state.filterState ? this.state.filterTrash : this.props.TrashNotes} view={this.state.View} TrashState={stateTrash}
@@ -631,11 +678,11 @@ class DashBoard extends Component {
                                     stateLabel ?
                                         <Notes notes={this.getLabelNotes()} view={this.state.View}
                                             setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}
-                                            LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} />
+                                            LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} filter={this.state.filterState} />
                                         :
                                         <Notes notes={this.state.filterState ? this.state.filterArray : (this.props.updatedArray !== undefined ? this.updateArray : this.state.notesArray)} view={this.state.View}
                                             setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}
-                                            LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} />)))
+                                            LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} filterValue={this.state.filterState} />)))
                     }
                 </div>
 

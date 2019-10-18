@@ -237,7 +237,6 @@ class Notes extends Component {
                 source: { id: this.props.notes[source.index]._id, index: destination.index },
                 destination: { id: this.props.notes[destination.index]._id, index: source.index }
             }
-            console.log("drag", payload);
             updateIndex(payload)
                 .then(updated => {
 
@@ -256,6 +255,7 @@ class Notes extends Component {
         let view = this.props.view ? 'ListView' : 'gridView'
         let cardCss = this.props.view ? 'notesCard' : 'notesCardGrid'
 
+
         return (
             <MuiThemeProvider theme={theme}>
                 <div className={view} >
@@ -264,27 +264,22 @@ class Notes extends Component {
                         <div className="searchNote">
                             No Note Found!!!!
                         </div> :
-
                         <DragDropContext onDragEnd={this.onDragEnd}>
-
-                            <Droppable droppableId="droppable">
+                            <Droppable droppableId="droppable" direction='vertical'>
                                 {(provided, snapshot) => (
                                     <div
                                         ref={provided.innerRef}
                                         className='noteAlign' style={{ transform: this.state.sideNav ? 'translate(10rem,0px)' : '' }}
                                     >
-
-
-                                        <div >
+                                        <div className='note-count' >
                                             <p> Notes in dashboard::{this.props.notes.length}</p>
                                         </div>
                                         <div>
                                             {this.props.notes.map((Element, index) =>
                                                 <Draggable
                                                     key={Element._id}
-                                                    draggableId={Element._id}
+                                                    draggableId={Element._id !== undefined ? Element._id : Element.id}
                                                     index={Element.index}>
-
                                                     {(provided, snapshot) => (
                                                         <div
                                                             ref={provided.innerRef}
@@ -292,8 +287,8 @@ class Notes extends Component {
                                                             {...provided.dragHandleProps}
                                                         // style={{ position: 'relative', display: 'inline-block' }}
                                                         >
-                                                            <Card className={cardCss} key={Element.index} id={Element._id}
-                                                                style={{ backgroundColor: Element.color, padding: '10px' }} onMouseEnter={event => this.setState({ visibleCard: Element._id })}
+                                                            <Card className={cardCss} key={Element.index} id={this.props.filterValue ? Element.id : Element._id}
+                                                                style={{ backgroundColor: Element.color, padding: '10px' }} onMouseEnter={event => this.setState({ visibleCard: this.props.filterValue ? Element.id : Element._id })}
                                                                 onMouseLeave={event => this.state.NotePoper ? '' : this.state.trashPoper ? '' : this.setState({ visibleCard: '' })}>
                                                                 <div className="titleIcon">
                                                                     <div >
@@ -305,7 +300,7 @@ class Notes extends Component {
                                                                         />
                                                                     </div>
 
-                                                                    <img className={this.props.TrashState !== undefined ? 'IconPin-hide' : (this.state.visibleCard === Element._id ? '' : 'IconPin-hide')} src={pin} />
+                                                                    <img className={this.props.TrashState !== undefined ? 'IconPin-hide' : (this.state.visibleCard === (this.props.filterValue ? Element.id : Element._id) ? '' : 'IconPin-hide')} src={pin} />
 
                                                                 </div>
                                                                 <div style={{ width: "100%" }}>
@@ -338,7 +333,7 @@ class Notes extends Component {
                                                                     ) : ''}
                                                                 </div>
                                                                 {this.props.TrashState === undefined ?
-                                                                    <div className={this.state.visibleCard === Element._id ? "IconsList" : "IconsList-hide"}>
+                                                                    <div className={this.state.visibleCard === (this.props.filterValue ? Element.id : Element._id) ? "IconsList" : "IconsList-hide"}>
                                                                         <div className='decsIcon' >
                                                                             <NotificationImportantOutlined titleAccess="Remind me" style={{ zIndex: '999' }} onClick={(event) => this.addReminder(Element._id, event)} />
                                                                             <PersonAddOutlined titleAccess="Collaborate" />

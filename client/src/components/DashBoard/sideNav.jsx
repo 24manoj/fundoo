@@ -5,7 +5,6 @@ import { EmojiObjectsOutlined, NotificationsOutlined, LabelOutlined, EditOutline
 import { withRouter, Link } from "react-router-dom";
 import DailogLabel from './DailogLabel'
 import { messageService } from '../../minddleware/middleWareServices';
-import { async } from 'rxjs/internal/scheduler/async';
 const theme = createMuiTheme({
     overrides: {
         MuiDrawer: {
@@ -55,6 +54,8 @@ class SideNav extends Component {
     }
     handleTrash = (event) => {
         this.setState({ activeClass: event.currentTarget.id })
+        console.log("class", this.state.activeClass);
+
         this.props.history.push({
             pathname: '/trash',
             state: { Trash: true, title: event.currentTarget.id }
@@ -123,21 +124,22 @@ class SideNav extends Component {
                         }} onClick={this.handleEditLabels}><MenuItem className="labelList"> <EditOutlined titleAccess="Edit Label" /><div style={{ paddingLeft: "30px" }}> Edit Labels </div></MenuItem></div>
 
                         <hr style={{ width: "100%" }} />
-                        <div>
-                            <div id='archive'
-                                style={{
-                                    backgroundColor: this.state.activeClass === 'archive' ? '#F5EEC3' : ''
-                                    , borderRadius: '0px 50px 50px 0px'
-                                }} onClick={this.handleArchive}><MenuItem className="labelList"> <ArchiveOutlined titleAccess="Edit Label" /><div style={{ paddingLeft: "30px" }}> Archive </div></MenuItem></div>
-                            <div id='trash'
-                                style={{
-                                    backgroundColor: this.state.activeClass === 'trash' ? '#F5EEC3' : ''
-                                    , borderRadius: '0px 50px 50px 0px'
-                                }} onClick={this.handleTrash}>
-                                <MenuItem className="labelList"> <DeleteOutline titleAccess="Edit Label" />
-                                    <div style={{ paddingLeft: "30px" }}> Trash</div></MenuItem></div>
 
-                        </div>
+                        <div id='archive'
+                            style={{
+                                backgroundColor: this.state.activeClass === 'archive' ? '#F5EEC3' : ''
+                                , borderRadius: '0px 50px 50px 0px'
+                            }} onClick={this.handleArchive}><MenuItem className="labelList"> <ArchiveOutlined titleAccess="Edit Label" />
+                                <div style={{ paddingLeft: "30px" }}> Archive </div></MenuItem></div>
+                        <div id='trash'
+                            style={{
+                                backgroundColor: this.state.activeClass === 'trash' ? '#F5EEC3' : ''
+                                , borderRadius: '0px 50px 50px 0px'
+                            }} onClick={this.handleTrash}>
+                            <MenuItem className="labelList"> <DeleteOutline titleAccess="Edit Label" />
+                                <div style={{ paddingLeft: "30px" }}> Trash</div></MenuItem></div>
+
+
                         <hr style={{ width: "100%" }} />
                     </Drawer>
                     {this.state.editLabeldailog ?

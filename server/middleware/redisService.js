@@ -34,7 +34,7 @@ exports.getRedis = (details, callback) => {
     try {
         /**hmset takes key as string , field and value */
         client.hmget(process.env.REDISKEY, details.id, (err, get) => {
-            (err || !get[0]) ? callback(`cache error ${err}`) : (console.log("sent from cache"), callback(null, JSON.parse(get)))
+            (err || !get[0]) ? callback(`cache error ${err}`) : callback(null, JSON.parse(get))
         })
     } catch (e) {
         console.log(e)

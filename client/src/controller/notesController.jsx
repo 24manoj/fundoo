@@ -488,7 +488,7 @@ let updateLabel = (payload) => {
 
         return new Promise((resolve, reject) => {
             axios.put(`${process.env.REACT_APP_BASE_URL}/note/updateLabel`, payload, { headers: headers })
-                .thenupdateIndex(created => {
+                .then(created => {
                     resolve(created)
                 })
                 .catch(err => {

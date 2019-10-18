@@ -5,6 +5,7 @@ import { messageService } from '../minddleware/middleWareServices';
 import { Snackbar } from '@material-ui/core';
 import { UndoOutlined } from '@material-ui/icons';
 let ArchiveNote;
+let UndoTakeNote;
 class Archive extends Component {
     constructor(props) {
         super(props)
@@ -45,11 +46,13 @@ class Archive extends Component {
                     return ((a.index < b.index) ? -1 : ((a.index > b.index) ? 1 : 0));
                 })
                 // let newArray = AllNotes.filter(ele => ele.index!==undefined).sort()
+                console.log("notes", AllNotes);
+
                 this.setState({
-                    notesArray: AllNotes
+                    ArchiveArray: AllNotes
                 })
 
-              
+
 
             })
             .catch(err => {
@@ -76,11 +79,91 @@ class Archive extends Component {
 
             })
     }
+    reminder = (arraynotes, dateTime, cardId) => {
+        try {
+            console.log("date time", dateTime, cardId, arraynotes);
+
+            if (dateTime === undefined) {
+                let index = this.state.ArchiveArray.map(ele => ele._id).indexOf(cardId)
+                let array = this.state.ArchiveArray;
+                array[index].reminder = null;
+                this.setState({ ArchiveArray: array })
+            } else {
+                let index = this.state.ArchiveArray.map(ele => ele._id).indexOf(cardId)
+                let array1 = this.state.ArchiveArray
+                console.log("array", array1[index], index);
+
+                array1[index].reminder = new Date(dateTime + 1).toString().slice(0, 15);
+                this.setState({ ArchiveArray: array1 })
+
+            }
+        } catch (err) {
+            console.log(err);
+
+        }
+    }
+    color = (color, cardId) => {
+        try {
+            let index = this.state.ArchiveArray.map(ele => ele._id).indexOf(cardId)
+            let array = this.state.ArchiveArray
+            array[index].color = color;
+            this.setState({ ArchiveArray: array })
+
+        } catch (err) {
+            console.log(err);
+
+        }
+    }
+    Trash = (element) => {
+        try {
+            let arrayNotes = this.state.ArchiveArray;
+            let index = arrayNotes.indexOf(element)
+            UndoTakeNote = arrayNotes.splice(index, 1)[0]
+            this.setState({ ArchiveArray: arrayNotes })
+        } catch (err) {
+            console.log(err);
+
+        }
+    }
+    addNoteLabel = (data, cardId) => {
+        try {
+            let arrayNotes = this.state.ArchiveArray
+            arrayNotes.forEach((element) => {
+                if (element._id === cardId) {
+                    element.labels.push(data)
+                    // this.setState({ noteLabel: [...this.state.noteLabel, data] })
+                }
+            })
+            this.setState({ ArchiveArray: arrayNotes })
+
+        } catch (err) {
+            console.log(err);
+
+        }
+    }
+    removeNoteLabel = (labelid) => {
+        try {
+            let array = this.state.ArchiveArray
+            array.forEach((element) => {
+                element.labels.forEach((ele, index) => {
+                    if (ele.id === labelid) {
+                        element.labels.splice(index, 1)
+                        this.setState({ ArchiveArray: array })
+                    }
+                })
+
+            })
+        } catch (err) {
+            console.log(err);
+
+        }
+    }
     render() {
 
         return (
             <div>
-                <DashBoard ArchiveState={this.props.location.state} ArchiveNotes={this.state.ArchiveArray} />
+                <DashBoard ArchiveComponent={this.props.location.state} ArchiveNotes={this.state.ArchiveArray} reminder={this.reminder} color={this.color}
+                    Trash={this.Trash} addNoteLabel={this.addNoteLabel} removeNoteLabel={this.removeNoteLabel} />
                 <Snackbar anchorOrigin={{
                     vertical: "bottom",
                     horizontal: "left"
