@@ -1,3 +1,12 @@
+/********************************************************************************************************************
+ * @Execution : default : cmd> npm start
+ * @Purpose : fundoonotes reactjs
+ * @description : Build a login componenet
+ * @overview : fundoo
+ * @author : manoj kumar k s<manoj.ks.24.mk@gmail.com>
+ * @version : 1.0
+ * @since :15-oct-2019
+ *******************************************************************************************************************/
 import React, { Component } from "react";
 import { createMuiTheme } from '@material-ui/core/styles';
 import Glogo from '../assets/google_icon.png'

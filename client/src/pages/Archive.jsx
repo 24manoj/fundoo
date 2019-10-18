@@ -1,3 +1,14 @@
+
+/********************************************************************************************************************
+ * @Execution : default : cmd> npm start
+ * @Purpose : fundoonotes reactjs
+ * @description : Build a Archive componenet
+ * @overview : fundoo
+ * @author : manoj kumar k s<manoj.ks.24.mk@gmail.com>
+ * @version : 1.0
+ * @since :15-oct-2019
+ *******************************************************************************************************************/
+
 import React, { Component } from 'react';
 import DashBoard from '../pages/DashBoard'
 import { getArchiveNotes, UndoArchive, updateArchive } from "../controller/notesController";
@@ -5,7 +16,6 @@ import { messageService } from '../minddleware/middleWareServices';
 import { Snackbar } from '@material-ui/core';
 import { UndoOutlined } from '@material-ui/icons';
 let ArchiveNote;
-let UndoTakeNote;
 class Archive extends Component {
     constructor(props) {
         super(props)
@@ -14,12 +24,9 @@ class Archive extends Component {
             snackBar: false,
             snackBarMessage: ''
         }
-
-
+        /** @description rxjs obsever */
         messageService.getMessage().subscribe(message => {
-
             if (message.text.key === 'UnArchiveNote') {
-
                 let payload = {
                     noteId: message.text.value._id
                 }
@@ -33,56 +40,65 @@ class Archive extends Component {
                         this.setState({ ArchiveArray: array, snackBar: true, snackBarMessage: 'Note UnArchived Sucess' })
                         console.log("archive array", this.state.ArchiveArray);
                     })
-
             }
         })
     }
+
+    /**
+     * @description method loads data after render
+     */
     componentWillMount() {
-
-        getArchiveNotes()
-            .then(archivedNotes => {
-                let AllNotes = archivedNotes.data.data
-                AllNotes.sort((a, b) => {
-                    return ((a.index < b.index) ? -1 : ((a.index > b.index) ? 1 : 0));
+        try {
+            getArchiveNotes()
+                .then(archivedNotes => {
+                    let AllNotes = archivedNotes.data.data
+                    AllNotes.sort((a, b) => {
+                        return ((a.index < b.index) ? -1 : ((a.index > b.index) ? 1 : 0));
+                    })
+                    this.setState({
+                        ArchiveArray: AllNotes
+                    })
                 })
-                // let newArray = AllNotes.filter(ele => ele.index!==undefined).sort()
-                console.log("notes", AllNotes);
-
-                this.setState({
-                    ArchiveArray: AllNotes
+                .catch(err => {
+                    console.log(err);
                 })
-
-
-
-            })
-            .catch(err => {
-                console.log(err);
-            }
-            )
-
-    }
-    Archive = () => {
-
-        let payload = {
-            noteId: ArchiveNote._id
+        } catch (err) {
+            console.log(err);
         }
-        updateArchive(payload)
-            .then(updatedArchive => {
-                let array = this.state.ArchiveArray
-                array.push(ArchiveNote)
-                this.setState({
-                    ArchiveArray: array,
-                    snackBar: true,
-                    snackBarMessage: 'Undo Archive Sucess'
-                })
-
-
-            })
     }
+    /**
+    * @desc  makes a note archive
+    */
+    Archive = () => {
+        try {
+            let payload = {
+                noteId: ArchiveNote._id
+            }
+            updateArchive(payload)
+                .then(updatedArchive => {
+                    let array = this.state.ArchiveArray
+                    array.push(ArchiveNote)
+                    this.setState({
+                        ArchiveArray: array,
+                        snackBar: true,
+                        snackBarMessage: 'Undo Archive Sucess'
+                    })
+
+
+                })
+        } catch (err) {
+            console.log(err);
+
+        }
+    }
+    /**
+    * @desc  sets reminder notes
+    * @param arraynotes notes 
+    * @dateTime reminder to update
+    * @param cardId note id
+    */
     reminder = (arraynotes, dateTime, cardId) => {
         try {
-            console.log("date time", dateTime, cardId, arraynotes);
-
             if (dateTime === undefined) {
                 let index = this.state.ArchiveArray.map(ele => ele._id).indexOf(cardId)
                 let array = this.state.ArchiveArray;
@@ -91,17 +107,18 @@ class Archive extends Component {
             } else {
                 let index = this.state.ArchiveArray.map(ele => ele._id).indexOf(cardId)
                 let array1 = this.state.ArchiveArray
-                console.log("array", array1[index], index);
-
                 array1[index].reminder = new Date(dateTime + 1).toString().slice(0, 15);
                 this.setState({ ArchiveArray: array1 })
-
             }
         } catch (err) {
             console.log(err);
-
         }
     }
+    /**
+    * @desc  updates color 
+    * @param color color code
+    * @param cardId note id
+    */
     color = (color, cardId) => {
         try {
             let index = this.state.ArchiveArray.map(ele => ele._id).indexOf(cardId)
@@ -114,6 +131,10 @@ class Archive extends Component {
 
         }
     }
+    /**
+    * @desc  trash note
+    * @param element note details
+    */
     Trash = (element) => {
         try {
             let arrayNotes = this.state.ArchiveArray;
@@ -122,25 +143,30 @@ class Archive extends Component {
             this.setState({ ArchiveArray: arrayNotes })
         } catch (err) {
             console.log(err);
-
         }
     }
+    /**
+    * @desc add label to note
+    * @param data label detail
+    * @param cardId note id
+    */
     addNoteLabel = (data, cardId) => {
         try {
             let arrayNotes = this.state.ArchiveArray
             arrayNotes.forEach((element) => {
                 if (element._id === cardId) {
                     element.labels.push(data)
-                    // this.setState({ noteLabel: [...this.state.noteLabel, data] })
                 }
             })
             this.setState({ ArchiveArray: arrayNotes })
-
         } catch (err) {
             console.log(err);
-
         }
     }
+    /**
+    * @desc  removes label from note
+    * @param labelid label id 
+     */
     removeNoteLabel = (labelid) => {
         try {
             let array = this.state.ArchiveArray
@@ -155,11 +181,9 @@ class Archive extends Component {
             })
         } catch (err) {
             console.log(err);
-
         }
     }
     render() {
-
         return (
             <div>
                 <DashBoard ArchiveComponent={this.props.location.state} ArchiveNotes={this.state.ArchiveArray} reminder={this.reminder} color={this.color}

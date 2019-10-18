@@ -1,10 +1,22 @@
+/********************************************************************************************************************
+ * @Execution : default : cmd> npm start
+ * @Purpose : fundoonotes reactjs
+ * @description : Build a sidenav componenet
+ * @overview : fundoo
+ * @author : manoj kumar k s<manoj.ks.24.mk@gmail.com>
+ * @version : 1.0
+ * @since :15-oct-2019
+ *******************************************************************************************************************/
 import React, { Component } from 'react';
 import MenuIcon from '@material-ui/icons/Menu';
 import { Drawer, MenuItem, MuiThemeProvider, createMuiTheme, IconButton } from '@material-ui/core'
 import { EmojiObjectsOutlined, NotificationsOutlined, LabelOutlined, EditOutlined, ArchiveOutlined, DeleteOutline } from '@material-ui/icons'
-import { withRouter, Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import DailogLabel from './DailogLabel'
 import { messageService } from '../../minddleware/middleWareServices';
+/**
+ * @description overiding theme
+ */
 const theme = createMuiTheme({
     overrides: {
         MuiDrawer: {
@@ -31,43 +43,81 @@ class SideNav extends Component {
             activeClass: this.props.active !== undefined ? this.props.active : 'notes',
             editLabeldailog: false
         }
-
     }
+    /**
+     * @description handels notes component
+     */
     handleNotes = (event) => {
-        this.setState({ activeClass: event.currentTarget.id })
-        this.props.history.push('/Dashboard')
+        try {
+            this.setState({ activeClass: event.currentTarget.id })
+            this.props.history.push('/Dashboard')
+        } catch (err) {
+            console.log(err);
+
+        }
     }
+    /**
+    * @description handels reminder component
+    */
     handleReminder = (event) => {
-        this.setState({ activeClass: event.currentTarget.id })
-        this.props.history.push({
-            pathname: '/reminder',
-            state: { reminder: true, title: event.currentTarget.id }
-        })
+        try {
+            this.setState({ activeClass: event.currentTarget.id })
+            this.props.history.push({
+                pathname: '/reminder',
+                state: { reminder: true, title: event.currentTarget.id }
+            })
+        } catch (err) {
+            console.log(err);
+
+        }
     }
+    /**
+    * @description handels Archive component
+    */
     handleArchive = (event) => {
-        this.setState({ activeClass: event.currentTarget.id })
-        this.props.history.push({
-            pathname: '/archive',
-            state: { archive: true, title: event.currentTarget.id }
-        })
+        try {
+            this.setState({ activeClass: event.currentTarget.id })
+            this.props.history.push({
+                pathname: '/archive',
+                state: { archive: true, title: event.currentTarget.id }
+            })
+        } catch (err) {
+            console.log(err);
 
+        }
     }
+    /**
+    * @description handels trash component
+    */
     handleTrash = (event) => {
-        this.setState({ activeClass: event.currentTarget.id })
-        console.log("class", this.state.activeClass);
+        try {
+            this.setState({ activeClass: event.currentTarget.id })
+            this.props.history.push({
+                pathname: '/trash',
+                state: { Trash: true, title: event.currentTarget.id }
+            })
+        } catch (err) {
+            console.log(err);
 
-        this.props.history.push({
-            pathname: '/trash',
-            state: { Trash: true, title: event.currentTarget.id }
-        })
+        }
     }
+    /**
+    * @description handels labels component
+    */
     handleLabels = (event) => {
-        this.setState({ activeClass: event.currentTarget.id })
-        this.props.history.push({
-            pathname: '/labels',
-            state: { labels: true, title: event.currentTarget.id }
-        })
+        try {
+            this.setState({ activeClass: event.currentTarget.id })
+            this.props.history.push({
+                pathname: '/labels',
+                state: { labels: true, title: event.currentTarget.id }
+            })
+        } catch (err) {
+            console.log(err);
+        }
     }
+    /**
+    * @description handels editlabels component
+    */
     handleEditLabels = () => {
         try {
             this.setState({ editLabeldailog: !this.state.editLabelPoper })
@@ -77,15 +127,25 @@ class SideNav extends Component {
 
         }
     }
+    /**
+    * @description handels Dailog
+    */
     DailogClose = (toogle) => {
         this.setState({ editLabeldailog: toogle })
-
     }
+    /**
+    * @description handels sidenav toggle
+    */
     toogle = async () => {
-        await this.setState({
-            sideToggle: !this.state.sideToggle
-        })
-        messageService.sendMessage({ key: 'sideNav', value: this.state.sideToggle })
+        try {
+            await this.setState({
+                sideToggle: !this.state.sideToggle
+            })
+            messageService.sendMessage({ key: 'sideNav', value: this.state.sideToggle })
+        } catch (err) {
+            console.log(err);
+
+        }
     }
     render() {
         return (
@@ -138,7 +198,6 @@ class SideNav extends Component {
                             }} onClick={this.handleTrash}>
                             <MenuItem className="labelList"> <DeleteOutline titleAccess="Edit Label" />
                                 <div style={{ paddingLeft: "30px" }}> Trash</div></MenuItem></div>
-
 
                         <hr style={{ width: "100%" }} />
                     </Drawer>

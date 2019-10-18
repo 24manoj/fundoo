@@ -1,3 +1,14 @@
+
+
+/********************************************************************************************************************
+ * @Execution : default : cmd> npm start
+ * @Purpose : fundoonotes reactjs
+ * @description : Build a Reset componenet
+ * @overview : fundoo
+ * @author : manoj kumar k s<manoj.ks.24.mk@gmail.com>
+ * @version : 1.0
+ * @since :15-oct-2019
+ *******************************************************************************************************************/
 import React, { Component } from 'react'
 import { Card, TextField, Button, createMuiTheme, MuiThemeProvider, Snackbar } from '@material-ui/core'
 import { Cancel } from '@material-ui/icons';
@@ -24,9 +35,10 @@ class ResetPassword extends Component {
             SnackbarMessage: ''
         })
     }
-
+    /**
+     * @description validates for the email and password
+     */
     Validate = (event) => {
-
         let PasswordRegx = /^[a-zA-Z0-9]{8,}/
         if (event.target.name === 'NewPassword') {
             this.setState({
@@ -34,7 +46,7 @@ class ResetPassword extends Component {
             })
             if (!PasswordRegx.test(this.state.NewPassword)) {
                 this.setState({
-                    NewPasswordError: 'password should  contain 8 or more characters '
+                    NewPasswordError: 'character should be more or 8'
                 })
             } else {
                 this.setState({
@@ -58,7 +70,9 @@ class ResetPassword extends Component {
         }
 
     }
-
+    /**
+    * @description validates  given details,give approprate message
+    */
     Reset = () => {
         if (this.state.NewPasswordError !== '' || this.state.NewPassword === '' || this.state.ConfirmError !== '' || this.state.ConfirmPassword === '') {
             this.setState({
@@ -76,10 +90,8 @@ class ResetPassword extends Component {
                         this.setState({
                             Snackbar: true,
                             SnackbarMessage: 'Password set Sucessfully !!1 happy Noting'
-
                         })
                         this.props.history.push('/')
-
                     })
                     .catch(err => {
                         this.setState({
@@ -97,12 +109,13 @@ class ResetPassword extends Component {
         }
 
     }
+
     SnackbarClose = () => this.setState({ Snackbar: false })
+
     render() {
         return (
             <MuiThemeProvider theme={theme}>
                 <div className="Style">
-
                     <Card className="cardStyleReset">
                         <h2>
                             <span style={{ color: "#7536BD" }}>F</span>
@@ -163,7 +176,6 @@ class ResetPassword extends Component {
 
                     </Card>
                 </div>
-
             </MuiThemeProvider>
         );
     }

@@ -1,3 +1,13 @@
+
+/********************************************************************************************************************
+ * @Execution : default : cmd> npm start
+ * @Purpose : fundoonotes reactjs
+ * @description : create appbar componenet
+ * @overview : fundoo
+ * @author : manoj kumar k s<manoj.ks.24.mk@gmail.com>
+ * @version : 1.0
+ * @since :15-oct-2019
+ *******************************************************************************************************************/
 import React, { Component } from 'react';
 import { SearchRounded, RefreshSharp, ViewAgendaOutlined, ClearAll, GridOnOutlined, Settings } from '@material-ui/icons'
 import Icon from '../../assets/icons8-google-keep.svg';
@@ -7,6 +17,9 @@ import { withRouter } from 'react-router-dom'
 import SideNav from './sideNav';
 import Search from './Search'
 import { ProfileUpload } from '../../controller/userController.jsx'
+/**
+ * @description overriding theme
+ */
 const theme = createMuiTheme({
     overrides: {
         MuiAppBar: {
@@ -19,11 +32,12 @@ const theme = createMuiTheme({
             },
 
         }
-
-
     }
 })
 class NavBar extends Component {
+    /**
+     * @desc get value from session storage
+     */
     sessionValue = JSON.parse(sessionStorage.getItem('UserSession'))
     Fname = this.sessionValue.data.firstName.slice(0, 1)
     constructor(props) {
@@ -40,57 +54,76 @@ class NavBar extends Component {
             profileUrl: this.sessionValue.data.url
         }
     }
+    /**
+     * @description handels popper
+     */
     popper = (event) => {
         this.setState({ anchorEl: event.currentTarget })
         this.state.popOver === true ? this.setState({ popOver: false }) : this.setState({ popOver: true })
     }
+    /**
+    * @description handels sidenav toggle
+    */
     NoteToogle = () => {
-
         this.setState({ View: !this.state.View })
         this.props.open(this.state.View)
-
     }
+    /**
+    * @description handels refresh button 
+    */
     refresh = async () => {
         await this.setState({ animate: !this.state.animate })
         this.props.refresh(this.state.animate)
     }
 
-
+    /**
+       * @description handels sign out
+       */
     SignOut = (event) => {
         sessionStorage.clear();
         this.props.history.push('/')
 
     }
+    /**
+    * @description handels profile upload
+    */
     profile = (event) => {
-        this.setState({
-            profileUrl: URL.createObjectURL(event.target.files[0])
-        })
-        let image = event.target.files[0];
-        ProfileUpload(image)
-            .then(upload => {
-                let profile = this.sessionValue
-                sessionStorage.clear()
-                profile.data.url = upload.data.data
-                sessionStorage.setItem(process.env.REACT_APP_STORAGE, JSON.stringify(profile))
+        try {
+            this.setState({
+                profileUrl: URL.createObjectURL(event.target.files[0])
             })
-            .catch(err => {
-                console.log(err);
+            let image = event.target.files[0];
+            ProfileUpload(image)
+                .then(upload => {
+                    let profile = this.sessionValue
+                    sessionStorage.clear()
+                    profile.data.url = upload.data.data
+                    sessionStorage.setItem(process.env.REACT_APP_STORAGE, JSON.stringify(profile))
+                })
+                .catch(err => {
+                    console.log(err);
 
-            })
+                })
+        } catch (err) {
+            console.log(err);
 
+        }
     }
+    /**
+    * @description handels search notes
+    */
     searchData = (event) => {
         this.props.onSearch(this.state.search)
     }
-
+    /**
+       * @description handels labels search
+       */
     search = (state, filt, trash, archive) => {
-
         this.props.search(state, filt, trash, archive)
     }
     render() {
         let animateClass = this.state.animate ? 'rotate' : ''
         const activeClass = this.props.title !== undefined ? this.props.title : undefined
-
         return (
             <MuiThemeProvider theme={theme}>
                 <AppBar>

@@ -1,20 +1,28 @@
+
+/********************************************************************************************************************
+ * @Execution : default : cmd> npm start
+ * @Purpose : fundoonotes reactjs
+ * @description : Build a Dashboard component
+ * @overview : fundoo
+ * @author : manoj kumar k s<manoj.ks.24.mk@gmail.com>
+ * @version : 1.0
+ * @since :15-oct-2019
+ *******************************************************************************************************************/
 import React, { Component } from "react";
 import NavBar from '../components/DashBoard/NavBar';
 import TakeNote from '../components/DashBoard/TakeNote';
 import Notes from '../components/DashBoard/Notes';
 import { withRouter } from 'react-router-dom';
-import { Popper, Paper, ClickAwayListener, IconButton, Snackbar, Card, TextField, Checkbox, Dialog, Menu, MenuItem } from "@material-ui/core";
-import { UndoOutlined, DeleteOutline, AddCircleOutline, Message, LabelOutlined } from '@material-ui/icons'
+import { Popper, Paper, ClickAwayListener, IconButton, Snackbar, Card, TextField, Checkbox } from "@material-ui/core";
+import { UndoOutlined, DeleteOutline, AddCircleOutline } from '@material-ui/icons'
 import {
     getLabels, getNotes, updateColor, updateArchive, createNote, UndoArchive, updateReminder, undoReminder,
     removeNoteLabel, addNoteLabel, NoteTrash, undoTrash, createLabel
 } from '../controller/notesController';
-import { searchNotes } from '../minddleware/searchNotes'
 import '../App.scss'
 import DateFnsUtils from '@date-io/date-fns';
 import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { messageService } from '../minddleware/middleWareServices'
-import { async } from "rxjs/internal/scheduler/async";
 var Alllabels;
 var AllNotes;
 var UndoTakeNote;
@@ -22,6 +30,7 @@ var UndoTakeNote;
 class DashBoard extends Component {
     constructor(props) {
         super(props);
+        /**@description declaring state and props */
         this.state = {
             filterArray: [],
             notesArray: [],
@@ -69,9 +78,10 @@ class DashBoard extends Component {
                 { name: 'Brown', colorCode: '#bcaaa4' }
             ]
         }
+        /** @description binding memberfunctions  */
         this.open = this.open.bind(this);
         this.search = this.search.bind(this);
-
+        /** @description rxjs Observer  for data sharing*/
         messageService.getMessage().subscribe(message => {
             if (message.text.key === 'updateNotes' && message.text.key !== undefined) {
                 let index = this.state.notesArray.map(ele => ele._id).indexOf(message.text.value.noteId)
@@ -92,25 +102,20 @@ class DashBoard extends Component {
                 this.setState({ labels: message.text.value })
             }
             if (message.text.key === 'updateIndex') {
-                let array = this.state.notesArray
-
-
-
-                let index1 = array.map(ele => ele._id).indexOf(message.text.value.source.id)
+                let array = this.state.filterState ? this.state.filterArray : this.state.notesArray
+                let index1 = array.map(ele => this.state.filterState ? ele.id : ele._id).indexOf(message.text.value.source.id)
                 array[index1].index = message.text.value.source.index
-                let index2 = array.map(ele => ele._id).indexOf(message.text.value.destination.id)
+                let index2 = array.map(ele => this.state.filterState ? ele.id : ele._id).indexOf(message.text.value.destination.id)
                 array[index2].index = message.text.value.destination.index
                 let newArray2 = array.sort((a, b) => {
                     return ((a.index < b.index) ? -1 : ((a.index > b.index) ? 1 : 0));
                 })
-                console.log("dash sort ", newArray2, index1, index2);
-                console.log("dash sort ", array);
-
-                this.setState({ notesArray: newArray2 })
-
+                this.state.filterState ? this.setState({ filterArray: newArray2 }) :
+                    this.setState({ notesArray: newArray2 })
             }
         })
     }
+    /** @description loaded after render  */
     componentDidMount() {
         getLabels().then(labels => {
             Alllabels = labels.data.data;
@@ -135,38 +140,57 @@ class DashBoard extends Component {
 
         })
     }
-
+    /**
+     * @desc  sets sidenav state 
+     * @param toggle boolean value 
+    */
     open(toggle) {
         this.setState({ View: toggle })
     }
+    /**
+    * @desc  animates the refresh button on click
+    * @param animate boolean value
+    */
     refresh = (animate) => {
-        if (animate) {
-            getLabels().then(labels => {
-                Alllabels = labels.data.data;
-                this.setState({
-                    labels: Alllabels
+        try {
+            if (animate) {
+                getLabels().then(labels => {
+                    Alllabels = labels.data.data;
+                    this.setState({
+                        labels: Alllabels
+                    })
                 })
-            })
-                .catch(err => {
-                    console.log((err));
-                })
-            getNotes().then(notes => {
-                AllNotes = notes.data.data;
-                AllNotes.sort((a, b) => {
-                    return ((a.index < b.index) ? -1 : ((a.index > b.index) ? 1 : 0));
-                })
-                // let newArray = AllNotes.filter(ele => ele.index!==undefined).sort()
-                this.setState({
-                    notesArray: AllNotes
-                })
+                    .catch(err => {
+                        console.log((err));
+                    })
+                getNotes().then(notes => {
+                    AllNotes = notes.data.data;
+                    AllNotes.sort((a, b) => {
+                        return ((a.index < b.index) ? -1 : ((a.index > b.index) ? 1 : 0));
+                    })
+                    // let newArray = AllNotes.filter(ele => ele.index!==undefined).sort()
+                    this.setState({
+                        notesArray: AllNotes
+                    })
 
-            }).catch(err => {
-                console.log(err);
+                }).catch(err => {
+                    console.log(err);
 
-            })
+                })
+            }
+        } catch (err) {
+            console.log(err);
+
         }
     }
 
+    /**
+       * @desc  sharing data between child to parent using props
+       * @param cardId  noteId
+       * @param anchorEl location of current div
+       * @param poper boolean value
+       * @param Archive boolean value
+      */
 
     setValue = async (cardId, anchorEl, poper, Archive) => {
         try {
@@ -182,6 +206,9 @@ class DashBoard extends Component {
 
         }
     }
+    /** 
+     * @description updates the archive state of note
+     */
     noteArchive = () => {
         try {
             let payload = {
@@ -193,7 +220,6 @@ class DashBoard extends Component {
                     let array = this.state.notesArray;
                     UndoTakeNote = array.splice(index, 1)[0]
                     this.setState({ notesArray: array })
-                    console.log(updatedData);
                     this.setState({
                         NoteColor: '',
                         AnchorEl: null,
@@ -216,6 +242,10 @@ class DashBoard extends Component {
         }
     }
 
+    /**
+       * @desc  sets color  for note
+       * @param event   event handler
+       * */
     setNoteColor = async (event) => {
         try {
             await this.setState({ NoteColor: event.target.value })
@@ -236,10 +266,13 @@ class DashBoard extends Component {
                         })
                     }
                     else {
-
-                        let index = this.state.notesArray.map(ele => ele._id).indexOf(this.state.cardId)
-                        let array = this.state.notesArray;
+                        let array1 = this.state.filterState ? this.state.filterArray : this.state.notesArray;
+                        let index = array1.map(ele => this.state.filterState ? ele.id : ele._id).indexOf(this.state.cardId)
+                        let array = this.state.filterState ? this.state.filterArray : this.state.notesArray;
                         array[index].color = this.state.NoteColor;
+                        if (this.state.filterState) {
+                            this.setState({ filterArray: array })
+                        }
                         this.setState({ notesArray: array })
                         this.setState({
                             NoteColor: '',
@@ -256,6 +289,10 @@ class DashBoard extends Component {
             console.log(err);
         }
     }
+    /**
+       * @desc  creates a new note
+       * @param payload contains the details of note to create
+       */
     createNote = (payload) => {
         try {
             createNote(payload)
@@ -281,6 +318,12 @@ class DashBoard extends Component {
 
         }
     }
+    /**
+       * @desc  removes reminder from a specific note
+       * @param reminderpoper conatins boolean value
+       * @param anchorEl location of current div
+       * @param noteId Id of note to be updated
+      */
     NoteReminder = async (reminderPoper, anchorEl, noteId) => {
         try {
             await this.setState({ reminderPoper: reminderPoper, AnchorEl: anchorEl, cardId: noteId })
@@ -293,103 +336,117 @@ class DashBoard extends Component {
                         if (this.state.archiveStateComponent) {
                             this.props.reminder(this.state.notesArray, null, this.state.cardId)
                         } else {
-                            let index = this.state.notesArray.map(ele => ele._id).indexOf(this.state.cardId)
-                            let array = this.state.notesArray;
+                            let array2 = this.state.filterState ? this.state.filterArray : this.state.notesArray
+                            let index = array2.map(ele => this.state.filterState ? ele.id : ele._id).indexOf(this.state.cardId)
+                            let array = this.state.filterState ? this.state.filterArray : this.state.notesArray
                             array[index].reminder = null;
-                            this.setState({ notesArray: array, cardId: '' })
+                            this.state.filterState ? this.setState({ filterArray: array }) :
+                                this.setState({ notesArray: array, cardId: '' })
                         }
-
                     })
                     .catch(err => {
                         console.log(err);
-
                     })
             }
-
         } catch (err) {
             console.log(err);
-
         }
-
     }
-
+    /** 
+       * @desc  add reminder to note
+       * @param dateTime reminder value
+      */
     dateSet = (dateTime) => {
-        let payload = {
-            reminder: dateTime,
-            noteId: this.state.cardId
-        }
-        updateReminder(payload)
-            .then(reminder => {
-                if (this.state.archiveStateComponent) {
-                    this.props.reminder(this.state.notesArray, dateTime, this.state.cardId)
-                    this.setState({
-                        // notesArray: array,
-                        cardId: '',
-                        dateTime: '',
-                        AnchorEl: null,
-                        // newReminder: array[index].reminder
-                    })
-                } else {
-                    let index = this.state.notesArray.map(ele => ele._id).indexOf(this.state.cardId)
-                    let array = this.state.notesArray;
-                    array[index].reminder = new Date(dateTime + 1).toString().slice(0, 15);
-                    messageService.sendMessage({ key: 'updateReminder', value: (new Date(dateTime + 1).toString().slice(0, 15)) })
-                    this.setState({
-                        notesArray: array,
-                        cardId: '',
-                        dateTime: '',
-                        AnchorEl: null,
-                        newReminder: array[index].reminder
-                    })
-                }
-            })
-            .catch(err => {
-                console.log(err);
-
-            })
-
-    }
-
-    undoArchive = () => {
-
-        let payload = {
-            noteId: UndoTakeNote._id
-        }
-        if (this.state.trashState) {
-            undoTrash(payload)
-                .then(update => {
-                    let array = this.state.notesArray;
-                    array.push(UndoTakeNote)
-                    this.setState({
-                        notesArray: array,
-                        stackBar: false,
-                        stackBarMessage: ''
-                    })
-                    UndoTakeNote = ''
-
+        try {
+            let payload = {
+                reminder: dateTime,
+                noteId: this.state.cardId
+            }
+            updateReminder(payload)
+                .then(reminder => {
+                    if (this.state.archiveStateComponent) {
+                        this.props.reminder(this.state.notesArray, dateTime, this.state.cardId)
+                        this.setState({
+                            cardId: '',
+                            dateTime: '',
+                            AnchorEl: null,
+                        })
+                    } else {
+                        let index = (this.state.filterState ? this.state.filterArray : this.state.notesArray).map(ele => this.state.filterState ? ele.id : ele._id).indexOf(this.state.cardId)
+                        let array = this.state.filterState ? this.state.filterArray : this.state.notesArray;
+                        array[index].reminder = new Date(dateTime + 1).toString().slice(0, 15);
+                        messageService.sendMessage({ key: 'updateReminder', value: (new Date(dateTime + 1).toString().slice(0, 15)) })
+                        if (this.state.filterState) {
+                            this.setState({
+                                filterArray: array,
+                                cardId: '',
+                                dateTime: '',
+                                AnchorEl: null,
+                                newReminder: array[index].reminder
+                            })
+                        }
+                        this.setState({
+                            notesArray: array,
+                            cardId: '',
+                            dateTime: '',
+                            AnchorEl: null,
+                            newReminder: array[index].reminder
+                        })
+                    }
                 })
-        } else {
-            UndoArchive(payload)
-                .then(updated => {
-                    let array = this.state.notesArray;
-                    array.push(UndoTakeNote)
-                    this.setState({
-                        notesArray: array,
-                        stackBar: false,
-                        stackBarMessage: ''
-                    })
-                    UndoTakeNote = ''
-
-                })
-
-
                 .catch(err => {
                     console.log(err);
-
                 })
+        } catch (err) {
+            console.log(err);
         }
     }
 
+    /**
+       * @desc  removes note from archive state of note
+      */
+    undoArchive = () => {
+        try {
+            let payload = {
+                noteId: this.state.filterState ? UndoTakeNote.id : UndoTakeNote._id
+            }
+            if (this.state.trashState) {
+                undoTrash(payload)
+                    .then(update => {
+                        let array = this.state.notesArray;
+                        array.push(UndoTakeNote)
+                        this.setState({
+                            notesArray: array,
+                            stackBar: false,
+                            stackBarMessage: ''
+                        })
+                        UndoTakeNote = ''
+                    })
+            } else {
+                UndoArchive(payload)
+                    .then(updated => {
+                        let array = this.state.notesArray;
+                        array.push(UndoTakeNote)
+                        this.setState({
+                            notesArray: array,
+                            stackBar: false,
+                            stackBarMessage: ''
+                        })
+                        UndoTakeNote = ''
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    })
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+    /**
+        * @desc  remove label from note
+        * @param cardId  noteId
+        * @param labelId labelID
+        */
     removeNoteLabel = (cardId, labelId) => {
         try {
             let payload = {
@@ -398,40 +455,37 @@ class DashBoard extends Component {
             }
             removeNoteLabel(payload)
                 .then(removed => {
-                    if (this.state.archiveStateComponent) {
+                    if (this.state.archiveStateComponent)
                         this.props.removeNoteLabel(labelId)
-                    }
                     else {
-                        let array = this.state.notesArray
+                        let array = this.state.filterState ? this.state.filterArray : this.state.notesArray
                         array.forEach((element) => {
                             element.labels.forEach((ele, index) => {
                                 if (ele.id === labelId) {
                                     element.labels.splice(index, 1)
-                                    this.setState({ notesArray: array })
+                                    this.state.filterState ? this.setState({ filterArray: array }) :
+                                        this.setState({ notesArray: array })
                                 }
                             })
 
                         })
                     }
-                    console.log("labelremoved", removed);
                 })
                 .catch(err => {
                     console.log(err);
-
                 })
         } catch (err) {
             console.log(err);
-
         }
-
     }
-
+    /**
+        * @desc  add label to specific note
+        * @param cardId  noteId
+       */
     addNoteLabel = (event) => {
         try {
             let data = {}
-
             if (event.target !== undefined) {
-
                 data = {
                     id: event.target.id,
                     value: event.target.value
@@ -442,10 +496,8 @@ class DashBoard extends Component {
                     value: event.labelName
                 }
             }
-
             let array = this.state.noteLabel;
             let remove = false;
-
             this.state.noteLabel.forEach((element, index) => {
                 if (element.id === data.id) {
                     this.removeNoteLabel(this.state.cardId, element.id)
@@ -459,21 +511,23 @@ class DashBoard extends Component {
                     noteId: this.state.cardId,
                     label: data
                 }
-
                 addNoteLabel(payload)
                     .then(updated => {
                         if (this.state.archiveStateComponent) {
                             this.props.addNoteLabel(data, this.state.cardId)
                             this.setState({ noteLabel: [...this.state.noteLabel, data] })
-
-
                         } else {
-                            let arrayNotes = this.state.notesArray
+                            let arrayNotes = this.state.filterState ? this.state.filterArray : this.state.notesArray
                             arrayNotes.forEach((element) => {
-                                if (element._id === this.state.cardId) {
+                                if ((this.state.filterState ? element.id : element._id) === this.state.cardId) {
                                     element.labels.push(data)
-                                    this.setState({ notesArray: arrayNotes })
-                                    this.setState({ noteLabel: [...this.state.noteLabel, data] })
+                                    if (this.state.filterState) {
+                                        this.setState({ filterArray: arrayNotes })
+                                        this.setState({ noteLabel: [...this.state.noteLabel, data] })
+                                    } else {
+                                        this.setState({ notesArray: arrayNotes })
+                                        this.setState({ noteLabel: [...this.state.noteLabel, data] })
+                                    }
                                 }
                             })
                         }
@@ -481,7 +535,6 @@ class DashBoard extends Component {
                     })
                     .catch(err => {
                         console.log(err);
-
                     })
             }
 
@@ -489,6 +542,13 @@ class DashBoard extends Component {
             console.log(err);
         }
     }
+    /**
+        * @desc  sets labelpoper state
+        * @param cardId  noteId
+        * @param poper boolean value
+        * @param location anchorEl of div
+       */
+
     LabelPoper = (cardId, poper, location) => {
         try {
             this.setState({ AnchorEl: location, OptionsPoper: poper, cardId: cardId })
@@ -496,6 +556,11 @@ class DashBoard extends Component {
             console.log(err);
         }
     }
+    /** 
+        * @desc adds label  
+        * @param event handler        
+        */
+
     addLabel = (event) => {
         this.setState({
             labelListAnchor: event.currentTarget,
@@ -503,72 +568,98 @@ class DashBoard extends Component {
 
         })
     }
+    /**
+        * @desc  moves note to trash
+    */
 
     NoteTrash = () => {
-        this.setState({ OptionsPoper: !this.state.OptionsPoper })
-        let payload = {
-            noteId: this.state.cardId
-        }
-        NoteTrash(payload)
-            .then(deleted => {
-                let arrayNotes = this.state.notesArray
-                arrayNotes.forEach((element) => {
-                    if (this.state.archiveStateComponent) {
-                        this.props.Trash(element)
-                        this.setState({ stackBar: true, stackBarMessage: 'Note Trashed Sucessfully', trashState: true })
+        try {
+            this.setState({ OptionsPoper: !this.state.OptionsPoper })
+            let payload = {
+                noteId: this.state.cardId
+            }
+            NoteTrash(payload)
+                .then(deleted => {
+                    // console.log("filter state", this.state.filterState);
 
-                    } else {
+                    let arrayNotes = this.state.filterState ? this.state.filterArray : this.state.notesArray
+                    arrayNotes.forEach((element) => {
+                        if (this.state.archiveStateComponent) {
+                            this.props.Trash(element)
+                            this.setState({ stackBar: true, stackBarMessage: 'Note Trashed Sucessfully', trashState: true })
 
-                        if (element._id === this.state.cardId) {
-                            let index = arrayNotes.indexOf(element)
-                            UndoTakeNote = arrayNotes.splice(index, 1)[0]
-                            this.setState({ notesArray: arrayNotes, stackBar: true, stackBarMessage: 'Note Trashed Sucessfully', trashState: true })
+                        } else {
+                            if (this.state.filterState ? element.id : element._id === this.state.cardId) {
+                                let index = arrayNotes.indexOf(element)
+                                UndoTakeNote = arrayNotes.splice(index, 1)[0]
+                                if (this.state.filterState) {
+                                    this.setState({ filterArray: arrayNotes })
+                                }
+                                this.setState({ notesArray: arrayNotes, stackBar: true, stackBarMessage: 'Note Trashed Sucessfully', trashState: true })
+                            }
                         }
-                    }
+                    })
+                    console.log(deleted);
                 })
-                console.log(deleted);
-            })
-            .catch(err => {
-                console.log(err);
+                .catch(err => {
+                    console.log(err);
 
-            })
-    }
-
-    createLabelNote = async () => {
-        await this.createLabel(this.state.labelValue)
-        console.log("this state", this.state.newLabel);
-        await this.addNoteLabel(this.state.newLabel)
-    }
-
-    createLabel = async (labelName) => {
-        let payload = {
-            labelName: labelName
+                })
+        } catch (err) {
+            console.log(err);
         }
-        await createLabel(payload)
-            .then(createdLabel => {
-                this.setState({ newLabel: createdLabel.data.data })
-                let Labels = this.state.labels
-
-                Labels.push(this.state.newLabel)
-                this.setState({ labels: Labels, labelListPoper: '' })
-            })
-            .catch(err => {
-                console.log(err);
-
-            })
-
     }
+    /**
+      * @desc creates a new label and adds to note
+     */
+    createLabelNote = async () => {
+        try {
+            await this.createLabel(this.state.labelValue)
+            console.log("this state", this.state.newLabel);
+            await this.addNoteLabel(this.state.newLabel)
+        } catch (err) {
+            console.log(err);
+        }
+    }
+    /**
+      * @desc  creates a new label
+      * @param labelname name of  label to create
+     */
+    createLabel = async (labelName) => {
+        try {
+            let payload = {
+                labelName: labelName
+            }
+            await createLabel(payload)
+                .then(createdLabel => {
+                    this.setState({ newLabel: createdLabel.data.data })
+                    let Labels = this.state.labels
+                    Labels.push(this.state.newLabel)
+                    this.setState({ labels: Labels, labelListPoper: '' })
+                })
+                .catch(err => {
+                    console.log(err);
+                })
+        } catch (err) {
+            console.log(err);
+        }
+    }
+    /**
+      * @desc  remove new label
+     */
     handelDeleteNewLabel = () => {
         this.setState({ newLabel: '' })
     }
-
+    /**
+      * @desc  search function for labels ,filters labels on search
+      * @param event event handler
+     */
     filterLabel = async (event) => {
         await this.setState({ labelValue: event.target.value, searchLabels: [] })
         let filterLabel = []
         let special = /[!@#$%^&*(),.?":{}|<>]/
         if (this.state.labelValue.length <= 0) {
             this.setState({ foundLabel: true, filterstateLabel: false })
-
         } else {
             if (!special.test(this.state.labelValue)) {
                 let patt = new RegExp(`${this.state.labelValue}`)
@@ -580,11 +671,9 @@ class DashBoard extends Component {
                 })
                 if (filterLabel.length === 0) {
                     this.setState({ foundLabel: false })
-
                 } else {
                     if (filterLabel.length === 1 && filterLabel[0].labelName.length === this.state.labelValue.length) {
-                        this.setState({ foundLabel: true }
-                        )
+                        this.setState({ foundLabel: true })
                     } else {
                         this.setState({ foundLabel: false })
                     }
@@ -593,36 +682,62 @@ class DashBoard extends Component {
             }
         }
     }
+    /**
+      * @desc  filters notes array for reminder
+     */
     getReminderNotes = () => {
         let array = this.state.notesArray.filter(ele => ele.reminder !== null)
         return array
     }
+    /**
+      * @desc  filters for specific filter labels
+      */
     getLabelNotes = () => {
-        let array = []
-        this.state.notesArray.map(ele => {
-            ele.labels.forEach(label => {
-                if (label.value === this.props.LabelsState.title)
-                    array.push(ele)
+        try {
+            let array = []
+            this.state.notesArray.map(ele => {
+                ele.labels.forEach(label => {
+                    if (label.value === this.props.LabelsState.title)
+                        array.push(ele)
+                })
             })
+            return array
+        } catch (err) {
+            console.log(err);
         }
-        )
-        return array
     }
+    /**
+      * @desc updates notes array
+       */
     updatedArray = () => {
-        let array = this.state.notesArray
-        array.push(this.props.updatedArray)
-        this.setState({
-            notesArray: array
-        })
-        return this.state.notesArray
-    }
+        try {
+            let array = this.state.notesArray
+            array.push(this.props.updatedArray)
+            this.setState({
+                notesArray: array
+            })
+            return this.state.notesArray
+        } catch (err) {
+            console.log(err);
 
+        }
+    }
+    /**
+      * @desc  sends archived data to child
+     */
     setArchive = () => {
         try {
             if (this.props.ArchiveNotes !== undefined) {
-                this.setState({
-                    notesArray: this.props.ArchiveNotes
-                })
+                if (this.state.filterState) {
+                    this.setState({
+                        filterArray: this.props.ArchiveNotes
+                    })
+                } else {
+
+                    this.setState({
+                        notesArray: this.props.ArchiveNotes
+                    })
+                }
                 return this.props.ArchiveNotes
             }
         } catch (err) {
@@ -630,16 +745,17 @@ class DashBoard extends Component {
 
         }
     }
+    /**
+      * @desc  sets filtered array on search
+      * @param state  boolean value
+      * @param filt notes of searched
+      * @param trash trash search notes
+      * @param archive archive notes
+     */
     search = (state, filt, trash, archive) => {
-        console.log("state", state, filt, trash, archive);
-
-
         this.setState({ filterState: state, filterArray: filt, filterTrash: trash, filterArchive: archive })
     }
-
     render() {
-
-
         const title = this.props.reminder !== undefined ? this.props.reminder.title :
             (this.props.ArchiveComponent !== undefined ? this.props.ArchiveComponent.title
                 : (this.props.TrashState !== undefined ? this.props.TrashState.title :
@@ -649,8 +765,6 @@ class DashBoard extends Component {
         const stateTrash = this.props.TrashState !== undefined ? this.props.TrashState.Trash : undefined
         const stateLabel = this.props.LabelsState !== undefined ? this.props.LabelsState.labels : undefined
         const arciveTitle = this.props.ArchiveComponent !== undefined ? this.props.ArchiveComponent.title : undefined
-
-
         return (
             <div className="Container" >
                 <div>
@@ -660,29 +774,33 @@ class DashBoard extends Component {
                 <div className="NotesScroll" >
                     <TakeNote ArchiveState={stateArchive} createNote={this.createNote} NoteArchived={this.NoteArchived} labels={this.state.labels} createLabel={this.createLabel}
                         newLabel={this.state.newLabel} handelDeleteNewLabel={this.handelDeleteNewLabel} />
-
                     {stateReminder ?
                         <Notes notes={this.state.filterState ? this.state.filterArray : this.getReminderNotes()} view={this.state.View}
                             setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}
-                            LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} filter={this.state.filterState} />
+                            LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} filter={this.state.filterState}
+                            title={this.props.ArchiveComponent !== undefined ? arciveTitle : title} />
                         : (stateArchive ?
 
                             <Notes notes={this.state.filterState ? this.state.filterArchive : this.props.ArchiveNotes} view={this.state.View} ArchiveState={stateArchive}
                                 setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}
-                                LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} filter={this.state.filterState} />
+                                LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} filter={this.state.filterState}
+                                title={this.props.ArchiveComponent !== undefined ? arciveTitle : title} />
                             :
                             (stateTrash ?
                                 <Notes notes={this.state.filterState ? this.state.filterTrash : this.props.TrashNotes} view={this.state.View} TrashState={stateTrash}
+                                    title={this.props.ArchiveComponent !== undefined ? arciveTitle : title}
                                 />
                                 : (
                                     stateLabel ?
                                         <Notes notes={this.getLabelNotes()} view={this.state.View}
                                             setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}
-                                            LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} filter={this.state.filterState} />
+                                            LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} filter={this.state.filterState}
+                                            title={this.props.ArchiveComponent !== undefined ? arciveTitle : title} />
                                         :
                                         <Notes notes={this.state.filterState ? this.state.filterArray : (this.props.updatedArray !== undefined ? this.updateArray : this.state.notesArray)} view={this.state.View}
                                             setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}
-                                            LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} filterValue={this.state.filterState} />)))
+                                            LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} filterValue={this.state.filterState}
+                                            title={this.props.ArchiveComponent !== undefined ? arciveTitle : title} />)))
                     }
                 </div>
 

@@ -1,12 +1,17 @@
 import axios from 'axios'
 import { messageService } from '../minddleware/middleWareServices'
 
-
+/**
+ * @description rxjs observers
+ */
 messageService.getMessage().subscribe(message => {
     if (message.text.key === 'updateNotes')
         updateNotes(message.text.value)
 })
 
+/**
+ * @description updates notes with changes
+ */
 let updateNotes = (payload) => {
     try {
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
@@ -14,27 +19,25 @@ let updateNotes = (payload) => {
             "Content-Type": "application/json",
             token: sessionValue.token
         }
-
         axios.put(`${process.env.REACT_APP_BASE_URL}/note/updateNotes`, payload, { headers: headers })
             .then(notes => {
                 console.log(notes);
-
             })
             .catch(err => {
                 console.log(err);
-
             })
 
     } catch (err) {
         console.log(err);
-
     }
-
 }
+
+/**
+ * @description gets all the notes from  backend
+ */
 let getNotes = () => {
     try {
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
-
         const headers = {
             "Content-Type": "application/json",
             token: sessionValue.token
@@ -43,7 +46,6 @@ let getNotes = () => {
             axios.get(`${process.env.REACT_APP_BASE_URL}/note/getNotes`, { headers: headers })
                 .then(notes => {
                     resolve(notes)
-
                 })
                 .catch(err => {
                     reject(err)
@@ -52,42 +54,40 @@ let getNotes = () => {
     }
     catch (err) {
         console.log(err);
-
     }
 }
 
 
 
+/**
+ * @description gets search data from backend
+ */
 let searchText = (payload) => {
-    console.log("payload" + JSON.stringify(payload));
-
     try {
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
         const headers = {
             token: sessionValue.token
         }
-
         return new Promise((resolve, reject) => {
             axios.post(`${process.env.REACT_APP_BASE_URL}/elastic/search`, payload, { headers: headers })
                 .then(notes => {
                     resolve(notes)
-
                 })
                 .catch(err => {
                     reject(err)
                 })
         })
-
     } catch (err) {
         console.log(err);
-
     }
 }
+
+/**
+ * @description creates new note
+ */
 let createNote = (payload) => {
     try {
-
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
-        console.log(sessionValue.token)
         const headers = {
             "Content-Type": "application/json",
             token: sessionValue.token
@@ -96,7 +96,6 @@ let createNote = (payload) => {
             axios.post(`${process.env.REACT_APP_BASE_URL}/note/createNotes`, payload, { headers: headers })
                 .then(notes => {
                     resolve(notes)
-
                 })
                 .catch(err => {
                     reject(err)
@@ -104,10 +103,11 @@ let createNote = (payload) => {
         })
     } catch (err) {
         console.log(err);
-
     }
 }
-
+/**
+ * @description update note with trash value
+ */
 let undoTrash = (payload) => {
     try {
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
@@ -126,10 +126,12 @@ let undoTrash = (payload) => {
         })
     } catch (err) {
         console.log(err);
-
     }
-
 }
+
+/**
+ * @description Trash a note
+ */
 let NoteTrash = (payload) => {
     try {
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
@@ -148,11 +150,12 @@ let NoteTrash = (payload) => {
         })
     } catch (err) {
         console.log(err);
-
     }
-
 }
 
+/**
+ * @description updates archive state of note
+ */
 let updateArchive = (payload) => {
     try {
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
@@ -164,7 +167,6 @@ let updateArchive = (payload) => {
             axios.put(`${process.env.REACT_APP_BASE_URL}/note/noteArchive`, payload, { headers: headers })
                 .then(notes => {
                     resolve(notes)
-
                 })
                 .catch(err => {
                     reject(err)
@@ -172,17 +174,16 @@ let updateArchive = (payload) => {
         })
     } catch (err) {
         console.log(err);
-
     }
-
 }
 
 
+/**
+ * @description makes http request to update color of note
+ */
 let updateColor = (payload) => {
     try {
-
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
-        console.log(sessionValue.token)
         const headers = {
             "Content-Type": "application/json",
             token: sessionValue.token
@@ -191,7 +192,6 @@ let updateColor = (payload) => {
             axios.put(`${process.env.REACT_APP_BASE_URL}/note/updateColor`, payload, { headers: headers })
                 .then(colorUpdate => {
                     resolve(colorUpdate)
-
                 })
                 .catch(err => {
                     reject(err)
@@ -199,16 +199,14 @@ let updateColor = (payload) => {
         })
     } catch (err) {
         console.log(err);
-
     }
-
 }
-
+/**
+ * @description makes http request to getlabels
+ */
 let getLabels = () => {
     try {
-
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
-        console.log(sessionValue.token)
         const headers = {
             "Content-Type": "application/json",
             token: sessionValue.token
@@ -217,7 +215,6 @@ let getLabels = () => {
             axios.get(`${process.env.REACT_APP_BASE_URL}/note/getLabels`, { headers: headers })
                 .then(notes => {
                     resolve(notes)
-
                 })
                 .catch(err => {
                     reject(err)
@@ -225,14 +222,14 @@ let getLabels = () => {
         })
     } catch (err) {
         console.log(err);
-
     }
 }
-
+/**
+ * @description makes http request to update Archive note
+ */
 let UndoArchive = (payload) => {
     try {
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
-        console.log(sessionValue.token)
         const headers = {
             "Content-Type": "application/json",
             token: sessionValue.token
@@ -241,23 +238,21 @@ let UndoArchive = (payload) => {
             axios.put(`${process.env.REACT_APP_BASE_URL}/note/noteUnArchive`, payload, { headers: headers })
                 .then(notes => {
                     resolve(notes)
-
                 })
                 .catch(err => {
                     reject(err)
                 })
         })
-
     } catch (err) {
         console.log(err);
-
     }
 }
+/**
+ * @description makes http request to update reminder of note
+ */
 let updateReminder = (payload) => {
     try {
-
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
-        console.log(sessionValue.token)
         const headers = {
             "Content-Type": "application/json",
             token: sessionValue.token
@@ -266,24 +261,21 @@ let updateReminder = (payload) => {
             axios.put(`${process.env.REACT_APP_BASE_URL}/note/noteReminder`, payload, { headers: headers })
                 .then(notes => {
                     resolve(notes)
-
                 })
                 .catch(err => {
                     reject(err)
                 })
         })
-
-
     } catch (err) {
         console.log(err);
-
     }
 }
+/**
+ * @description makes http request to update reminder of note
+ */
 let undoReminder = (payload) => {
     try {
-
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
-        console.log(sessionValue.token)
         const headers = {
             "Content-Type": "application/json",
             token: sessionValue.token
@@ -297,24 +289,21 @@ let undoReminder = (payload) => {
                     reject(err)
                 })
         })
-
-
     } catch (err) {
         console.log(err);
-
     }
 }
 
+/**
+ * @description makes http request to update note label
+ */
 let removeNoteLabel = (payload) => {
     try {
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
-        console.log(sessionValue.token)
         const headers = {
             "Content-Type": "application/json",
             token: sessionValue.token
         }
-        console.log("payload", payload);
-
         return new Promise((resolve, reject) => {
             axios.put(`${process.env.REACT_APP_BASE_URL}/note/noteUndoLabel`, payload, { headers: headers })
                 .then(removed => {
@@ -324,13 +313,14 @@ let removeNoteLabel = (payload) => {
                     reject(err)
                 })
         })
-
     } catch (err) {
         console.log(err);
-
     }
 
 }
+/**
+ * @description makes http request to add label to note
+ */
 let addNoteLabel = (payload) => {
     try {
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
@@ -350,12 +340,11 @@ let addNoteLabel = (payload) => {
 
     } catch (err) {
         console.log(err);
-
     }
 }
-
-
-
+/**
+ * @description makes http request to 
+ */
 let createLabel = (payload) => {
     try {
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
@@ -375,10 +364,11 @@ let createLabel = (payload) => {
 
     } catch (err) {
         console.log(err);
-
     }
 }
-
+/**
+ * @description makes http request to get trash notes
+ */
 let getTrashNotes = () => {
     try {
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
@@ -401,7 +391,9 @@ let getTrashNotes = () => {
 
     }
 }
-
+/**
+ * @description makes http request to delete a specific note
+ */
 let deleteNotes = (payload) => {
     try {
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
@@ -409,8 +401,6 @@ let deleteNotes = (payload) => {
             "Content-Type": "application/json",
             token: sessionValue.token
         }
-
-
         return new Promise((resolve, reject) => {
             axios.put(`${process.env.REACT_APP_BASE_URL}/note/deleteNotes`, payload, { headers: headers })
                 .then(deletd => {
@@ -423,15 +413,15 @@ let deleteNotes = (payload) => {
 
     } catch (err) {
         console.log(err);
-
     }
-
 }
 
+/**
+ * @description makes http request to get Archive notes
+ */
 let getArchiveNotes = (payload) => {
     try {
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
-        console.log(sessionValue.token)
         const headers = {
             "Content-Type": "application/json",
             token: sessionValue.token
@@ -448,9 +438,11 @@ let getArchiveNotes = (payload) => {
 
     } catch (err) {
         console.log(err);
-
     }
 }
+/**
+ * @description makes http request to restore trashed note
+ */
 let restoreNotes = (payload) => {
     try {
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
@@ -458,8 +450,6 @@ let restoreNotes = (payload) => {
             "Content-Type": "application/json",
             token: sessionValue.token
         }
-        console.log("payload 1 ", payload);
-
         return new Promise((resolve, reject) => {
             axios.put(`${process.env.REACT_APP_BASE_URL}/note/noteUnTrash`, payload, { headers: headers })
                 .then(created => {
@@ -472,10 +462,12 @@ let restoreNotes = (payload) => {
 
     } catch (err) {
         console.log(err);
-
     }
 
 }
+/**
+ * @description makes http request to updates label
+ */
 let updateLabel = (payload) => {
     try {
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
@@ -483,9 +475,6 @@ let updateLabel = (payload) => {
             "Content-Type": "application/json",
             token: sessionValue.token
         }
-        console.log("payload", payload);
-
-
         return new Promise((resolve, reject) => {
             axios.put(`${process.env.REACT_APP_BASE_URL}/note/updateLabel`, payload, { headers: headers })
                 .then(created => {
@@ -498,10 +487,11 @@ let updateLabel = (payload) => {
 
     } catch (err) {
         console.log(err);
-
     }
-
 }
+/**
+ * @description makes http request to delete label
+ */
 let deleteLabel = (payload) => {
     try {
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
@@ -518,12 +508,13 @@ let deleteLabel = (payload) => {
                     reject(err)
                 })
         })
-
     } catch (err) {
         console.log(err);
-
     }
 }
+/**
+ * @description makes http request to update index of notes
+ */
 let updateIndex = (payload) => {
     try {
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))

@@ -1,7 +1,16 @@
+/********************************************************************************************************************
+ * @Execution : default : cmd> npm start
+ * @Purpose : fundoonotes reactjs
+ * @description : create editlabel componenet
+ * @overview : fundoo
+ * @author : manoj kumar k s<manoj.ks.24.mk@gmail.com>
+ * @version : 1.0
+ * @since :15-oct-2019
+ *******************************************************************************************************************/
 import React from 'react'
 import { Dialog, TextField, MenuItem } from '@material-ui/core'
 import { getLabels, createLabel, updateLabel, deleteLabel } from '../../controller/notesController'
-import {  LabelOutlined, EditOutlined, DoneOutline, Add, DeleteOutline } from '@material-ui/icons'
+import { LabelOutlined, EditOutlined, DoneOutline, Add, DeleteOutline } from '@material-ui/icons'
 import { messageService } from '../../minddleware/middleWareServices'
 class DailogLabel extends React.Component {
     constructor(props) {
@@ -19,6 +28,9 @@ class DailogLabel extends React.Component {
             hidden: false
         }
     }
+    /**
+     * @description getsLabels sets to state variable
+     */
     componentDidMount() {
         getLabels()
             .then(labels => {
@@ -27,42 +39,75 @@ class DailogLabel extends React.Component {
             .catch(err => console.log(err)
             )
     }
+    /**
+     * @description handles dailog open
+     */
     stateOpen = async () => {
-        await this.setState({ DailogOpen: this.props.Dailog !== undefined ? this.props.Dailog : false })
-        return this.state.DailogOpen
+        try {
+            await this.setState({ DailogOpen: this.props.Dailog !== undefined ? this.props.Dailog : false })
+            return this.state.DailogOpen
+        } catch (err) {
+            console.log(err);
+
+        }
     }
+    /**
+     * @description handles dailog close
+     */
     stateClose = async () => {
-        await this.setState({ DailogOpen: !this.props.Dailog })
-        this.props.DailogClose(this.state.DailogOpen)
+        try {
+            await this.setState({ DailogOpen: !this.props.Dailog })
+            this.props.DailogClose(this.state.DailogOpen)
+        } catch (err) {
+            console.log(err);
+
+        }
     }
+    /**
+     * @description habdles mouse over
+     */
     handleMouseOver = async (e, element) => {
-        e.preventDefault();
-        console.log("element on mouse over", element._id);
+        try {
+            e.preventDefault();
+            await this.setState({ labelState: !this.state.labelState, activeLabel: element._id })
+        } catch (err) {
+            console.log(err);
 
-        await this.setState({ labelState: !this.state.labelState, activeLabel: element._id })
-
-    }
+        }
+    }/**
+     * @description  handles labels edit
+     */
     handleEditLabel = (element) => {
         this.setState({ editlabel: !this.state.editlabel, activeEditLabel: element._id, labelValue: element.labelName, activeLabel: '' })
 
     }
+    /**
+     * @description handles new label create
+     */
     handleCreateLabel = (event) => {
-        let payload = {
-            labelName: this.state.createLabelValue
-        }
-        createLabel(payload).then(createdata => {
-            let array = this.state.Labels;
-            array.unshift(createdata.data.data)
-            this.setState({ labels: array, createLabelValue: '' })
-            messageService.sendMessage({ key: 'labelCreated', value: array })
-
-        })
-            .catch(err => {
-                console.log(err);
+        try {
+            let payload = {
+                labelName: this.state.createLabelValue
+            }
+            createLabel(payload).then(createdata => {
+                let array = this.state.Labels;
+                array.unshift(createdata.data.data)
+                this.setState({ labels: array, createLabelValue: '' })
+                messageService.sendMessage({ key: 'labelCreated', value: array })
 
             })
-    }
+                .catch(err => {
+                    console.log(err);
 
+                })
+        } catch (err) {
+            console.log(err);
+
+        }
+    }
+    /**
+         * @description handle update label
+         */
     updateLabel = (element) => {
         try {
 
@@ -84,10 +129,12 @@ class DailogLabel extends React.Component {
 
         }
     }
-
+    /**
+         * @description handles delete labels
+         */
     handelDelete = (e, element) => {
-        e.preventDefault();
         try {
+            e.preventDefault();
             let payload = {
                 id: element._id,
             }

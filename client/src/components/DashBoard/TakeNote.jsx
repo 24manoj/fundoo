@@ -1,3 +1,12 @@
+/********************************************************************************************************************
+ * @Execution : default : cmd> npm start
+ * @Purpose : fundoonotes reactjs
+ * @description : Build a TakeNote componenet
+ * @overview : fundoo
+ * @author : manoj kumar k s<manoj.ks.24.mk@gmail.com>
+ * @version : 1.0
+ * @since :15-oct-2019
+ *******************************************************************************************************************/
 import React, { Component } from "react";
 import {
   TextField,
@@ -19,13 +28,7 @@ import {
   Alarm,
   BrushOutlined,
   CheckBoxOutlined,
-  UndoOutlined,
   ImageOutlined,
-  PinDropOutlined,
-  PersonPin,
-  LabelImportantOutlined,
-  ImportantDevicesOutlined,
-  NotificationImportant,
   NotificationImportantOutlined,
   PersonAddOutlined,
   ColorizeOutlined,
@@ -44,7 +47,6 @@ import { log } from "util";
 class Notes extends Component {
   constructor() {
     super();
-
     this.state = {
       newLabel: '',
       NoteState: false,
@@ -118,19 +120,31 @@ class Notes extends Component {
     };
   }
 
-
-
+  /**
+   * @description creates a new note
+   */
   CreateNote = async () => {
-    if ((this.state.NoteContent !== "") | (this.state.NoteTitile !== "")) {
-      let payload = {
-        title: this.state.NoteTitile,
-        content: this.state.NoteContent,
-        color: this.state.NoteColor,
-        Archive: this.state.Archive,
-        reminder: this.state.reminder,
-        label: this.state.noteLabel
-      };
-      await this.props.createNote(payload);
+    try {
+      if ((this.state.NoteContent !== "") | (this.state.NoteTitile !== "")) {
+        let payload = {
+          title: this.state.NoteTitile,
+          content: this.state.NoteContent,
+          color: this.state.NoteColor,
+          Archive: this.state.Archive,
+          reminder: this.state.reminder,
+          label: this.state.noteLabel
+        };
+        await this.props.createNote(payload);
+        this.setState({
+          NoteTake: false,
+          NoteTitile: "",
+          NoteContent: "",
+          NoteColor: "",
+          Archive: false,
+          anchorEl: null,
+          reminder: undefined
+        });
+      }
 
       this.setState({
         NoteTake: false,
@@ -141,46 +155,49 @@ class Notes extends Component {
         anchorEl: null,
         reminder: undefined
       });
-    }
+    } catch (err) {
+      console.log(err);
 
-    this.setState({
-      NoteTake: false,
-      NoteTitile: "",
-      NoteContent: "",
-      NoteColor: "",
-      Archive: false,
-      anchorEl: null,
-      reminder: undefined
-    });
+    }
   };
+  /**
+   * @description archives a specific note
+   */
   NoteArchived = async () => {
-    if ((this.state.NoteContent !== "") | (this.state.NoteTitile !== "")) {
-      console.log("in");
+    try {
+      if ((this.state.NoteContent !== "") | (this.state.NoteTitile !== "")) {
+        await this.setState({
+          Archive: true
+        });
+        this.CreateNote();
+      } else {
+        this.setState({
+          NoteTake: false,
+          NoteTitile: "",
+          NoteContent: "",
+          NoteColor: "",
+          Archive: false,
+          anchorEl: null,
+          reminder: undefined
+        });
+      }
+    } catch (err) {
+      console.log(err);
 
-      await this.setState({
-        Archive: true
-      });
-      this.CreateNote();
-    } else {
-      this.setState({
-        NoteTake: false,
-        NoteTitile: "",
-        NoteContent: "",
-        NoteColor: "",
-        Archive: false,
-        anchorEl: null,
-        reminder: undefined
-      });
     }
-  };
-
+  }
+  /**
+   * @description adds reminder to notes
+   */
   AddReminder = (event) => {
     this.setState({
       reminderPoper: !this.state.reminderPoper,
       anchorEl: event.currentTarget
     });
   };
-
+  /**
+   * @description sets new date to reminder state
+   */
   dateSet = async newDate => {
     await this.setState({
       reminder: newDate.toString().slice(0, 15),
@@ -188,16 +205,17 @@ class Notes extends Component {
     });
   };
 
+  /**
+  * @description adds labels to note
+  */
   addNoteLabel = async (event) => {
     try {
-      console.log(event.target.id, event.target.value);
       let array = this.state.noteLabel;
       let remove = false;
       let data = {
         id: event.target.id,
         value: event.target.value
       }
-
       this.state.noteLabel.forEach((element, index) => {
         if (element.id === data.id) {
           remove = true;
@@ -211,9 +229,11 @@ class Notes extends Component {
       }
     } catch (err) {
       console.log(err);
-
     }
   }
+  /**
+  * @description removes label from note
+  */
   removeLabel = (id, event) => {
     try {
       if (this.props.newLabel._id === id) {
@@ -237,51 +257,60 @@ class Notes extends Component {
   }
 
   filterLabel = async (event) => {
-    await this.setState({ labelValue: event.target.value, searchLabels: [] })
-    let filterLabel = []
-    let special = /[!@#$%^&*(),.?":{}|<>]/
-    console.log("this", (this.state.labelValue === ''));
+    try {
+      await this.setState({ labelValue: event.target.value, searchLabels: [] })
+      let filterLabel = []
+      let special = /[!@#$%^&*(),.?":{}|<>]/
+      console.log("this", (this.state.labelValue === ''));
 
-    if (this.state.labelValue.length <= 0) {
-      this.setState({ found: true, filterState: false })
-      console.log("thsis found", this.state.found);
+      if (this.state.labelValue.length <= 0) {
+        this.setState({ found: true, filterState: false })
+        console.log("thsis found", this.state.found);
 
-    } else {
-      if (!special.test(this.state.labelValue)) {
-        let patt = new RegExp(`${this.state.labelValue}`)
-        this.props.labels.forEach((element) => {
+      } else {
+        if (!special.test(this.state.labelValue)) {
+          let patt = new RegExp(`${this.state.labelValue}`)
+          this.props.labels.forEach((element) => {
 
-          if (patt.test(element.labelName)) {
-            console.log("search", element.labelName);
-            filterLabel.push(element)
-          }
-        })
-        // console.log(filterLabel.length, this.state.labelValue.length, filterLabel[0].labelName);
-        if (filterLabel.length === 0) {
-          this.setState({ found: false })
-
-        } else {
-          if (filterLabel.length === 1 && filterLabel[0].labelName.length === this.state.labelValue.length) {
-            this.setState({ found: true }
-            )
-          } else {
+            if (patt.test(element.labelName)) {
+              console.log("search", element.labelName);
+              filterLabel.push(element)
+            }
+          })
+          // console.log(filterLabel.length, this.state.labelValue.length, filterLabel[0].labelName);
+          if (filterLabel.length === 0) {
             this.setState({ found: false })
+
+          } else {
+            if (filterLabel.length === 1 && filterLabel[0].labelName.length === this.state.labelValue.length) {
+              this.setState({ found: true }
+              )
+            } else {
+              this.setState({ found: false })
+            }
+            this.setState({ filterState: true, searchLabels: filterLabel })
           }
-          this.setState({ filterState: true, searchLabels: filterLabel })
         }
       }
+    } catch (err) {
+      console.log(err);
     }
   }
+  /**
+  * @description crates a new label
+  */
   createLabel = async (event) => {
     await this.props.createLabel(this.state.labelValue)
     this.setState({ labelValue: '', filterState: false, found: true, labelListPoper: false })
   }
+  /**
+  * @description removes label from  labels array
+  */
   removeNewLabel = () => {
     this.props.handelDeleteNewLabel()
   }
 
   render() {
-
     return (
       <div className={this.props.ArchiveState !== undefined ? 'hideDiv' : "NoteCreate"}>
         {!this.state.NoteTake ? (

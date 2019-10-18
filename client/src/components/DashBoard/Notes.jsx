@@ -1,3 +1,13 @@
+
+/********************************************************************************************************************
+ * @Execution : default : cmd> npm start
+ * @Purpose : fundoonotes reactjs
+ * @description : create notes componenet
+ * @overview : fundoo
+ * @author : manoj kumar k s<manoj.ks.24.mk@gmail.com>
+ * @version : 1.0
+ * @since :15-oct-2019
+ *******************************************************************************************************************/
 import React, { Component } from 'react';
 import {
     InputBase, Card, Button, Popper, Paper, Fade, Fab, createMuiTheme, MuiThemeProvider, IconButton, ClickAwayListener, Chip, TextField, Checkbox, Dialog, MenuItem
@@ -7,7 +17,9 @@ import { ImageOutlined, Alarm, NotificationImportantOutlined, PersonAddOutlined,
 import { messageService } from '../../minddleware/middleWareServices'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { updateIndex } from '../../controller/notesController'
-
+/**
+ * @desc overrides theme 
+ */
 const theme = createMuiTheme({
     overrides: {
         MuiFab: {
@@ -34,15 +46,13 @@ const theme = createMuiTheme({
         }
     }
 })
+/**
+ * @description arranges the drag and drop of an array
+ */
 const reorder = (list, startIndex, endIndex) => {
-    console.log("reorder", list, startIndex, endIndex);
-
     const result = Array.from(list);
-    console.log();
-
     const [removed] = result.splice(startIndex, 1);
     result.splice(endIndex, 0, removed);
-
     return result;
 };
 
@@ -51,7 +61,6 @@ const reorder = (list, startIndex, endIndex) => {
 class Notes extends Component {
     constructor(props) {
         super(props)
-        // console.log('Allnotes', this.props)
         this.state = {
             NotePoper: false,
             dailogTitleValue: '',
@@ -78,31 +87,43 @@ class Notes extends Component {
         }
         this.LabelList = this.LabelList.bind(this);
         messageService.getMessage().subscribe(message => {
+            try {
+                if (message.text.key === 'updateReminder') {
+                    this.setState({
+                        dailogReminder: message.text.value
+                    })
+                }
+                if (message.text.key === 'updateColor') {
+                    this.setState({
+                        dailogColor: message.text.value
+                    })
+                }
+                if (message.text.key === 'sideNav') {
+                    this.setState({
+                        sideNav: message.text.value
+                    })
+                }
+            } catch (err) {
+                console.log(err);
 
-            if (message.text.key === 'updateReminder') {
-                this.setState({
-                    dailogReminder: message.text.value
-                })
-            }
-            if (message.text.key === 'updateColor') {
-                this.setState({
-                    dailogColor: message.text.value
-                })
-            }
-            if (message.text.key === 'sideNav') {
-                this.setState({
-                    sideNav: message.text.value
-                })
             }
         })
     }
-
+    /**
+     * @description sets note color
+     */
     setNoteColor = async (event, cardId) => {
-        await this.setState({ poper: true, anchorEl: event.currentTarget })
-        this.setState({ NotePoper: true })
-        this.props.setValue(cardId, this.state.anchorEl, this.state.poper, false)
+        try {
+            await this.setState({ poper: true, anchorEl: event.currentTarget })
+            this.setState({ NotePoper: true })
+            this.props.setValue(cardId, this.state.anchorEl, this.state.poper, false)
+        } catch (err) {
+            console.log(err);
+        }
     }
-
+    /**
+        * @description unArchives archived note
+        */
     NoteUnArchive = (card) => {
         try {
             messageService.sendMessage({ key: 'UnArchiveNote', value: card })
@@ -111,21 +132,30 @@ class Notes extends Component {
 
         }
     }
+    /**
+     * @description Archives specified noted
+     */
     NoteArchived = (cardId) => {
         try {
             this.props.setValue(cardId, false, false, true)
         } catch (err) {
             console.log(err)
         }
-    }
+    }/**
+     * @description  removes reninder
+     */
     undoReminder = (cardId, event) => {
         try {
+
             this.props.NoteReminder(false, null, cardId)
         } catch (err) {
             console.log(err)
         }
 
     }
+    /**
+     * @description adds reminder 
+     */
     addReminder = (cardId, event) => {
         try {
             let AnchorEl = event.currentTarget
@@ -136,11 +166,21 @@ class Notes extends Component {
             console.log(err);
         }
     }
+    /**
+     * @description sets poper value true
+     */
     LabelList(cardId, event) {
-        this.setState({ NotePoper: true })
-        this.props.LabelPoper(cardId, true, event.target)
-    }
+        try {
+            this.setState({ NotePoper: true })
+            this.props.LabelPoper(cardId, true, event.target)
+        } catch (err) {
+            console.log(err);
 
+        }
+    }
+    /**
+     * @description removes note label
+     */
     removeNoteLabel = (cardId, labelId) => {
         try {
             this.props.removeNoteLabel(cardId, labelId)
@@ -150,6 +190,9 @@ class Notes extends Component {
 
         }
     }
+    /**
+     * @description handels dailogopen
+     */
     handleDailog = async (Element, event) => {
         await this.setState({
             dailogNoteId: Element._id,
@@ -162,7 +205,9 @@ class Notes extends Component {
         })
 
     }
-
+    /**
+         * @description handels dailogclose
+         */
     handleDailogClose = () => {
         this.setState({
             dailogNoteId: '',
@@ -175,78 +220,105 @@ class Notes extends Component {
         })
     }
 
-
+    /**
+         * @description handels title
+         */
     handleTitle = async (event) => {
         await this.setState({ dailogTitleValue: event.target.value })
     }
 
-
-    updateNote = () => {
-        let payload = {
-            id: this.state.dailogNoteId,
-            title: this.state.dailogTitleValue,
-            content: this.state.dailogDescvalue
-        }
-
-    }
-
+    /**
+         * @description updates a notes 
+         */
     updateNotes = async () => {
-        let payload = {
-            noteId: this.state.dailogNoteId,
-            title: this.state.dailogTitleValue,
-            content: this.state.dailogDescvalue,
-
-        }
-        messageService.sendMessage({ key: 'updateNotes', value: payload })
-        this.setState({
-            cardDailog: !this.state.cardDailog
-        })
-    }
-    handleTrashOPtions = async (cardId, event) => {
-
-        await this.setState({ trashAnchorEl: event.currentTarget, trashPoper: !this.state.trashPoper, cardId: cardId })
-
-    }
-    handleTrashRestore = async () => {
-        await messageService.sendMessage({ key: 'MoreOptionsRestore', cardId: this.state.cardId })
-        this.setState({ cardId: '', trashPoper: false, trashAnchorEl: null })
-
-    }
-    handleTrashDelete = async () => {
-
-        await messageService.sendMessage({ key: 'MoreTrashOPtions', cardId: this.state.cardId })
-        this.setState({ cardId: '', trashPoper: false, trashAnchorEl: null })
-
-    }
-
-    onDragEnd = async result => {
-        const { source, destination } = result;
-        console.log("drag", source, "drop ", destination);
-
-        if (!destination) {
-            return;
-        }
-
-        if (source.droppableId === destination.droppableId && destination !== null) {
-            const items = await reorder(
-                this.props.notes,
-                source.index,
-                destination.index
-            )
+        try {
             let payload = {
-                source: { id: this.props.notes[source.index]._id, index: destination.index },
-                destination: { id: this.props.notes[destination.index]._id, index: source.index }
+                noteId: this.state.dailogNoteId,
+                title: this.state.dailogTitleValue,
+                content: this.state.dailogDescvalue,
+
             }
-            updateIndex(payload)
-                .then(updated => {
+            messageService.sendMessage({ key: 'updateNotes', value: payload })
+            this.setState({
+                cardDailog: !this.state.cardDailog
+            })
+        } catch (err) {
+            console.log(err);
 
-                    messageService.sendMessage({ key: 'updateIndex', value: payload })
+        }
+    }
+    /**
+     * @description handels Trashoptions
+     */
+    handleTrashOPtions = async (cardId, event) => {
+        try {
 
-                })
-                .catch(err => {
-                    console.log("err", err);
+            await this.setState({ trashAnchorEl: event.currentTarget, trashPoper: !this.state.trashPoper, cardId: cardId })
+        } catch (err) {
+            console.log(err);
 
-                })
+        }
+
+    }
+    /**
+     * @description handels trashrestore
+     */
+    handleTrashRestore = async () => {
+        try {
+            await messageService.sendMessage({ key: 'MoreOptionsRestore', cardId: this.state.cardId })
+            this.setState({ cardId: '', trashPoper: false, trashAnchorEl: null })
+        } catch (err) {
+            console.log(err);
+
+        }
+    }
+    /**
+     * @description handels delete note
+     */
+    handleTrashDelete = async () => {
+        try {
+            await messageService.sendMessage({ key: 'MoreTrashOPtions', cardId: this.state.cardId })
+            this.setState({ cardId: '', trashPoper: false, trashAnchorEl: null })
+        } catch (err) {
+            console.log(err);
+
+        }
+    }
+    /**
+         * @description handels DragEnd
+         */
+    onDragEnd = async result => {
+        try {
+            const { source, destination } = result;
+
+            if (!destination) {
+                return;
+            }
+
+            if (source.droppableId === destination.droppableId && destination !== null && source !== null) {
+                const items = await reorder(
+                    this.props.notes,
+                    source.index,
+                    destination.index
+                )
+
+
+                let payload = {
+                    source: { id: this.props.filterValue ? this.props.notes[source.index].id : this.props.notes[source.index]._id, index: destination.index },
+                    destination: { id: this.props.filterValue ? this.props.notes[destination.index].id : this.props.notes[destination.index]._id, index: source.index }
+                }
+                updateIndex(payload)
+                    .then(updated => {
+                        messageService.sendMessage({ key: 'updateIndex', value: payload })
+                    })
+                    .catch(err => {
+                        console.log("err", err);
+
+                    })
+            }
+        } catch (err) {
+            console.log(err);
+
         }
     };
 
@@ -254,8 +326,6 @@ class Notes extends Component {
     render() {
         let view = this.props.view ? 'ListView' : 'gridView'
         let cardCss = this.props.view ? 'notesCard' : 'notesCardGrid'
-
-
         return (
             <MuiThemeProvider theme={theme}>
                 <div className={view} >
@@ -265,31 +335,32 @@ class Notes extends Component {
                             No Note Found!!!!
                         </div> :
                         <DragDropContext onDragEnd={this.onDragEnd}>
-                            <Droppable droppableId="droppable" direction='vertical'>
+                            <Droppable droppableId="droppable" >
                                 {(provided, snapshot) => (
                                     <div
                                         ref={provided.innerRef}
                                         className='noteAlign' style={{ transform: this.state.sideNav ? 'translate(10rem,0px)' : '' }}
                                     >
                                         <div className='note-count' >
-                                            <p> Notes in dashboard::{this.props.notes.length}</p>
+                                            <p> Notes in {this.props.title !== undefined ? this.props.title : 'Dashboard'}::{this.props.notes.length}</p>
                                         </div>
-                                        <div>
+                                        <div className="notes">
                                             {this.props.notes.map((Element, index) =>
                                                 <Draggable
-                                                    key={Element._id}
-                                                    draggableId={Element._id !== undefined ? Element._id : Element.id}
+                                                    key={this.props.filterValue ? Element.id : Element._id}
+                                                    draggableId={this.props.filterValue ? Element.id : Element._id}
                                                     index={Element.index}>
                                                     {(provided, snapshot) => (
                                                         <div
                                                             ref={provided.innerRef}
                                                             {...provided.draggableProps}
                                                             {...provided.dragHandleProps}
-                                                        // style={{ position: 'relative', display: 'inline-block' }}
+                                                            className="space-note"
                                                         >
                                                             <Card className={cardCss} key={Element.index} id={this.props.filterValue ? Element.id : Element._id}
                                                                 style={{ backgroundColor: Element.color, padding: '10px' }} onMouseEnter={event => this.setState({ visibleCard: this.props.filterValue ? Element.id : Element._id })}
-                                                                onMouseLeave={event => this.state.NotePoper ? '' : this.state.trashPoper ? '' : this.setState({ visibleCard: '' })}>
+                                                                onMouseLeave={event => this.state.NotePoper ? '' : this.state.trashPoper ? '' : this.setState({ visibleCard: '' })
+                                                                }>
                                                                 <div className="titleIcon">
                                                                     <div >
                                                                         <InputBase
@@ -318,7 +389,7 @@ class Notes extends Component {
                                                                                 icon={<Alarm />}
                                                                                 label={(Element.reminder !== null ? new Date(Element.reminder).toString().slice(0, 15) : null)
                                                                                 }
-                                                                                onDelete={event => this.undoReminder(Element._id, event)}
+                                                                                onDelete={event => this.undoReminder(this.props.filterValue ? Element.id : Element._id, event)}
 
                                                                             />
                                                                         </div> : ''}
@@ -328,26 +399,26 @@ class Notes extends Component {
                                                                             style={{ width: 'auto' }}
                                                                             label={labelvalue.value
                                                                             }
-                                                                            onDelete={() => this.removeNoteLabel(Element._id, labelvalue.id)}
+                                                                            onDelete={() => this.removeNoteLabel((this.props.filterValue ? Element.id : Element._id), labelvalue.id)}
                                                                         />
                                                                     ) : ''}
                                                                 </div>
                                                                 {this.props.TrashState === undefined ?
                                                                     <div className={this.state.visibleCard === (this.props.filterValue ? Element.id : Element._id) ? "IconsList" : "IconsList-hide"}>
                                                                         <div className='decsIcon' >
-                                                                            <NotificationImportantOutlined titleAccess="Remind me" style={{ zIndex: '999' }} onClick={(event) => this.addReminder(Element._id, event)} />
+                                                                            <NotificationImportantOutlined titleAccess="Remind me" style={{ zIndex: '999' }} onClick={(event) => this.addReminder(this.props.filterValue ? Element.id : Element._id, event)} />
                                                                             <PersonAddOutlined titleAccess="Collaborate" />
                                                                             <ColorLensOutlined titleAccess="change Color"
-                                                                                onClick={(event) => this.setNoteColor(event, Element._id)} />
+                                                                                onClick={(event) => this.setNoteColor(event, this.props.filterValue ? Element.id : Element._id)} />
                                                                             <ImageOutlined titleAccess=" Add Image" />
                                                                             {this.props.ArchiveState ?
                                                                                 <UnarchiveOutlined titleAccess='Unarchive Note' onClick={() => this.NoteUnArchive(Element)} />
                                                                                 :
                                                                                 <ArchiveOutlined titleAccess=" Archive Note"
-                                                                                    onClick={() => this.NoteArchived(Element._id)} />
+                                                                                    onClick={() => this.NoteArchived(this.props.filterValue ? Element.id : Element._id)} />
                                                                             }
                                                                             <MoreVertOutlined titleAccess="More"
-                                                                                onClick={(event) => this.LabelList(Element._id, event)}
+                                                                                onClick={(event) => this.LabelList(this.props.filterValue ? Element.id : Element._id, event)}
 
                                                                             />
                                                                         </div>
@@ -451,9 +522,4 @@ class Notes extends Component {
         );
     }
 }
-
-
-
-
-
 export default Notes;

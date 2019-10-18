@@ -1,3 +1,7 @@
+
+/**
+ * @description observer for data sharing
+ */
 import { Subject } from 'rxjs'
 
 const subject = new Subject();

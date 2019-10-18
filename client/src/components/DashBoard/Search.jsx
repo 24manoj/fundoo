@@ -1,4 +1,13 @@
 
+/********************************************************************************************************************
+ * @Execution : default : cmd> npm start
+ * @Purpose : fundoonotes reactjs
+ * @description : create search componenet
+ * @overview : fundoo
+ * @author : manoj kumar k s<manoj.ks.24.mk@gmail.com>
+ * @version : 1.0
+ * @since :15-oct-2019
+ *******************************************************************************************************************/
 import React from 'react';
 import { Card, InputBase } from '@material-ui/core';
 import { ClearAll, SearchRounded } from '@material-ui/icons';
@@ -10,32 +19,30 @@ class Search extends React.Component {
             search: '',
         }
     }
-
+    /**
+     * @description search for the give charaters in notes ,responses with result
+     */
     search = (event) => {
-        let payload = {
-            search: event.target.value
-        }
-
-        if (event.target.value === "") {
-
-            this.props.search(false, [], [], [])
-
-
-        } else {
-            searchNotes(payload)
-                .then(result => {
-                   
-                    this.props.search(true, result.filt, result.trash, result.archive)
-                })
-                .catch(err => console.log(err)
-                )
-
-
+        try {
+            let payload = {
+                search: event.target.value
+            }
+            if (payload.search === "") {
+                this.props.search(false, [], [], [])
+            } else {
+                searchNotes(payload)
+                    .then(result => {
+                        this.props.search(true, result.filt, result.trash, result.archive)
+                    })
+                    .catch(err => console.log(err)
+                    )
+            }
+        } catch (err) {
+            console.log(err);
         }
     }
     render() {
         return (
-
             <Card className="NavCard" onKeyPress={this.search}>
                 <SearchRounded />
                 <InputBase
@@ -51,8 +58,6 @@ class Search extends React.Component {
                 />
                 <div>{this.state.search !== '' ? <ClearAll style={{ marginTop: "12px" }} onClick={(event) => this.setState({ search: '' })} /> : ''}</div>
             </Card>
-
-
         )
     }
 }
