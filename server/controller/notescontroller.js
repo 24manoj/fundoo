@@ -4,6 +4,7 @@ let redisCache = require('../middleware/redisService')
 let elastic = require('../middleware/elasticSearch')
 let model = require('../services/userService')
 require('dotenv').config()
+let scheduler = require('../middleware/scheduler')
 let mailer = require('../middleware/userMailer')
 let response = {};
 let details = {};
@@ -19,7 +20,6 @@ exports.createNotes = (req, res) => {
         if (req.body.title != null || req.body.content != null) {
             elastic.Documentdelete(req)
             details.id = req.decoded.id
-
             redisCache.delRedis(details, (err, cacheDelete) => {
                 if (err) {
                     console.log(err)
@@ -29,10 +29,10 @@ exports.createNotes = (req, res) => {
             })
             noteService.createNotes(req)
                 .then(data => {
+                    scheduler.scheduleReminder(req)
                     response.sucess = true,
                         response.data = data,
                         response.errors = null
-                    console.log(response)
                     res.status(status.sucess).send(response)
                 })
                 .catch((err) => {
@@ -147,30 +147,12 @@ exports.getTrashNotes = (req, res) => {
 
 exports.getArchiveNotes = (req, res) => {
     try {
-        // details.id = req.decoded.id
-        // details.value = []
-        // redisCache.getRedis(details, (err, data) => {
-        //     if (data) {
-        //         response.sucess = true,
-        //             response.data = data,
-        //             response.errors = null
-        //         res.status(status.sucess).send(response)
-        //     } else {
         noteService.getArchiveNotes(req.decoded.id)
             .then(notes => {
-                // elastic.addDocument(notes)
-                // details.id = `${req.decoded.id}Archive`
-                // details.value = notes
-                // redisCache.setRedis(details, (err, data) => {
-                //     if (data) {
                 response.sucess = true,
                     response.data = notes,
                     response.errors = null
                 res.status(status.sucess).send(response)
-                //     }
-                // })
-
-
             })
             .catch(err => {
                 response.sucess = false,
@@ -178,8 +160,6 @@ exports.getArchiveNotes = (req, res) => {
                     response.errors = err
                 res.status(status.notfound).send(response)
             })
-        //     }
-        // })
 
     } catch (e) {
         console.log(e)
@@ -197,7 +177,7 @@ exports.getNotes = (req, res) => {
     try {
         details.id = req.decoded.id
         details.value = []
-=        redisCache.getRedis(details, (err, data) => {
+        redisCache.getRedis(details, (err, data) => {
             if (data) {
                 response.sucess = true,
                     response.data = data,
@@ -501,8 +481,6 @@ exports.noteArchive = (req, res) => {
                             response.data = data
                             response.sucess = true
                             res.status(status.sucess).send(response)
-
-
                         })
                         .catch(err => {
                             response.errors = err
@@ -577,6 +555,7 @@ exports.noteReminder = (req, res) => {
             } else {
                 noteService.noteReminder(req)
                     .then(data => {
+                        scheduler.scheduleReminder(req)
                         response.errors = null
                         response.data = data
                         response.sucess = true

@@ -23,9 +23,18 @@ const theme = createMuiTheme({
     overrides: {
         MuiButton: {
             root: {
-                borderRadius: "30px"
+                borderRadius: "30px",
+                width: '80%'
             }
 
+        },
+        MuiPaper: {
+            elevation1: {
+                boxShadow: '0px 0px 20px 11px rgba(0,0,0,0.1), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)'
+            },
+            rounded: {
+                borderRadius: '20px'
+            }
         }
     }
 })
@@ -216,7 +225,7 @@ class Login extends Component {
                             <span style={{ color: "#FA6121" }}>O</span>
                         </h2>
                         <h3>Sign In</h3>
-                        <div>
+                        <div >
                             <div>
                                 <TextField
                                     id="userName"
@@ -228,6 +237,7 @@ class Login extends Component {
                                     helperText={this.state.userName === '' || this.state.EmailError === '' ? 'Well never share your Email ' : <span style={{ color: "red" }} > {this.state.EmailError}</span>}
                                     value={this.state.userName}
                                     onChange={this.validateInput}
+
                                 />
                             </div>
                             <div>
@@ -256,7 +266,7 @@ class Login extends Component {
                             <Fab> <img src={Glogo} width="100%" height="50vh" alt='avathar' onClick={this.GoogleLogin} /></Fab>
                         </div>
                         <hr />
-                        <p>Not a member? <Link to='/register'><span style={{ color: "Blue" }}> Sign Up here</span></Link></p>
+                        <p style={{ fontWeight: 'bold' }}>Not a member? <Link to='/register'><span style={{ color: "Blue" }}> Sign Up here</span></Link></p>
                         <div></div>
                     </Card>
                 </div>
@@ -291,7 +301,7 @@ class Login extends Component {
                                 onChange={event => this.setState({ resetMail: event.target.value })}
                                 fullWidth
                             />
-                            <DialogActions  >
+                            <DialogActions>
                                 <Button onClick={this.forgotPassword} color="primary" variant="contained">
                                     Send
                                    </Button>

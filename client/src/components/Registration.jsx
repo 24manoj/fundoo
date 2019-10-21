@@ -19,9 +19,18 @@ const theme = createMuiTheme({
     overrides: {
         MuiButton: {
             root: {
-                borderRadius: "30px"
+                borderRadius: "30px",
+                width: '80%'
             }
 
+        },
+        MuiPaper: {
+            elevation1: {
+                boxShadow: '0px 0px 20px 11px rgba(0,0,0,0.1), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)'
+            },
+            rounded: {
+                borderRadius: '20px'
+            }
         }
     }
 })
@@ -234,7 +243,7 @@ class Registration extends Component {
                             <Button variant="contained" color="primary" className="SignButton" onSubmit={this.Register}> Sign Up</Button>
                         </div>
                         <hr />
-                        <p>Have an Account ? <Link to='/'><span style={{ color: "Blue" }}> Sign In</span></Link></p>
+                        <p style={{ fontWeight: 'bold' }}>Have an Account ? <Link to='/'><span style={{ color: "Blue" }}> Sign In</span></Link></p>
                     </Card>
                     <div>
                         <Snackbar

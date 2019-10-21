@@ -99,8 +99,7 @@ exports.addDocument = (req) => {
         //perform bulk indexing of the data passed
 
         client.bulk({ body: bulk }, (err, response) => {
-            err ? console.log("failed operation", err) : console.log("sucessfully inserted to search", response.items
-            )
+            err ? console.log("failed operation", err) : console.log("sucessfully inserted to search")
         });
     } catch (e) {
         console.log(e)
@@ -126,6 +125,7 @@ exports.searchkey = (req, callback) => {
         }
         client.search({ index: req.decoded.id, body: body, type: 'notes' })
             .then(searchresult => {
+
                 callback(null, searchresult)
             })
             .catch(err => {

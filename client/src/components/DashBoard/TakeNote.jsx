@@ -279,11 +279,9 @@ class Notes extends Component {
       await this.setState({ labelValue: event.target.value, searchLabels: [] })
       let filterLabel = []
       let special = /[!@#$%^&*(),.?":{}|<>]/
-      console.log("this", (this.state.labelValue === ''));
 
       if (this.state.labelValue.length <= 0) {
         this.setState({ found: true, filterState: false })
-        console.log("thsis found", this.state.found);
 
       } else {
         if (!special.test(this.state.labelValue)) {
@@ -329,10 +327,11 @@ class Notes extends Component {
   }
 
   render() {
+
     return (
-      <div id = { this.state.sideNav ? 'transitionLeft' : '' } className={this.props.ArchiveState !== undefined ? 'hideDiv' : "NoteCreate"}>
+      <div id={this.state.sideNav ? 'transitionLeft' : ''} className={this.props.ArchiveState !== undefined ? 'hideDiv' : (this.props.TrashState !== undefined ? 'hideDiv' : "NoteCreate")}>
         {!this.state.NoteTake ? (
-          <Card className="TakeNote" hidden={this.state.NoteTake}>
+          <Card className="TakeNote" >
             <InputBase
               style={{ width: '80%' }}
               onClick={event =>
@@ -343,7 +342,7 @@ class Notes extends Component {
               title="Title"
               placeholder="Take a note..."
             />
-            <div>
+            <div className="createNoteIcons">
               <CheckBoxOutlined titleAccess="New List" />
               <BrushOutlined titleAccess=" new Note with Drawing" />
               <ImageOutlined titleAccess="new Note with image" />

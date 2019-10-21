@@ -15,25 +15,30 @@
 
  .Style {
    @extend %style-column;
+   justify-content: center;
    align-items: center;
-   padding: 15px;
+   margin-top: 2rem;
+
  }
 
  .cardStyle,
  .cardStyleRegister,
  .cardStyleReset {
    text-align: center;
-   align-content: center;
+   width: 100%;
+   max-width: 300px;
    font-family: sans-serif;
-   width: 50%;
    justify-content: center;
-   margin-top: 20px;
-   height: 450px auto;
+   height: fit-content;
  }
 
  .label {
    @extend %style-row;
 
+ }
+
+ .NavCard2 {
+   display: none;
  }
 
  .NavCard {
@@ -43,7 +48,7 @@
    padding: 5px;
    background: #EEFAFF !important;
    box-shadow: none !important;
-   width: 70%;
+   width: 90%;
    align-items: center;
    height: 40px;
  }
@@ -236,15 +241,15 @@
    border-radius: 50px;
  }
 
- .SignButton {
-   width: 40%;
- }
+
 
  .card-Forgot {
    color: blue;
    text-align: right;
-   padding-right: 25%;
+   margin-top: 1rem;
+   margin-right: 2rem;
    font-size: 10pt;
+   font-weight: bold;
  }
 
  .Container {
@@ -253,11 +258,19 @@
  }
 
 
+ @media screen and (max-width: 320px) {
+   .title {
+     display: none;
+   }
+ }
 
  @media screen and (max-width: 600px) {
    .NavCard {
      display: none;
+   }
 
+   .NavCard2 {
+     display: flex;
    }
  }
 
@@ -275,6 +288,7 @@
    padding: 5px;
    justify-content: space-between;
    width: 50%;
+   min-width: 200px;
    height: 50%;
  }
 
@@ -283,6 +297,7 @@
    padding: 5px;
    flex-direction: column;
    justify-content: space-between;
+   min-width: 200px;
    width: 50%;
    height: 30%;
  }
@@ -341,9 +356,23 @@
  }
 
  .hideDiv {
-   display: flex;
-   visibility: hidden !important;
-   margin-top: 2rem;
+   display: none;
+   //  visibility: hidden !important;
+   //  margin-top: 2rem;
+ }
+
+ .searchCardSmall {
+   @extend %style-row;
+   width: 100%;
+ }
+
+ .createNoteIcons {
+   display: flex !important;
+ }
+
+ .iconlistCreatenote {
+   @extend %style-row;
+   justify-content: space-between;
  }
 
  .notesCard {
@@ -353,13 +382,15 @@
    flex-flow: wrap;
    margin: 5px;
    padding: 5px;
-   width: 35rem;
+   width: 70%;
    height: fit-content;
-   min-width: 200px;
+   min-width: 200px !important;
    min-height: 140px;
 
 
  }
+
+
 
  .rotate {
    animation: rotate-spin 1s linear;

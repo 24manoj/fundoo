@@ -51,6 +51,7 @@ class NavBar extends Component {
             animate: false,
             sideToggle: false,
             profile: false,
+            hideNav: false,
             profileUrl: this.sessionValue.data.url
         }
     }
@@ -121,26 +122,33 @@ class NavBar extends Component {
     search = (state, filt, trash, archive) => {
         this.props.search(state, filt, trash, archive)
     }
+    hideNav = (value) => {
+        this.setState({ hideNav: value })
+    }
     render() {
         let animateClass = this.state.animate ? 'rotate' : ''
         const activeClass = this.props.title !== undefined ? this.props.title : undefined
+
+
         return (
             <MuiThemeProvider theme={theme}>
                 <AppBar>
                     <Toolbar>
-                        <div className="NavContent-Left">
+                        <div className={this.state.hideNav ? "hideDiv" : "NavContent-Left"}>
                             <SideNav labels={this.props.labels} active={activeClass} />
                             <img src={Icon} width="50px" height="50px" alt="fundoo Icon" title="Fundoo Icon" />
-                            <div>  {this.props.title !== undefined ? this.props.title : 'Fundoo'}</div>
+                            <div className="title">  {this.props.title !== undefined ? this.props.title : 'Fundoo'}</div>
                         </div>
                         <div className="appBar">
                             <div className="NavContent">
-                                <Search search={this.search} />
+                                <Search search={this.search} hideNav={this.hideNav} />
                                 <RefreshSharp className={animateClass} onClick={this.refresh} />
                                 {this.state.View ? <ViewAgendaOutlined titleAccess="List View" className="" onClick={this.NoteToogle} /> : <GridOnOutlined titleAccess="Grid View" className="" onClick={this.NoteToogle} />}
                                 <ClickAwayListener onClickAway={event => this.setState({ popOver: false })} >
                                     <Settings titleAccess="settings" onClick={this.popper} />
                                 </ClickAwayListener>
+
+
                                 <div>
                                     <Menu open={this.state.popOver}
                                         anchorEl={this.state.anchorEl}>
@@ -148,9 +156,10 @@ class NavBar extends Component {
                                         <MenuItem >EnableDarktheme</MenuItem>
                                         <MenuItem >send Feedback</MenuItem>
                                     </Menu>
+
+
                                 </div>
                             </div>
-
                             <Avatar alt='profile img' src={this.state.profileUrl} onClick={event => this.setState({ anchorEl: event.currentTarget, profile: !this.state.profile })}>{this.Fname} </Avatar>
 
                         </div>

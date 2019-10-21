@@ -357,7 +357,7 @@ class Notes extends Component {
                                                             className="space-note"
                                                         >
                                                             <Card className={cardCss} key={Element.index} id={this.props.filterValue ? Element.id : Element._id}
-                                                                style={{ backgroundColor: Element.color, padding: '10px' }} onMouseEnter={event => this.setState({ visibleCard: this.props.filterValue ? Element.id : Element._id })}
+                                                                style={{ backgroundColor: Element.color }} onMouseEnter={event => this.setState({ visibleCard: this.props.filterValue ? Element.id : Element._id })}
                                                                 onMouseLeave={event => this.state.NotePoper ? '' : this.state.trashPoper ? '' : this.setState({ visibleCard: '' })
                                                                 }>
                                                                 <div className="titleIcon">
@@ -382,16 +382,17 @@ class Notes extends Component {
                                                                             multiline />
                                                                     </div>
                                                                     {Element.reminder !== null ?
-                                                                        <div >
-                                                                            <Chip
-                                                                                style={{ width: 'auto' }}
-                                                                                icon={<Alarm />}
-                                                                                label={(Element.reminder !== null ? new Date(Element.reminder).toString().slice(0, 15) : null)
-                                                                                }
-                                                                                onDelete={event => this.undoReminder(this.props.filterValue ? Element.id : Element._id, event)}
+                                                                        // <div style={{ width: '50%' }}>
+                                                                        <Chip
+                                                                            style={{ width: 'auto' }}
+                                                                            icon={<Alarm />}
+                                                                            label={(Element.reminder !== null ? new Date(Element.reminder).toString().slice(0, 25) : null)
+                                                                            }
+                                                                            onDelete={event => this.undoReminder(this.props.filterValue ? Element.id : Element._id, event)}
 
-                                                                            />
-                                                                        </div> : ''}
+                                                                        />
+                                                                        // </div>
+                                                                        : ''}
                                                                     {Element.labels.length > 0 ? Element.labels.map((labelvalue) =>
                                                                         <Chip
                                                                             key={labelvalue.id}

@@ -378,8 +378,8 @@ class DashBoard extends Component {
                     } else {
                         let index = (this.state.filterState ? this.state.filterArray : this.state.notesArray).map(ele => this.state.filterState ? ele.id : ele._id).indexOf(this.state.cardId)
                         let array = this.state.filterState ? this.state.filterArray : this.state.notesArray;
-                        array[index].reminder = new Date(dateTime + 1).toString().slice(0, 15);
-                        messageService.sendMessage({ key: 'updateReminder', value: (new Date(dateTime + 1).toString().slice(0, 15)) })
+                        array[index].reminder = new Date(dateTime + 1).toString().slice(0, 25);
+                        messageService.sendMessage({ key: 'updateReminder', value: (new Date(dateTime + 1).toString().slice(0, 25)) })
                         if (this.state.filterState) {
                             this.setState({
                                 reminderPoper: false,
@@ -771,6 +771,8 @@ class DashBoard extends Component {
         const stateTrash = this.props.TrashState !== undefined ? this.props.TrashState.Trash : undefined
         const stateLabel = this.props.LabelsState !== undefined ? this.props.LabelsState.labels : undefined
         const arciveTitle = this.props.ArchiveComponent !== undefined ? this.props.ArchiveComponent.title : undefined
+
+
         return (
             <div className="Container" >
                 <div>
@@ -779,7 +781,7 @@ class DashBoard extends Component {
                 </div>
                 <div className="NotesScroll" >
                     <TakeNote ArchiveState={stateArchive} createNote={this.createNote} NoteArchived={this.NoteArchived} labels={this.state.labels} createLabel={this.createLabel}
-                        newLabel={this.state.newLabel} handelDeleteNewLabel={this.handelDeleteNewLabel} />
+                        newLabel={this.state.newLabel} handelDeleteNewLabel={this.handelDeleteNewLabel} TrashState={stateTrash} />
                     {stateReminder ?
                         <Notes notes={this.state.filterState ? this.state.filterArray : this.getReminderNotes()} view={this.state.View}
                             setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}

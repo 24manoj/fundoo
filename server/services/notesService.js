@@ -1,4 +1,3 @@
-const scheduler = require('node-schedule')
 const labelSchema = require('../app/model/labelSchema')
 const collSchema = require('../app/model/collaboraterSchema')
 const noteSchema = require('../app/model/notesSchema')
@@ -339,11 +338,34 @@ exports.noteUndoReminder = (req) => {
  * @param req request contains http request
  * @return returns  promise data resolve or reject
  */
+exports.findNote = (req) => {
+    try {
+        return new Promise((resolve, reject) => {
+            noteSchema.notes.findOne({
+                '_id': req.body.noteId
+            }, (err, details) => {
+                if (err) reject(err)
+                else {
+                    resolve(details)
+                }
+            })
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+/**
+ * @desc gets validated request from services,performs database operations needed,
+ * updates reminder on given condition 
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
 exports.noteReminder = (req) => {
     try {
         let date = new Date(req.body.reminder)
         return new Promise((resolve, reject) => {
-            noteSchema.notes.update({
+            noteSchema.notes.updateOne({
                 '_id': req.body.noteId
             }, {
                 reminder: date,
