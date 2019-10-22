@@ -8,9 +8,9 @@
  * @since :15-oct-2019
  *******************************************************************************************************************/
 import React from 'react'
-import { Dialog, TextField, MenuItem } from '@material-ui/core'
+import { Dialog, TextField, MenuItem, IconButton } from '@material-ui/core'
 import { getLabels, createLabel, updateLabel, deleteLabel } from '../../controller/notesController'
-import { LabelOutlined, EditOutlined, DoneOutline, Add, DeleteOutline } from '@material-ui/icons'
+import { LabelOutlined, EditOutlined, DoneOutline, Add, DeleteOutline, AddCircleOutline, DoneAll, Done } from '@material-ui/icons'
 import { messageService } from '../../minddleware/middleWareServices'
 class DailogLabel extends React.Component {
     constructor(props) {
@@ -89,17 +89,22 @@ class DailogLabel extends React.Component {
             let payload = {
                 labelName: this.state.createLabelValue
             }
-            createLabel(payload).then(createdata => {
-                let array = this.state.Labels;
-                array.unshift(createdata.data.data)
-                this.setState({ labels: array, createLabelValue: '' })
-                messageService.sendMessage({ key: 'labelCreated', value: array })
+            if (this.state.createLabelValue === '') {
+                this.setState({ createLabelValue: '', createLabel: !this.state.createLabel })
 
-            })
-                .catch(err => {
-                    console.log(err);
+            } else {
+                createLabel(payload).then(createdata => {
+                    let array = this.state.Labels;
+                    array.unshift(createdata.data.data)
+                    this.setState({ labels: array, createLabelValue: '', createLabel: !this.state.createLabel })
+                    messageService.sendMessage({ key: 'labelCreated', value: array })
 
                 })
+                    .catch(err => {
+                        console.log(err);
+
+                    })
+            }
         } catch (err) {
             console.log(err);
 
@@ -160,16 +165,19 @@ class DailogLabel extends React.Component {
                         <h3> Edit Labels</h3>
                         {!this.state.createLabel ?
                             <div className="createLabel" onClick={event => this.setState({ createLabel: !this.state.createLabel })}>
-                                <Add /> CreateLabel</div>
+                                <AddCircleOutline /> <span style={{ marginLeft: '4px' }}>CreateLabel</span></div>
                             :
-                            <div>
+                            <div className="createlabel-text">
                                 <TextField
+                                    style={{
+                                        width: '75%'
+                                    }}
                                     type="text"
                                     placeholder="Create Label"
                                     value={this.state.createLabelValue}
                                     onChange={event => this.setState({ createLabelValue: event.target.value })}
                                 />
-                                <DoneOutline onClick={this.handleCreateLabel} />
+                                <IconButton><Done onClick={this.handleCreateLabel} /></IconButton>
                             </div>
                         }
 
@@ -185,14 +193,15 @@ class DailogLabel extends React.Component {
                                     <label hidden={element._id === this.state.activeEditLabel ? true : false}> {element.labelName}</label>
                                     <div hidden={element._id === this.state.activeEditLabel ? false : true}>
                                         <TextField
+                                            style={{ marginLeft: '10px' }}
                                             type='text'
                                             placeholder="EditLabel"
                                             value={this.state.labelValue}
                                             onChange={event => this.setState({ labelValue: event.target.value })}
                                         />
                                     </div>
-                                    <div hidden={element._id === this.state.activeEditLabel ? true : false}> <EditOutlined onClick={() => this.handleEditLabel(element)} /></div>
-                                    <div hidden={element._id === this.state.activeEditLabel ? false : true} > <DoneOutline onClick={() => this.updateLabel(element)} /></div>
+                                    <div hidden={element._id === this.state.activeEditLabel ? true : false}> <IconButton><EditOutlined onClick={() => this.handleEditLabel(element)} /></IconButton></div>
+                                    <div hidden={element._id === this.state.activeEditLabel ? false : true} ><IconButton> <Done onClick={() => this.updateLabel(element)} /></IconButton></div>
                                 </div>
                             )}
                         </div>

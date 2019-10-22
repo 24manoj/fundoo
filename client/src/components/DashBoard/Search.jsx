@@ -105,7 +105,7 @@ class Search extends React.Component {
     render() {
         return (
 
-            <div style={{ width: '75%' }}>
+            <div className="searchCard-div">
 
                 {
                     !this.state.searchCardPoper ?

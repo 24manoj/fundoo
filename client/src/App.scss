@@ -39,6 +39,7 @@
 
  .NavCard2 {
    display: none;
+   margin: 8px;
  }
 
  .NavCard {
@@ -108,8 +109,9 @@
  .labelList {
    @extend %style-row;
    height: 50px;
-   padding: 5px;
-   margin: 5px;
+   //  justify-content: space-between;
+   //  padding: 5px;
+   //  margin: 5px;
  }
 
  .sideNav {
@@ -140,7 +142,7 @@
 
  .labelsCheckBox {
    display: flex;
-   width: 70%;
+   width: 100%;
    flex-direction: row;
    align-items: center;
    justify-content: space-between;
@@ -169,21 +171,26 @@
  }
 
  .Options-labels {
-   width: 200px;
-   min-height: 50px;
-   overflow-y: scroll;
+   width: 250px;
    height: 250px;
    display: $Default;
-   padding: 5px;
+   padding: 10px;
    margin: 5px;
    flex-direction: column;
    justify-content: space-between;
  }
 
+ .span-div {
+   display: flex;
+   flex-direction: row;
+   flex-flow: wrap;
+ }
+
  .labelContent {
    @extend %style-row;
    justify-content: space-between;
-   align-items: center
+   align-items: center;
+   margin: 5px
  }
 
  .createLabel {
@@ -223,6 +230,7 @@
  .NavSideBar {
    display: flex;
    margin: 10px;
+   height: 85%;
    justify-content: space-between;
    align-items: center;
  }
@@ -257,6 +265,14 @@
    height: auto
  }
 
+ .createlabel-text {
+   display: flex !important;
+   justify-content: space-between;
+   align-items: center;
+   justify-content: center;
+   width: 94%;
+   padding: 4px;
+ }
 
  @media screen and (max-width: 320px) {
    .title {
@@ -269,8 +285,28 @@
      display: none;
    }
 
+   .profileCard {
+     width: 285px !important;
+     //  margin-left: 10px !important;
+   }
+
+   .notes2 {
+     justify-content: center;
+   }
+
+   .notesCardGrid {
+     width: 230px !important;
+     margin: 5px !important;
+   }
+
    .NavCard2 {
      display: flex;
+   }
+
+   .EditLabel {
+     width: 230px !important;
+     padding: 2px;
+     margin: 2px;
    }
  }
 
@@ -345,6 +381,8 @@
  .notesCardGrid {
    display: flex;
    align-items: center;
+   margin: 10px;
+   padding: 10px;
    flex-direction: row;
    flex-flow: wrap;
    width: 250px;
@@ -366,6 +404,14 @@
    width: 100%;
  }
 
+ .searchCard-div {
+   width: 75%;
+
+   @media screen and (max-width:574px) {
+     width: 40px !important;
+   }
+ }
+
  .createNoteIcons {
    display: flex !important;
  }
@@ -382,15 +428,28 @@
    flex-flow: wrap;
    margin: 5px;
    padding: 5px;
-   width: 70%;
+   width: 600px;
    height: fit-content;
-   min-width: 200px !important;
-   min-height: 140px;
 
+   @media screen and (min-width:590px) and (max-width: 700px) {
+     width: 500px !important;
+   }
 
+   @media screen and (min-width:425px)and (max-width: 590px) {
+     width: 400px !important;
+   }
+
+   @media screen and (max-width: 425px) {
+     width: 250px !important;
+   }
  }
 
-
+ .label-div {
+   display: flex;
+   width: 65%;
+   flex-direction: row;
+   flex-wrap: wrap;
+ }
 
  .rotate {
    animation: rotate-spin 1s linear;
@@ -417,12 +476,21 @@
 
 
  #transitionLeft {
-   margin-left: 24%;
-   width: calc(100% - 30%) !important;
+   margin-left: 15%;
+   width: calc(100% - 15%) !important;
    transition: margin-left 0.25s;
  }
 
  .notes {
+   display: flex;
+   flex-direction: row;
+   flex-wrap: wrap;
+   width: 90%;
+   align-items: center;
+   justify-content: center;
+ }
+
+ .notes2 {
    display: flex;
    flex-direction: row;
    flex-wrap: wrap;
@@ -435,7 +503,7 @@
  }
 
  .noteAlign-count {
-   width: 76%
+   width: 75%
  }
 
  .noteAlign {
@@ -470,6 +538,7 @@
    justify-content: space-around;
    flex-wrap: wrap;
    align-items: center;
+   margin: 10px;
  }
 
  .Avatar-text {
@@ -507,11 +576,13 @@
 
  .IconsList-hide {
    visibility: hidden;
+   margin: 2px;
  }
 
  .IconsList {
    @extend %style-row;
    visibility: visible;
+   margin: 2px;
    width: 100%;
 
    justify-content: space-between;

@@ -13,7 +13,7 @@ import NavBar from '../components/DashBoard/NavBar';
 import TakeNote from '../components/DashBoard/TakeNote';
 import Notes from '../components/DashBoard/Notes';
 import { withRouter } from 'react-router-dom';
-import { Popper, Paper, ClickAwayListener, IconButton, Snackbar, Card, TextField, Checkbox } from "@material-ui/core";
+import { Popper, Paper, ClickAwayListener, IconButton, Snackbar, Card, TextField, Checkbox, Button } from "@material-ui/core";
 import { UndoOutlined, DeleteOutline, AddCircleOutline } from '@material-ui/icons'
 import {
     getLabels, getNotes, updateColor, updateArchive, createNote, UndoArchive, updateReminder, undoReminder,
@@ -63,6 +63,7 @@ class DashBoard extends Component {
             trashState: false,
             archiveStateComponent: false,
             foundLabel: true,
+            noteExistingLabels: [],
             colorPalette: [
                 { name: 'default', colorCode: '#FDFEFE' },
                 { name: 'Red', colorCode: '#ef9a9a' },
@@ -89,7 +90,6 @@ class DashBoard extends Component {
                 let array = this.state.filterState ? this.state.filterArray : this.state.notesArray;
                 array[index].title = message.text.value.title
                 array[index].content = message.text.value.content
-
                 this.state.filterState ? this.setState({ filterArray: array }) :
                     this.setState({
                         notesArray: array
@@ -105,8 +105,11 @@ class DashBoard extends Component {
                 this.setState({ labels: message.text.value })
             }
             if (message.text.key === 'updateIndex') {
+
                 let array = this.state.filterState ? this.state.filterArray : this.state.notesArray
+
                 let index1 = array.map(ele => this.state.filterState ? ele.id : ele._id).indexOf(message.text.value.source.id)
+
                 array[index1].index = message.text.value.source.index
                 let index2 = array.map(ele => this.state.filterState ? ele.id : ele._id).indexOf(message.text.value.destination.id)
                 array[index2].index = message.text.value.destination.index
@@ -555,9 +558,10 @@ class DashBoard extends Component {
         * @param location anchorEl of div
        */
 
-    LabelPoper = (cardId, poper, location) => {
+    LabelPoper = (cardId, poper, location, element) => {
         try {
             this.setState({ AnchorEl: location, OptionsPoper: poper, cardId: cardId })
+            this.setState({ noteExistingLabels: element.labels })
         } catch (err) {
             console.log(err);
         }
@@ -621,8 +625,8 @@ class DashBoard extends Component {
     createLabelNote = async () => {
         try {
             await this.createLabel(this.state.labelValue)
-            console.log("this state", this.state.newLabel);
             await this.addNoteLabel(this.state.newLabel)
+            this.setState({ filterstateLabel: false, labelValue: '' })
         } catch (err) {
             console.log(err);
         }
@@ -671,7 +675,6 @@ class DashBoard extends Component {
                 let patt = new RegExp(`${this.state.labelValue}`)
                 this.state.labels.forEach((element) => {
                     if (patt.test(element.labelName)) {
-                        console.log("search", element.labelName);
                         filterLabel.push(element)
                     }
                 })
@@ -862,7 +865,7 @@ class DashBoard extends Component {
                     </ClickAwayListener>
                 </Popper>
                 <Popper open={this.state.labelListPoper} anchorEl={this.state.AnchorEl} style={{ zIndex: '1300' }} placement={'bottom'} style={{ zIndex: '1300' }}>
-                    <ClickAwayListener onClickAway={event => this.setState({ labelListPoper: !this.state.labelListPoper, AnchorEl: null, cardId: '', labelValue: '' })} >
+                    <ClickAwayListener onClickAway={event => this.setState({ labelListPoper: !this.state.labelListPoper, filterstateLabel: false, AnchorEl: null, cardId: '', labelValue: '', foundLabel: true })} >
                         <Card className="Options-labels">
                             <label>Label List</label>
                             <TextField
@@ -870,26 +873,33 @@ class DashBoard extends Component {
                                 placeholder='Enter Label'
                                 value={this.state.labelValue}
                                 onChange={this.filterLabel}
-                            />
+                            />{console.log("label", this.state.noteExistingLabels)
+                            }
                             <div className="listLabels">
                                 {
+
                                     this.state.filterstateLabel ?
-                                        this.state.searchLabels.length > 0 ? this.state.searchLabels.map((label) =>
-                                            <div key={label._id} className="labelsCheckBox">
-                                                <Checkbox color="primary" value={label.labelName} id={label._id} onChange={this.addNoteLabel} />
-                                                <p></p>{label.labelName} </div>) : <label> No Label Found!!</label>
+                                        this.state.searchLabels.length > 0 ? (this.state.searchLabels.map((label) =>
+                                            // this.state.noteExistingLabels.length > 0 ? this.state.noteExistingLabels.map((noteExisting) =>
+
+                                            <div key={label._id} className="labelsCheckBox" >
+                                                <Checkbox color="primary" value={label.labelName} id={label._id} onChange={this.addNoteLabel}
+                                                />
+                                                <p></p>{label.labelName} </div>)) : <label style={{ margin: '10px' }}> No Label Found!!</label>
                                         :
                                         this.state.labels.map((label) =>
                                             <div key={label._id} className="labelsCheckBox">
-                                                <Checkbox color="primary" value={label.labelName} id={label._id} onChange={this.addNoteLabel} />
+                                                {this.state.noteExistingLabels.includes(label.labelName) ?
+                                                    <Checkbox color="primary" value={label.labelName} id={label._id} onChange={this.addNoteLabel}
+                                                        checked /> :
+                                                    <Checkbox color="primary" value={label.labelName} id={label._id} onChange={this.addNoteLabel}
+                                                    />}
                                                 <p>{label.labelName}</p> </div>)
                                 }
                             </div>
                             <div hidden={this.state.foundLabel}>
                                 <hr />
-                                <IconButton onClick={() => this.createLabelNote(this.state.labelValue)} > <AddCircleOutline />Create Label</IconButton>
-                                <p>"{this.state.labelValue}"</p>
-                            </div>
+                                <Button onClick={() => this.createLabelNote(this.state.labelValue)} > <AddCircleOutline />Create Label </Button>                            </div>
                         </Card>
                     </ClickAwayListener>
                 </Popper>

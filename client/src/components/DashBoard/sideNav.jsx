@@ -21,9 +21,12 @@ const theme = createMuiTheme({
     overrides: {
         MuiDrawer: {
             paper: {
-                top: "71px",
+                top: "65px",
                 zIndex: 1000,
-                overflowY: 'scroll'
+                overflowY: 'scroll',
+                overflowX: 'hidden !important',
+                height: '90%'
+
             },
 
         },

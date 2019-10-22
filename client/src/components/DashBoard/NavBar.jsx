@@ -17,6 +17,7 @@ import { withRouter } from 'react-router-dom'
 import SideNav from './sideNav';
 import Search from './Search'
 import { ProfileUpload } from '../../controller/userController.jsx'
+import { messageService } from '../../minddleware/middleWareServices';
 /**
  * @description overriding theme
  */
@@ -54,6 +55,12 @@ class NavBar extends Component {
             hideNav: false,
             profileUrl: this.sessionValue.data.url
         }
+        messageService.getMessage().subscribe(async message => {
+            if (message.text.key === 'changeView') {
+                this.setState({ View: message.text.value })
+                this.props.open(this.state.View)
+            }
+        })
     }
     /**
      * @description handels popper
@@ -136,8 +143,8 @@ class NavBar extends Component {
                     <Toolbar>
                         <div className={this.state.hideNav ? "hideDiv" : "NavContent-Left"}>
                             <SideNav labels={this.props.labels} active={activeClass} />
-                            <img src={Icon} width="50px" height="50px" alt="fundoo Icon" title="Fundoo Icon" />
-                            <div className="title">  {this.props.title !== undefined ? this.props.title : 'Fundoo'}</div>
+                            <img className="title" src={Icon} width="50px" height="50px" alt="fundoo Icon" title="Fundoo Icon" />
+                            <div >  {this.props.title !== undefined ? this.props.title : 'Fundoo'}</div>
                         </div>
                         <div className="appBar">
                             <div className="NavContent">
@@ -182,8 +189,8 @@ class NavBar extends Component {
 
                                             </label>
                                             <div className="Avatar-text">
-                                                <h1>{this.sessionValue.data.firstName}</h1>
-                                                <h4>{this.sessionValue.data.email}</h4>
+                                                <h1 style={{ margin: '0px' }}>{this.sessionValue.data.firstName}</h1>
+                                                <h4 style={{ margin: '2px' }}>{this.sessionValue.data.email}</h4>
 
                                             </div>
                                         </div>

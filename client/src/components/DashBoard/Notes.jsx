@@ -33,7 +33,7 @@ const theme = createMuiTheme({
                 boxShadow: 'none'
             },
             elevation1: {
-                boxShadow: ' 5px 8px 14px 1px rgba(0,0,0,0.2), 1px 2px 0px 0.5px rgba(0,0,0,0.14), -2px 2px 1px -1px rgba(0,0,0,0.12)'
+                boxShadow: '0px 0px 20px 11px rgba(0,0,0,0.1), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)'
             },
             rounded: {
                 borderRadius: '7px'
@@ -109,6 +109,29 @@ class Notes extends Component {
             }
         })
     }
+    // componentWillMount() {
+    //     const mediaQuery = window.matchMedia("(max-width:500px)");
+
+    //     if (mediaQuery.matches) {
+    //         messageService.sendMessage({ key: 'changeView', value: true })
+    //     } else {
+    //         messageService.sendMessage({ key: 'changeView', value: true })
+
+    //     }
+
+    //     mediaQuery.addListener(mq => {
+    //         if (mq.matches) {
+
+    //             messageService.sendMessage({ key: 'changeView', value: true })
+    //         }
+    //         else {
+    //             messageService.sendMessage({ key: 'changeView', value: true })
+
+
+    //         }
+    //     })
+    // }
+
     /**
      * @description sets note color
      */
@@ -169,10 +192,10 @@ class Notes extends Component {
     /**
      * @description sets poper value true
      */
-    LabelList(cardId, event) {
+    LabelList(cardId, event, element) {
         try {
             this.setState({ NotePoper: true })
-            this.props.LabelPoper(cardId, true, event.target)
+            this.props.LabelPoper(cardId, true, event.target, element)
         } catch (err) {
             console.log(err);
 
@@ -295,7 +318,7 @@ class Notes extends Component {
                 return;
             }
 
-            if (source.droppableId === destination.droppableId && destination !== null && source !== null) {
+            if (source.droppableId === destination.droppableId && destination !== null) {
                 const items = await reorder(
                     this.props.notes,
                     source.index,
@@ -326,6 +349,7 @@ class Notes extends Component {
     render() {
         let view = this.props.view ? 'ListView' : 'gridView'
         let cardCss = this.props.view ? 'notesCard' : 'notesCardGrid'
+        let notesCss = this.props.view ? 'notes' : 'notes2'
         return (
             <MuiThemeProvider theme={theme}>
                 <div className={view} >
@@ -343,7 +367,7 @@ class Notes extends Component {
                                         <div className='noteAlign-count' >
                                             <p> Notes in {this.props.title !== undefined ? this.props.title : 'Dashboard'}::{this.props.notes.length}</p>
                                         </div>
-                                        <div className="notes">
+                                        <div className={notesCss}>
                                             {this.props.notes.map((Element, index) =>
                                                 <Draggable
                                                     key={this.props.filterValue ? Element.id : Element._id}
@@ -384,8 +408,8 @@ class Notes extends Component {
                                                                     {Element.reminder !== null ?
                                                                         // <div style={{ width: '50%' }}>
                                                                         <Chip
-                                                                            style={{ width: 'auto' }}
-                                                                            icon={<Alarm />}
+                                                                            style={{ margin: '2px' }}
+                                                                            icon={< Alarm />}
                                                                             label={(Element.reminder !== null ? new Date(Element.reminder).toString().slice(0, 25) : null)
                                                                             }
                                                                             onDelete={event => this.undoReminder(this.props.filterValue ? Element.id : Element._id, event)}
@@ -393,15 +417,21 @@ class Notes extends Component {
                                                                         />
                                                                         // </div>
                                                                         : ''}
-                                                                    {Element.labels.length > 0 ? Element.labels.map((labelvalue) =>
-                                                                        <Chip
-                                                                            key={labelvalue.id}
-                                                                            style={{ width: 'auto' }}
-                                                                            label={labelvalue.value
-                                                                            }
-                                                                            onDelete={() => this.removeNoteLabel((this.props.filterValue ? Element.id : Element._id), labelvalue.id)}
-                                                                        />
-                                                                    ) : ''}
+
+
+                                                                    <div className="label-div">
+                                                                        {Element.labels.length > 0 ? Element.labels.map((labelvalue) =>
+
+                                                                            <Chip
+                                                                                key={labelvalue.id}
+                                                                                style={{ width: 'auto', margin: '2px' }}
+                                                                                label={labelvalue.value
+                                                                                }
+                                                                                onDelete={() => this.removeNoteLabel((this.props.filterValue ? Element.id : Element._id), labelvalue.id)}
+                                                                            />
+
+                                                                        ) : ''}
+                                                                    </div>
                                                                 </div>
                                                                 {this.props.TrashState === undefined ?
                                                                     <div className={this.state.visibleCard === (this.props.filterValue ? Element.id : Element._id) ? "IconsList" : "IconsList-hide"}>
@@ -418,7 +448,7 @@ class Notes extends Component {
                                                                                     onClick={() => this.NoteArchived(this.props.filterValue ? Element.id : Element._id)} />
                                                                             }
                                                                             <MoreVertOutlined titleAccess="More"
-                                                                                onClick={(event) => this.LabelList(this.props.filterValue ? Element.id : Element._id, event)}
+                                                                                onClick={(event) => this.LabelList(this.props.filterValue ? Element.id : Element._id, event, Element)}
 
                                                                             />
                                                                         </div>
@@ -448,7 +478,7 @@ class Notes extends Component {
                         </ClickAwayListener>
                     </Popper>
                 </div>
-                <Dialog open={this.state.cardDailog} onClose={this.handleDailogClose} >
+                <Dialog open={this.props.TrashState ? false : this.state.cardDailog} onClose={this.handleDailogClose}  >
                     <div className='DailogCard' style={{ backgroundColor: this.state.dailogColor }}>
                         <div className="titleIcon">
                             <div >
