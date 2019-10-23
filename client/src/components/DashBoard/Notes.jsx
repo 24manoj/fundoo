@@ -13,10 +13,11 @@ import {
     InputBase, Card, Button, Popper, Paper, Fade, Fab, createMuiTheme, MuiThemeProvider, IconButton, ClickAwayListener, Chip, TextField, Checkbox, Dialog, MenuItem
 } from '@material-ui/core';
 import pin from '../../assets/afterPin.svg'
-import { ImageOutlined, Alarm, NotificationImportantOutlined, PersonAddOutlined, ColorLensOutlined, ArchiveOutlined, Label, MoreVertOutlined, UnarchiveOutlined, Translate } from "@material-ui/icons";
+import { ImageOutlined, Alarm, NotificationImportantOutlined, PersonAddOutlined, ColorLensOutlined, ArchiveOutlined, Label, MoreVertOutlined, UnarchiveOutlined, Translate, NotesOutlined } from "@material-ui/icons";
 import { messageService } from '../../minddleware/middleWareServices'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { updateIndex } from '../../controller/notesController'
+let note = require('../../assets/noteEmpty.svg')
 /**
  * @desc overrides theme 
  */
@@ -36,7 +37,7 @@ const theme = createMuiTheme({
                 boxShadow: '0px 0px 20px 11px rgba(0,0,0,0.1), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)'
             },
             rounded: {
-                borderRadius: '7px'
+                borderRadius: '14px'
             }
         },
         MuiBackdrop: {
@@ -44,6 +45,7 @@ const theme = createMuiTheme({
                 backgroundColor: 'rgba(0, 0, 0, 0.3)'
             }
         }
+
     }
 })
 /**
@@ -90,12 +92,17 @@ class Notes extends Component {
             try {
                 if (message.text.key === 'updateReminder') {
                     this.setState({
-                        dailogReminder: message.text.value
+                        dailogReminder: message.text.value,
+                        visibleCard: '',
+                        NotePoper: false
                     })
                 }
                 if (message.text.key === 'updateColor') {
+
                     this.setState({
-                        dailogColor: message.text.value
+                        dailogColor: message.text.value,
+                        visibleCard: '',
+                        NotePoper: false
                     })
                 }
                 if (message.text.key === 'sideNav') {
@@ -135,11 +142,12 @@ class Notes extends Component {
     /**
      * @description sets note color
      */
-    setNoteColor = async (event, cardId) => {
+    setNoteColor = async (event, cardId, Element) => {
         try {
             await this.setState({ poper: true, anchorEl: event.currentTarget })
             this.setState({ NotePoper: true })
             this.props.setValue(cardId, this.state.anchorEl, this.state.poper, false)
+            this.props.setNoteElement(Element)
         } catch (err) {
             console.log(err);
         }
@@ -194,6 +202,7 @@ class Notes extends Component {
      */
     LabelList(cardId, event, element) {
         try {
+            event.preventDefault()
             this.setState({ NotePoper: true })
             this.props.LabelPoper(cardId, true, event.target, element)
         } catch (err) {
@@ -239,7 +248,8 @@ class Notes extends Component {
             cardDailog: !this.state.cardDailog,
             dailogReminder: '',
             dailogLabels: '',
-            dailogColor: ''
+            dailogColor: '',
+            visibleCard: ''
         })
     }
 
@@ -355,8 +365,9 @@ class Notes extends Component {
                 <div className={view} >
 
                     {this.props.notes.length <= 0 ?
-                        <div className="searchNote">
-                            No Note Found!!!!
+                        <div className="EmptyNote">
+                            <img src={note} width="100px" height="100px" />
+                            <span> :) No Notes yet !!!</span>
                         </div> :
                         <DragDropContext onDragEnd={this.onDragEnd}>
                             <Droppable droppableId="droppable" >
@@ -365,7 +376,7 @@ class Notes extends Component {
                                         ref={provided.innerRef}
                                         className='noteAlign' id={this.state.sideNav ? "transitionLeft" : ''} >
                                         <div className='noteAlign-count' >
-                                            <p> Notes in {this.props.title !== undefined ? this.props.title : 'Dashboard'}::{this.props.notes.length}</p>
+                                            <span> Notes in {this.props.title !== undefined ? this.props.title : 'Dashboard'}:: <span style={{ fontSize: '22px' }}>{this.props.notes.length}</span></span>
                                         </div>
                                         <div className={notesCss}>
                                             {this.props.notes.map((Element, index) =>
@@ -385,16 +396,18 @@ class Notes extends Component {
                                                                 onMouseLeave={event => this.state.NotePoper ? '' : this.state.trashPoper ? '' : this.setState({ visibleCard: '' })
                                                                 }>
                                                                 <div className="titleIcon">
-                                                                    <div >
+                                                                    <div>
                                                                         <InputBase
                                                                             name="title"
                                                                             value={Element.title}
                                                                             tabIndex='1'
                                                                             onClick={(event) => this.handleDailog(Element, event)}
+                                                                            className="text-Title"
                                                                         />
                                                                     </div>
 
-                                                                    <img className={this.props.TrashState !== undefined ? 'IconPin-hide' : (this.state.visibleCard === (this.props.filterValue ? Element.id : Element._id) ? '' : 'IconPin-hide')} src={pin} />
+                                                                    <img className={this.props.TrashState !== undefined ? 'IconPin-hide' : (this.state.visibleCard === (this.props.filterValue ? Element.id : Element._id) ? '' : 'IconPin-hide')}
+                                                                        src={pin} style={{ opacity: '0.5' }} />
 
                                                                 </div>
                                                                 <div style={{ width: "100%" }}>
@@ -403,10 +416,11 @@ class Notes extends Component {
                                                                             name="description"
                                                                             value={Element.content}
                                                                             onClick={(event) => this.handleDailog(Element, event)}
-                                                                            multiline />
+                                                                            multiline
+                                                                            className="text-desc"
+                                                                        />
                                                                     </div>
                                                                     {Element.reminder !== null ?
-                                                                        // <div style={{ width: '50%' }}>
                                                                         <Chip
                                                                             style={{ margin: '2px' }}
                                                                             icon={< Alarm />}
@@ -415,7 +429,6 @@ class Notes extends Component {
                                                                             onDelete={event => this.undoReminder(this.props.filterValue ? Element.id : Element._id, event)}
 
                                                                         />
-                                                                        // </div>
                                                                         : ''}
 
 
@@ -439,7 +452,7 @@ class Notes extends Component {
                                                                             <NotificationImportantOutlined titleAccess="Remind me" style={{ zIndex: '999' }} onClick={(event) => this.addReminder(this.props.filterValue ? Element.id : Element._id, event)} />
                                                                             <PersonAddOutlined titleAccess="Collaborate" />
                                                                             <ColorLensOutlined titleAccess="change Color"
-                                                                                onClick={(event) => this.setNoteColor(event, this.props.filterValue ? Element.id : Element._id)} />
+                                                                                onClick={(event) => this.setNoteColor(event, this.props.filterValue ? Element.id : Element._id, Element)} />
                                                                             <ImageOutlined titleAccess=" Add Image" />
                                                                             {this.props.ArchiveState ?
                                                                                 <UnarchiveOutlined titleAccess='Unarchive Note' onClick={() => this.NoteUnArchive(Element)} />
@@ -481,14 +494,13 @@ class Notes extends Component {
                 <Dialog open={this.props.TrashState ? false : this.state.cardDailog} onClose={this.handleDailogClose}  >
                     <div className='DailogCard' style={{ backgroundColor: this.state.dailogColor }}>
                         <div className="titleIcon">
-                            <div >
+                            <div>
                                 <InputBase
                                     name="title"
                                     type="text"
                                     value={this.state.dailogTitleValue}
                                     onChange={this.handleTitle}
-                                    tabIndex='1'
-
+                                    className="text-Title"
                                 />
                             </div>
                             <div >
@@ -502,7 +514,10 @@ class Notes extends Component {
                                     type="text"
                                     value={this.state.dailogDescvalue}
                                     onChange={event => this.setState({ dailogDescvalue: event.target.value })}
-                                    multiline />
+                                    multiline
+                                    className="text-desc"
+
+                                />
                             </div>
                             {this.state.dailogReminder !== null ?
                                 <div >
@@ -539,7 +554,7 @@ class Notes extends Component {
                                 />
                             </div>
                             <div>
-                                <Button onClick={this.updateNotes} >
+                                <Button onClick={this.updateNotes} style={{ opacity: 0.8 }} >
                                     Close
                                 </Button>
                             </div>

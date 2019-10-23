@@ -87,7 +87,7 @@ class Login extends Component {
             })
             if (!passwordRegex.test(event.target.value)) {
                 this.setState({
-                    passwordError: ` ${event.target.name} Should contain min 8 characters `
+                    passwordError: `Incorrect ${event.target.name}  `
                 })
 
             }

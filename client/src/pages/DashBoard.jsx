@@ -13,8 +13,8 @@ import NavBar from '../components/DashBoard/NavBar';
 import TakeNote from '../components/DashBoard/TakeNote';
 import Notes from '../components/DashBoard/Notes';
 import { withRouter } from 'react-router-dom';
-import { Popper, Paper, ClickAwayListener, IconButton, Snackbar, Card, TextField, Checkbox, Button } from "@material-ui/core";
-import { UndoOutlined, DeleteOutline, AddCircleOutline } from '@material-ui/icons'
+import { Popper, Paper, ClickAwayListener, IconButton, Snackbar, Card, TextField, Checkbox, Button, createMuiTheme, MuiThemeProvider, MenuItem } from "@material-ui/core";
+import { UndoOutlined, DeleteOutline, AddCircleOutline, Done } from '@material-ui/icons'
 import {
     getLabels, getNotes, updateColor, updateArchive, createNote, UndoArchive, updateReminder, undoReminder,
     removeNoteLabel, addNoteLabel, NoteTrash, undoTrash, createLabel
@@ -26,7 +26,17 @@ import { messageService } from '../minddleware/middleWareServices'
 var Alllabels;
 var AllNotes;
 var UndoTakeNote;
-
+let check = [];
+const theme = createMuiTheme({
+    overrides: {
+        MuiListItem: {
+            gutters: {
+                paddingLeft: '5px',
+                opacity: 0.7
+            }
+        }
+    }
+})
 class DashBoard extends Component {
     constructor(props) {
         super(props);
@@ -64,19 +74,56 @@ class DashBoard extends Component {
             archiveStateComponent: false,
             foundLabel: true,
             noteExistingLabels: [],
+            poperValue: false,
             colorPalette: [
-                { name: 'default', colorCode: '#FDFEFE' },
-                { name: 'Red', colorCode: '#ef9a9a' },
-                { name: 'Cyan', colorCode: '#80deea' },
-                { name: 'Blue', colorCode: '#2196f3' },
-                { name: 'Indigo', colorCode: '#9fa8da' },
-                { name: 'LightBlue', colorCode: '#90caf9' },
-                { name: 'Purple', colorCode: '#b39ddb' },
-                { name: 'Yellow', colorCode: '#fff59d' },
-                { name: 'Lime', colorCode: '#e6ee9c' },
-                { name: 'Pink', colorCode: ' #f48fb1' },
-                { name: 'gray', colorCode: '#eeeeee' },
-                { name: 'Brown', colorCode: '#bcaaa4' }
+                {
+                    name: "default",
+                    colorCode: "#FDFEFE"
+                },
+                {
+                    name: "Red",
+                    colorCode: "#f28b82"
+                },
+                {
+                    name: "Cyan",
+                    colorCode: "#80deea"
+                },
+                {
+                    name: "orange",
+                    colorCode: "#fbbc04"
+                },
+                {
+                    name: "Tea",
+                    colorCode: "#a7ffeb"
+                },
+                {
+                    name: "LightBlue",
+                    colorCode: "#90caf9"
+                },
+                {
+                    name: "Purple",
+                    colorCode: "#b39ddb"
+                },
+                {
+                    name: "Yellow",
+                    colorCode: "#fff475"
+                },
+                {
+                    name: "litegreen",
+                    colorCode: "#1AE55B"
+                },
+                {
+                    name: "Pink",
+                    colorCode: " #f48fb1"
+                },
+                {
+                    name: "gray",
+                    colorCode: "#e8eaed"
+                },
+                {
+                    name: "Brown",
+                    colorCode: "#bcaaa4"
+                }
             ]
         }
         /** @description binding memberfunctions  */
@@ -487,12 +534,14 @@ class DashBoard extends Component {
             console.log(err);
         }
     }
+
     /**
         * @desc  add label to specific note
         * @param cardId  noteId
        */
     addNoteLabel = (event) => {
         try {
+
             let data = {}
             if (event.target !== undefined) {
                 data = {
@@ -505,6 +554,7 @@ class DashBoard extends Component {
                     value: event.labelName
                 }
             }
+
             let array = this.state.noteLabel;
             let remove = false;
             this.state.noteLabel.forEach((element, index) => {
@@ -558,10 +608,10 @@ class DashBoard extends Component {
         * @param location anchorEl of div
        */
 
-    LabelPoper = (cardId, poper, location, element) => {
+    LabelPoper = async (cardId, poper, location, element) => {
         try {
-            this.setState({ AnchorEl: location, OptionsPoper: poper, cardId: cardId })
-            this.setState({ noteExistingLabels: element.labels })
+            await this.setState({ AnchorEl: location, OptionsPoper: poper, cardId: cardId, noteLabel: element.labels })
+            check = this.state.noteLabel
         } catch (err) {
             console.log(err);
         }
@@ -609,7 +659,6 @@ class DashBoard extends Component {
                             }
                         }
                     })
-                    console.log(deleted);
                 })
                 .catch(err => {
                     console.log(err);
@@ -764,6 +813,9 @@ class DashBoard extends Component {
     search = (state, filt, trash, archive) => {
         this.setState({ filterState: state, filterArray: filt, filterTrash: trash, filterArchive: archive })
     }
+    setNoteElement = (Element) => {
+        this.setState({ NoteColor: Element.color })
+    }
     render() {
         const title = this.props.reminder !== undefined ? this.props.reminder.title :
             (this.props.ArchiveComponent !== undefined ? this.props.ArchiveComponent.title
@@ -777,133 +829,147 @@ class DashBoard extends Component {
 
 
         return (
-            <div className="Container" >
-                <div>
-                    <NavBar labels={this.state.labels}
-                        open={this.open} refresh={this.refresh} search={this.search} title={this.props.ArchiveComponent !== undefined ? arciveTitle : title} />
-                </div>
-                <div className="NotesScroll" >
-                    <TakeNote ArchiveState={stateArchive} createNote={this.createNote} NoteArchived={this.NoteArchived} labels={this.state.labels} createLabel={this.createLabel}
-                        newLabel={this.state.newLabel} handelDeleteNewLabel={this.handelDeleteNewLabel} TrashState={stateTrash} />
-                    {stateReminder ?
-                        <Notes notes={this.state.filterState ? this.state.filterArray : this.getReminderNotes()} view={this.state.View}
-                            setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}
-                            LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} filter={this.state.filterState}
-                            title={this.props.ArchiveComponent !== undefined ? arciveTitle : title} />
-                        : (stateArchive ?
-
-                            <Notes notes={this.state.filterState ? this.state.filterArchive : this.props.ArchiveNotes} view={this.state.View} ArchiveState={stateArchive}
+            <MuiThemeProvider theme={theme}>
+                <div className="Container" >
+                    <div>
+                        <NavBar labels={this.state.labels}
+                            open={this.open} refresh={this.refresh} search={this.search} title={this.props.ArchiveComponent !== undefined ? arciveTitle : title} />
+                    </div>
+                    <div className="NotesScroll" >
+                        <TakeNote ArchiveState={stateArchive} createNote={this.createNote} NoteArchived={this.NoteArchived} labels={this.state.labels} createLabel={this.createLabel}
+                            newLabel={this.state.newLabel} handelDeleteNewLabel={this.handelDeleteNewLabel} TrashState={stateTrash} />
+                        {stateReminder ?
+                            <Notes notes={this.state.filterState ? this.state.filterArray : this.getReminderNotes()} view={this.state.View}
                                 setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}
                                 LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} filter={this.state.filterState}
+                                setNoteElement={this.setNoteElement}
+
                                 title={this.props.ArchiveComponent !== undefined ? arciveTitle : title} />
-                            :
-                            (stateTrash ?
-                                <Notes notes={this.state.filterState ? this.state.filterTrash : this.props.TrashNotes} view={this.state.View} TrashState={stateTrash}
-                                    title={this.props.ArchiveComponent !== undefined ? arciveTitle : title}
-                                />
-                                : (
-                                    stateLabel ?
-                                        <Notes notes={this.getLabelNotes()} view={this.state.View}
-                                            setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}
-                                            LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} filter={this.state.filterState}
-                                            title={this.props.ArchiveComponent !== undefined ? arciveTitle : title} />
-                                        :
-                                        <Notes notes={this.state.filterState ? this.state.filterArray : (this.props.updatedArray !== undefined ? this.updateArray : this.state.notesArray)} view={this.state.View}
-                                            setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}
-                                            LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} filterValue={this.state.filterState}
-                                            title={this.props.ArchiveComponent !== undefined ? arciveTitle : title} />)))
-                    }
-                </div>
+                            : (stateArchive ?
 
-                <Popper open={this.state.colorPoper} anchorEl={this.state.AnchorEl}
-                    placement={'top-start'}
-                    style={{ width: '100px', zIndex: '1300' }} >
-                    <ClickAwayListener onClickAway={event => this.setState({ colorPoper: false })}>
-                        <Paper  >  {this.state.colorPalette.map((code, index) =>
-                            <IconButton
-                                key={index}
-                                style={{ backgroundColor: code.colorCode, width: '20px', height: '15px', margin: '2px' }}
-                                title={code.name}
-                                onClick={this.setNoteColor} value={code.colorCode} />
-                        )}</Paper>
-
-                    </ClickAwayListener>
-                </Popper>
-                <Popper open={this.state.reminderPoper} anchorEl={this.state.AnchorEl} style={{ zIndex: '1300' }}>
-                    <Paper>
-                        <ClickAwayListener onClickAway={event => this.setState({ reminderPoper: false, AnchorEl: null })}>
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                <DateTimePicker
-                                    onClose={() => this.setState({ reminderPoper: false, AnchorEl: null })}
-                                    onChange={this.dateSet}
-                                    errortext='Required'
+                                <Notes notes={this.state.filterState ? this.state.filterArchive : this.props.ArchiveNotes} view={this.state.View} ArchiveState={stateArchive}
+                                    setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}
+                                    LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} filter={this.state.filterState}
+                                    title={this.props.ArchiveComponent !== undefined ? arciveTitle : title} setNoteElement={this.setNoteElement}
                                 />
-                            </MuiPickersUtilsProvider>
+                                :
+                                (stateTrash ?
+                                    <Notes notes={this.state.filterState ? this.state.filterTrash : this.props.TrashNotes} view={this.state.View} TrashState={stateTrash}
+                                        title={this.props.ArchiveComponent !== undefined ? arciveTitle : title}
+                                    />
+                                    : (
+                                        stateLabel ?
+                                            <Notes notes={this.getLabelNotes()} view={this.state.View}
+                                                setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}
+                                                LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} filter={this.state.filterState}
+                                                title={this.props.ArchiveComponent !== undefined ? arciveTitle : title} setNoteElement={this.setNoteElement}
+                                            />
+                                            :
+                                            <Notes notes={this.state.filterState ? this.state.filterArray : (this.props.updatedArray !== undefined ? this.updateArray : this.state.notesArray)} view={this.state.View}
+                                                setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}
+                                                LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} filterValue={this.state.filterState}
+                                                title={this.props.ArchiveComponent !== undefined ? arciveTitle : title} setNoteElement={this.setNoteElement}
+                                            />)))
+                        }
+                    </div>
+                    <Popper open={this.state.colorPoper} anchorEl={this.state.AnchorEl}
+                        placement={'top-start'}
+                        style={{ width: '100px', zIndex: '1300' }} >
+                        <ClickAwayListener onClickAway={event => this.setState({ colorPoper: false })}>
+                            <Paper style={{ width: '135px' }} >
+                                {this.state.colorPalette.map((code, index) =>
+                                    <IconButton
+                                        key={index}
+                                        className='colorstyle'
+                                        style={{ backgroundColor: code.colorCode }}
+                                        title={code.name}
+                                        onClick={this.setNoteColor} value={code.colorCode} >
+                                        {this.state.NoteColor === code.colorCode ? <Done style={{ width: '20px', position: 'absolute' }} /> : ''}
+                                    </IconButton>
+                                )}</Paper>
+
                         </ClickAwayListener>
-                    </Paper>
-                </Popper>
-                <Snackbar style={{ zIndex: '1300' }}
-                    anchorOrigin={{
-                        vertical: "bottom",
-                        horizontal: "left"
-                    }}
-                    open={this.state.stackBar}
-                    autoHideDuration={10}
-                    message={this.state.stackBarMessage}
-                    action={
-                        <UndoOutlined titleAccess="Undo " onClick={this.undoArchive} />
-                    }
-                />
-                <Popper open={this.state.OptionsPoper} anchorEl={this.state.AnchorEl} placement={'bottom'} style={{ zIndex: '1300' }} >
-                    <ClickAwayListener onClickAway={event => this.setState({ OptionsPoper: !this.state.OptionsPoper })} >
-                        <Card className="Options">
-                            <label onClick={this.NoteTrash}>
-                                <IconButton style={{ borderRadius: '0px', fontSize: '10pt' }}><DeleteOutline /> Trash</IconButton></label>
-                            <label onClick={event => this.setState({ OptionsPoper: !this.state.OptionsPoper, labelListPoper: !this.state.labelListPoper })}>
-                                <IconButton style={{ borderRadius: '0px', fontSize: '10pt' }}> <AddCircleOutline />    Add Label</IconButton>  </label>
-                        </Card>
-                    </ClickAwayListener>
-                </Popper>
-                <Popper open={this.state.labelListPoper} anchorEl={this.state.AnchorEl} style={{ zIndex: '1300' }} placement={'bottom'} style={{ zIndex: '1300' }}>
-                    <ClickAwayListener onClickAway={event => this.setState({ labelListPoper: !this.state.labelListPoper, filterstateLabel: false, AnchorEl: null, cardId: '', labelValue: '', foundLabel: true })} >
-                        <Card className="Options-labels">
-                            <label>Label List</label>
-                            <TextField
-                                type="text"
-                                placeholder='Enter Label'
-                                value={this.state.labelValue}
-                                onChange={this.filterLabel}
-                            />{console.log("label", this.state.noteExistingLabels)
-                            }
-                            <div className="listLabels">
-                                {
+                    </Popper>
+                    <Popper open={this.state.reminderPoper} anchorEl={this.state.AnchorEl} style={{ zIndex: '1300' }}>
+                        <Paper>
+                            <ClickAwayListener onClickAway={event => this.setState({ reminderPoper: false, AnchorEl: null })}>
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                    <DateTimePicker
+                                        onClose={() => this.setState({ reminderPoper: false, AnchorEl: null })}
+                                        onChange={this.dateSet}
+                                        errortext='Required'
+                                    />
+                                </MuiPickersUtilsProvider>
+                            </ClickAwayListener>
+                        </Paper>
+                    </Popper>
+                    <Snackbar style={{ zIndex: '1300' }}
+                        anchorOrigin={{
+                            vertical: "bottom",
+                            horizontal: "left"
+                        }}
+                        open={this.state.stackBar}
+                        autoHideDuration={10}
+                        message={this.state.stackBarMessage}
+                        action={
+                            <UndoOutlined titleAccess="Undo " onClick={this.undoArchive} />
+                        }
+                    />
+                    <Popper open={this.state.OptionsPoper} anchorEl={this.state.AnchorEl} placement={'bottom'} style={{ zIndex: '1300' }} >
+                        <ClickAwayListener onClickAway={event => this.setState({ OptionsPoper: !this.state.OptionsPoper })} >
+                            <Card className="Options">
+                                <label onClick={this.NoteTrash} style={{ width: '100%' }}>
+                                    <MenuItem id="notesOPtions" ><DeleteOutline /> Trash</MenuItem></label>
+                                <label onClick={event => this.setState({ OptionsPoper: !this.state.OptionsPoper, labelListPoper: !this.state.labelListPoper })} style={{ width: '100%' }}>
+                                    <MenuItem className='notesOPtions'> <AddCircleOutline />    Add Label</MenuItem>  </label>
+                            </Card>
+                        </ClickAwayListener>
+                    </Popper>
+                    <Popper open={this.state.labelListPoper} anchorEl={this.state.AnchorEl} style={{ zIndex: '1300' }} placement={'bottom'} style={{ zIndex: '1300' }}>
+                        <ClickAwayListener onClickAway={event => this.setState({ labelListPoper: !this.state.labelListPoper, filterstateLabel: false, AnchorEl: null, cardId: '', labelValue: '', foundLabel: true })} >
+                            <Card className="Options-labels">
+                                <label>Label List</label>
+                                <TextField
+                                    type="text"
+                                    placeholder='Enter Label'
+                                    value={this.state.labelValue}
+                                    onChange={this.filterLabel}
+                                />
+                                <div className="listLabels">
+                                    {
+                                        this.state.filterstateLabel ?
+                                            this.state.searchLabels.length > 0 ? (this.state.searchLabels.map((label) =>
+                                                <div key={label._id} className="labelsCheckBox" >
+                                                    {
+                                                        check.filter(ele => ele.id === label._id).length > 0 ?
+                                                            <Checkbox color="primary" value={label.labelName} id={label._id} onChange={this.addNoteLabel} checked
+                                                            /> :
+                                                            <Checkbox color="primary" value={label.labelName} id={label._id} onChange={this.addNoteLabel} />
 
-                                    this.state.filterstateLabel ?
-                                        this.state.searchLabels.length > 0 ? (this.state.searchLabels.map((label) =>
-                                            // this.state.noteExistingLabels.length > 0 ? this.state.noteExistingLabels.map((noteExisting) =>
-
-                                            <div key={label._id} className="labelsCheckBox" >
-                                                <Checkbox color="primary" value={label.labelName} id={label._id} onChange={this.addNoteLabel}
-                                                />
-                                                <p></p>{label.labelName} </div>)) : <label style={{ margin: '10px' }}> No Label Found!!</label>
-                                        :
-                                        this.state.labels.map((label) =>
-                                            <div key={label._id} className="labelsCheckBox">
-                                                {this.state.noteExistingLabels.includes(label.labelName) ?
-                                                    <Checkbox color="primary" value={label.labelName} id={label._id} onChange={this.addNoteLabel}
-                                                        checked /> :
-                                                    <Checkbox color="primary" value={label.labelName} id={label._id} onChange={this.addNoteLabel}
-                                                    />}
-                                                <p>{label.labelName}</p> </div>)
-                                }
-                            </div>
-                            <div hidden={this.state.foundLabel}>
-                                <hr />
-                                <Button onClick={() => this.createLabelNote(this.state.labelValue)} > <AddCircleOutline />Create Label </Button>                            </div>
-                        </Card>
-                    </ClickAwayListener>
-                </Popper>
-            </div>
+                                                    }
+                                                    <span>{label.labelName} </span></div>)) : <label style={{ margin: '10px' }}> No Label Found!!</label>
+                                            :
+                                            this.state.labels.map((label) =>
+                                                <div key={label._id} className="labelsCheckBox">
+                                                    {
+                                                        check.map(ele => ele.id).indexOf(label._id) !== -1 ?
+                                                            <Checkbox color="primary" value={label.labelName} id={label._id} onChange={this.addNoteLabel}
+                                                                checked
+                                                            /> :
+                                                            <Checkbox color="primary" value={label.labelName} id={label._id} onChange={this.addNoteLabel}
+                                                            />
+                                                    }
+                                                    <p>{label.labelName}</p> </div>)
+                                    }
+                                </div>
+                                <div hidden={this.state.foundLabel}>
+                                    <hr />
+                                    <Button onClick={() => this.createLabelNote(this.state.labelValue)} > <AddCircleOutline />Create Label </Button>                            </div>
+                            </Card>
+                        </ClickAwayListener>
+                    </Popper>
+                </div>
+            </MuiThemeProvider>
         )
     }
 }

@@ -143,14 +143,15 @@ class NavBar extends Component {
                     <Toolbar>
                         <div className={this.state.hideNav ? "hideDiv" : "NavContent-Left"}>
                             <SideNav labels={this.props.labels} active={activeClass} />
-                            <img className="title" src={Icon} width="50px" height="50px" alt="fundoo Icon" title="Fundoo Icon" />
-                            <div >  {this.props.title !== undefined ? this.props.title : 'Fundoo'}</div>
+                            <img className="title" src={Icon} width="50px" height="50px" alt="fundoo Icon" title="Fundoonotes Icon" />
+                            <span className="title-div">{this.props.title !== undefined ? this.props.title : 'Fundoo'}</span>
                         </div>
                         <div className="appBar">
                             <div className="NavContent">
                                 <Search search={this.search} hideNav={this.hideNav} />
                                 <RefreshSharp className={animateClass} onClick={this.refresh} />
-                                {this.state.View ? <ViewAgendaOutlined titleAccess="List View" className="" onClick={this.NoteToogle} /> : <GridOnOutlined titleAccess="Grid View" className="" onClick={this.NoteToogle} />}
+                                {this.state.View ? <ViewAgendaOutlined titleAccess="List View" className="" onClick={this.NoteToogle} /> :
+                                    <GridOnOutlined titleAccess="Grid View" className="" onClick={this.NoteToogle} />}
                                 <ClickAwayListener onClickAway={event => this.setState({ popOver: false })} >
                                     <Settings titleAccess="settings" onClick={this.popper} />
                                 </ClickAwayListener>

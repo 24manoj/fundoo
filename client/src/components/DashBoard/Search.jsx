@@ -17,7 +17,8 @@ class Search extends React.Component {
         super(props)
         this.state = {
             search: '',
-            searchCardPoper: false
+            searchCardPoper: false,
+            searchClick: false
         }
 
     }
@@ -115,10 +116,10 @@ class Search extends React.Component {
                                     <SearchRounded onClick={this.handleClick} />
                                 </IconButton>
                             </div>
-                            <Card className="NavCard" onKeyPress={this.search}>
-                                <SearchRounded style={{
-                                    margin: "10px"
-                                }} />
+                            <Card className={this.state.searchClick ? "NavCard-click" : "NavCard"} onKeyPress={this.search}>
+                                <IconButton>
+                                    <SearchRounded />
+                                </IconButton>
                                 <InputBase
                                     placeholder="Search"
                                     rowsMax="10"
@@ -129,6 +130,7 @@ class Search extends React.Component {
                                     value={this.state.search}
                                     onChange={(event) => this.setState({ search: event.target.value })}
                                     onKeyUp={(event) => { this.search(event) }}
+                                    onClick={event => this.setState({ searchClick: !this.state.searchClick })}
                                 />
                                 <div>{this.state.search !== '' ? <ClearAll style={{ marginTop: "12px" }} onClick={(event) => this.setState({ search: '' })} /> : ''}</div>
                             </Card>

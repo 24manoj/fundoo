@@ -25,7 +25,8 @@ const theme = createMuiTheme({
                 zIndex: 1000,
                 overflowY: 'scroll',
                 overflowX: 'hidden !important',
-                height: '90%'
+                height: '90%',
+                opacity: 0.8
 
             },
 
@@ -34,6 +35,14 @@ const theme = createMuiTheme({
             root: {
                 padding: '0px'
 
+            }
+        },
+        MuiMenuItem: {
+            root: {
+                fontFamily: "Google Sans,Roboto,Arial,sans-serif ",
+                letterSpacing: '0.01785714em',
+                fontWeight: '600',
+                fontSize: '.876rem'
             }
         }
     }
@@ -159,47 +168,31 @@ class SideNav extends Component {
                     </IconButton>
                     <Drawer anchor="left" open={this.state.sideToggle} variant="persistent" onClose={event => this.setState({ sideToggle: false })} >
                         <div id='notes'
-                            style={{
-                                backgroundColor: this.state.activeClass === 'notes' ? '#F5EEC3' : ''
-                                , borderRadius: '0px 50px 50px 0px'
-
-                            }} onClick={this.handleNotes}><MenuItem className="labelList">  <EmojiObjectsOutlined titleAccess="Notes" /><div style={{ paddingLeft: '30px' }}>Notes </div></MenuItem></div>
+                            onClick={this.handleNotes}><MenuItem className={this.state.activeClass === 'notes' ? 'labelList-color' : "labelList"}>  <EmojiObjectsOutlined titleAccess="Notes" /><div style={{ paddingLeft: '30px' }}>Notes </div></MenuItem></div>
                         <div id='reminder'
-                            style={{
-                                backgroundColor: this.state.activeClass === 'reminder' ? '#F5EEC3' : ''
-                                , borderRadius: '0px 50px 50px 0px'
-                            }} onClick={this.handleReminder}> <MenuItem className="labelList"> <NotificationsOutlined titleAccess="Reminder" /> <div style={{ paddingLeft: "30px" }}>Reminders </div></MenuItem></div>
+                            onClick={this.handleReminder}> <MenuItem className={this.state.activeClass === 'reminder' ? 'labelList-color' : "labelList"}> <NotificationsOutlined titleAccess="Reminder" /> <div style={{ paddingLeft: "30px" }}>Reminders </div></MenuItem></div>
                         <hr style={{ width: "100%" }} />
                         <MenuItem className="labelList">Label</MenuItem>
                         <div className="labels">
-
                             {this.props.labels.map((element) =>
 
-                                <div id={element.labelName} style={{
-                                    backgroundColor: this.state.activeClass === element.labelName ? '#F5EEC3' : ''
-                                    , borderRadius: '0px 50px 50px 0px'
-                                }} onClick={this.handleLabels} key={element._id}> <MenuItem className="labelList"> <LabelOutlined titleAccess="Notes" /><div style={{ paddingLeft: "30px" }}> {element.labelName} </div></MenuItem></div>
+                                <div id={element.labelName} onClick={this.handleLabels} key={element._id}>
+                                    <MenuItem className={this.state.activeClass === element.labelName ? 'labelList-color' : "labelList"}> <LabelOutlined titleAccess="Notes" /><div style={{ paddingLeft: "30px" }}> {element.labelName} </div></MenuItem></div>
                             )}
                         </div>
-                        <div style={{
-                            backgroundColor: this.state.activeClass === 'editLabel' ? '#F5EEC3' : ''
-                            , borderRadius: '0px 50px 50px 0px'
-                        }} onClick={this.handleEditLabels}><MenuItem className="labelList"> <EditOutlined titleAccess="Edit Label" /><div style={{ paddingLeft: "30px" }}> Edit Labels </div></MenuItem></div>
+                        <div onClick={this.handleEditLabels}>
+                            <MenuItem className="labelList"> <EditOutlined titleAccess="Edit Label" />
+                                <div style={{ paddingLeft: "30px" }}> Edit Labels </div></MenuItem></div>
 
                         <hr style={{ width: "100%" }} />
 
                         <div id='archive'
-                            style={{
-                                backgroundColor: this.state.activeClass === 'archive' ? '#F5EEC3' : ''
-                                , borderRadius: '0px 50px 50px 0px'
-                            }} onClick={this.handleArchive}><MenuItem className="labelList"> <ArchiveOutlined titleAccess="Edit Label" />
+                            onClick={this.handleArchive}>
+                            <MenuItem className={this.state.activeClass === 'archive' ? 'labelList-color' : "labelList"}> <ArchiveOutlined titleAccess="Edit Label" />
                                 <div style={{ paddingLeft: "30px" }}> Archive </div></MenuItem></div>
                         <div id='trash'
-                            style={{
-                                backgroundColor: this.state.activeClass === 'trash' ? '#F5EEC3' : ''
-                                , borderRadius: '0px 50px 50px 0px'
-                            }} onClick={this.handleTrash}>
-                            <MenuItem className="labelList"> <DeleteOutline titleAccess="Edit Label" />
+                            onClick={this.handleTrash}>
+                            <MenuItem className={this.state.activeClass === 'trash' ? 'labelList-color' : "labelList"}> <DeleteOutline titleAccess="Edit Label" />
                                 <div style={{ paddingLeft: "30px" }}> Trash</div></MenuItem></div>
 
                         <hr style={{ width: "100%" }} />
