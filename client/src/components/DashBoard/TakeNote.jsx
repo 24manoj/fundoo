@@ -16,12 +16,12 @@ import {
   MuiThemeProvider,
   InputBase,
   IconButton,
-  Icon,
+  
   ClickAwayListener,
   Button,
   Popper,
   Paper,
-  Snackbar,
+  
   Chip,
   Checkbox,
   createMuiTheme
@@ -34,12 +34,12 @@ import {
   ImageOutlined,
   NotificationImportantOutlined,
   PersonAddOutlined,
-  ColorizeOutlined,
+  
   ColorLensOutlined,
   ArchiveOutlined,
-  CloseOutlined,
+  
   MoreVertOutlined,
-  PlusOneOutlined,
+  
   AddCircleOutline,
   Done
 } from "@material-ui/icons";
@@ -78,7 +78,6 @@ class Notes extends Component {
       Archive: false,
       found: true,
       reminder: undefined,
-      reminderPoper: false,
       labelListPoper: false,
       filterState: false,
       sideNav: false,
@@ -254,7 +253,7 @@ class Notes extends Component {
           this.setState({ noteLabel: array })
         }
       })
-      if (remove == false) {
+      if (remove === false) {
 
         this.setState({ noteLabel: [...this.state.noteLabel, data] })
       }
@@ -400,7 +399,7 @@ class Notes extends Component {
                       />
                     </div>
                     <div>
-                      <img src={pin} className="Iconpin" />
+                      <img src={pin} className="Iconpin" alt="pin" />
                     </div>
                   </div>
                   <div >
@@ -418,7 +417,7 @@ class Notes extends Component {
                     />
                   </div>
                   <div>
-                    {this.props.newLabel !== undefined && this.props.newLabel != '' ?
+                    {this.props.newLabel !== undefined && this.props.newLabel !== '' ?
                       <Chip key={this.props.newLabel._id} label={this.props.newLabel.labelName} onDelete={(event) => this.removeLabel(this.props.newLabel._id, event)} />
                       : ''}{
                       this.state.noteLabel.length > 0 ? this.state.noteLabel.map((element) =>
@@ -434,7 +433,7 @@ class Notes extends Component {
                         }}
                         icon={<Alarm />}
                         label={
-                          this.state.reminder != undefined
+                          this.state.reminder !== undefined
                             ? this.state.reminder
                             : ""
                         }

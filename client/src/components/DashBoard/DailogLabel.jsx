@@ -8,9 +8,9 @@
  * @since :15-oct-2019
  *******************************************************************************************************************/
 import React from 'react'
-import { Dialog, TextField, MenuItem, IconButton } from '@material-ui/core'
+import { Dialog, TextField, IconButton } from '@material-ui/core'
 import { getLabels, createLabel, updateLabel, deleteLabel } from '../../controller/notesController'
-import { LabelOutlined, EditOutlined, DoneOutline, Add, DeleteOutline, AddCircleOutline, DoneAll, Done } from '@material-ui/icons'
+import { LabelOutlined, EditOutlined, DeleteOutline, AddCircleOutline, Done } from '@material-ui/icons'
 import { messageService } from '../../minddleware/middleWareServices'
 class DailogLabel extends React.Component {
     constructor(props) {
@@ -157,7 +157,7 @@ class DailogLabel extends React.Component {
         }
     }
     render() {
-        const { hidden } = this.state;
+        // const { hidden } = this.state;
         return (
             <div>
                 <Dialog open={this.stateOpen} onClose={this.stateClose} >

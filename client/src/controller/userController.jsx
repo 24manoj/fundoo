@@ -37,6 +37,8 @@ let ProfileUpload = (payload) => {
  */
 let loginControl = (payload) => {
     try {
+        console.log("process", process.env.REACT_APP_BASE_URL);
+
         return new Promise((resolve, reject) => {
             axios.post(`${process.env.REACT_APP_BASE_URL}/login`, payload, { headers: headers })
                 .then(response => {

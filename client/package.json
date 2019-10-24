@@ -11,12 +11,14 @@
     "date-fns": "^2.4.1",
     "dotenv": "^8.1.0",
     "i": "^0.3.6",
+    "jest": "^24.9.0",
     "node-sass": "^4.12.0",
     "npm": "^6.11.3",
     "react": "^16.10.2",
     "react-beautiful-dnd": "^11.0.5",
     "react-dom": "^16.10.2",
     "react-drag-sortable": "^1.0.6",
+    "react-router-dom": "^5.1.2",
     "react-scripts": "3.2.0",
     "rxjs": "^6.5.3"
   },
@@ -41,9 +43,16 @@
       "last 1 safari version"
     ]
   },
+  "jest": {
+    "setupTestFrameworkScriptFile": "mock-local-storage"
+  },
   "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
   "main": "index.js",
-  "devDependencies": {},
+  "devDependencies": {
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.15.1",
+    "mock-local-storage": "^1.1.8"
+  },
   "author": "",
   "license": "ISC"
 }

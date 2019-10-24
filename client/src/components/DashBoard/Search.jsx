@@ -9,8 +9,8 @@
  * @since :15-oct-2019
  *******************************************************************************************************************/
 import React from 'react';
-import { Card, InputBase, IconButton, Popper } from '@material-ui/core';
-import { ClearAll, SearchRounded, ArrowRightAltOutlined, ArrowLeftOutlined, ArrowLeftRounded, KeyboardArrowLeftOutlined, ArrowBackOutlined } from '@material-ui/icons';
+import { Card, InputBase, IconButton } from '@material-ui/core';
+import { ClearAll, SearchRounded, ArrowBackOutlined } from '@material-ui/icons';
 import { searchNotes } from '../../minddleware/searchNotes';
 class Search extends React.Component {
     constructor(props) {
@@ -22,7 +22,7 @@ class Search extends React.Component {
         }
 
     }
-    componentWillMount() {
+    componentDidMount() {
         const mediaQuery = window.matchMedia("(max-width:590px)");
 
         if (mediaQuery.matches) {
@@ -60,6 +60,7 @@ class Search extends React.Component {
     }
 
     handleClick = async () => {
+
         await this.setState({
             searchCardPoper: !this.state.searchCardPoper
         })
@@ -106,7 +107,7 @@ class Search extends React.Component {
     render() {
         return (
 
-            <div className="searchCard-div">
+            <div className={this.state.searchCardPoper ? "NavCard2-search" : "searchCard-div"}>
 
                 {
                     !this.state.searchCardPoper ?
@@ -132,7 +133,7 @@ class Search extends React.Component {
                                     onKeyUp={(event) => { this.search(event) }}
                                     onClick={event => this.setState({ searchClick: !this.state.searchClick })}
                                 />
-                                <div>{this.state.search !== '' ? <ClearAll style={{ marginTop: "12px" }} onClick={(event) => this.setState({ search: '' })} /> : ''}</div>
+                                <div>{this.state.search !== '' ? <ClearAll style={{ margin: "8px" }} onClick={(event) => this.setState({ search: '' })} /> : ''}</div>
                             </Card>
                         </div>
 

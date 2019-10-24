@@ -9,7 +9,7 @@
  * @since :15-oct-2019
  *******************************************************************************************************************/
 import React, { Component } from 'react';
-import { SearchRounded, RefreshSharp, ViewAgendaOutlined, ClearAll, GridOnOutlined, Settings } from '@material-ui/icons'
+import { RefreshSharp, ViewAgendaOutlined, GridOnOutlined, Settings } from '@material-ui/icons'
 import Icon from '../../assets/icons8-google-keep.svg';
 import { AppBar, Toolbar, Card, createMuiTheme, MuiThemeProvider, Menu, MenuItem, ClickAwayListener, Avatar, Paper, Popper, Button } from '@material-ui/core';
 import '../../App.scss';
@@ -54,6 +54,7 @@ class NavBar extends Component {
             profile: false,
             hideNav: false,
             profileUrl: this.sessionValue.data.url
+            // profileUrl: ''
         }
         messageService.getMessage().subscribe(async message => {
             if (message.text.key === 'changeView') {

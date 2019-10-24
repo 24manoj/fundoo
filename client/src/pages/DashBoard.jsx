@@ -248,7 +248,7 @@ class DashBoard extends Component {
     setValue = async (cardId, anchorEl, poper, Archive) => {
         try {
             await this.setState({ cardId: cardId, AnchorEl: anchorEl, colorPoper: poper, Archive: Archive })
-            if (this.state.Archive == true) {
+            if (this.state.Archive === true) {
                 this.noteArchive()
             }
             if (this.props.ArchiveComponent !== undefined) {
@@ -351,7 +351,7 @@ class DashBoard extends Component {
             createNote(payload)
                 .then(note => {
                     let array = this.state.notesArray;
-                    if (payload.Archive == false) {
+                    if (payload.Archive === false) {
                         array.push(note.data.data)
                     }
                     if (payload.Archive === true) {
@@ -565,7 +565,7 @@ class DashBoard extends Component {
                     this.setState({ noteLabel: array })
                 }
             })
-            if (remove == false) {
+            if (remove === false) {
                 let payload = {
                     noteId: this.state.cardId,
                     label: data
@@ -752,7 +752,9 @@ class DashBoard extends Component {
       */
     getLabelNotes = () => {
         try {
+
             let array = []
+            //eslint-disable-next-line
             this.state.notesArray.map(ele => {
                 ele.labels.forEach(label => {
                     if (label.value === this.props.LabelsState.title)
@@ -760,8 +762,10 @@ class DashBoard extends Component {
                 })
             })
             return array
+
         } catch (err) {
             console.log(err);
+
         }
     }
     /**
@@ -925,7 +929,7 @@ class DashBoard extends Component {
                             </Card>
                         </ClickAwayListener>
                     </Popper>
-                    <Popper open={this.state.labelListPoper} anchorEl={this.state.AnchorEl} style={{ zIndex: '1300' }} placement={'bottom'} style={{ zIndex: '1300' }}>
+                    <Popper open={this.state.labelListPoper} anchorEl={this.state.AnchorEl} placement={'bottom'} style={{ zIndex: '1300' }}>
                         <ClickAwayListener onClickAway={event => this.setState({ labelListPoper: !this.state.labelListPoper, filterstateLabel: false, AnchorEl: null, cardId: '', labelValue: '', foundLabel: true })} >
                             <Card className="Options-labels">
                                 <label>Label List</label>

@@ -10,10 +10,10 @@
  *******************************************************************************************************************/
 import React, { Component } from 'react';
 import {
-    InputBase, Card, Button, Popper, Paper, Fade, Fab, createMuiTheme, MuiThemeProvider, IconButton, ClickAwayListener, Chip, TextField, Checkbox, Dialog, MenuItem
+    InputBase, Card, Button, Popper, Paper, createMuiTheme, MuiThemeProvider, ClickAwayListener, Chip, Dialog, MenuItem
 } from '@material-ui/core';
 import pin from '../../assets/afterPin.svg'
-import { ImageOutlined, Alarm, NotificationImportantOutlined, PersonAddOutlined, ColorLensOutlined, ArchiveOutlined, Label, MoreVertOutlined, UnarchiveOutlined, Translate, NotesOutlined } from "@material-ui/icons";
+import { ImageOutlined, Alarm, NotificationImportantOutlined, PersonAddOutlined, ColorLensOutlined, ArchiveOutlined, MoreVertOutlined, UnarchiveOutlined } from "@material-ui/icons";
 import { messageService } from '../../minddleware/middleWareServices'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { updateIndex } from '../../controller/notesController'
@@ -329,7 +329,7 @@ class Notes extends Component {
             }
 
             if (source.droppableId === destination.droppableId && destination !== null) {
-                const items = await reorder(
+                await reorder(
                     this.props.notes,
                     source.index,
                     destination.index
@@ -366,7 +366,7 @@ class Notes extends Component {
 
                     {this.props.notes.length <= 0 ?
                         <div className="EmptyNote">
-                            <img src={note} width="100px" height="100px" />
+                            <img src={note} width="100px" height="100px" alt=" no Note " />
                             <span> :) No Notes yet !!!</span>
                         </div> :
                         <DragDropContext onDragEnd={this.onDragEnd}>
@@ -407,7 +407,7 @@ class Notes extends Component {
                                                                     </div>
 
                                                                     <img className={this.props.TrashState !== undefined ? 'IconPin-hide' : (this.state.visibleCard === (this.props.filterValue ? Element.id : Element._id) ? '' : 'IconPin-hide')}
-                                                                        src={pin} style={{ opacity: '0.5' }} />
+                                                                        src={pin} style={{ opacity: '0.5' }} alt="pin" />
 
                                                                 </div>
                                                                 <div style={{ width: "100%" }}>
@@ -504,7 +504,7 @@ class Notes extends Component {
                                 />
                             </div>
                             <div >
-                                <img className='IconPin' src={pin} />
+                                <img className='IconPin' src={pin} alt="pin" />
                             </div>
                         </div>
                         <div style={{ width: "100%" }}>

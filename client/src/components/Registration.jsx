@@ -119,6 +119,8 @@ class Registration extends Component {
 
     */
     Register = () => {
+        console.log("in");
+
         if (this.state.fname === '' || this.state.fnameError !== '') {
             this.setState({
                 stackBar: true,
@@ -141,6 +143,8 @@ class Registration extends Component {
         }
         else {
 
+            console.log("in");
+
             let payload = {
                 firstName: this.state.fname,
                 lastName: this.state.lname,
@@ -150,7 +154,6 @@ class Registration extends Component {
             Register(payload)
                 .then(response => {
                     console.log("response------", response);
-
                     this.setState({
                         stackBarMessage: "Registred Sucessfully",
                         stackBar: true
@@ -240,7 +243,7 @@ class Registration extends Component {
                         </div>
                         <br />
                         <div>
-                            <Button variant="contained" color="primary" className="SignButton" onSubmit={this.Register}> Sign Up</Button>
+                            <Button variant="contained" color="primary" className="SignButton" onClick={this.Register} type="submit"> Sign Up</Button>
                         </div>
                         <hr />
                         <p style={{ fontWeight: 'bold' }}>Have an Account ? <Link to='/'><span style={{ color: "Blue" }}> Sign In</span></Link></p>

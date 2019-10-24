@@ -22,7 +22,9 @@ let searchNotes = (payload) => {
     let archive = [];
     return new Promise((resolve, reject) => {
         searchText(payload)
+            //eslint-disable-next-line
             .then(searchData => {
+                //eslint-disable-next-line
                 searchData.data.data.hits.hits.map((element) => {
                     if (element._source.isTrash === false && element._source.isArchive === false)
                         filt.push(element._source);
