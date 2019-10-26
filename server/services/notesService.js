@@ -24,7 +24,8 @@ exports.createNotes = async (req) => {
                 "isArchive": req.body.Archive,
                 "labels": req.body.label,
                 "reminder": (req.body.reminder !== undefined ? req.body.reminder + 1 : null),
-                "index": countNotes
+                "index": countNotes,
+                "collaborated": req.body.collaborate
             });
             //save data in collection
             noteDetails.save(noteDetails, (err, data) => {

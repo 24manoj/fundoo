@@ -95,6 +95,7 @@ exports.forgotpassword = (req, callback) => {
         console.log(e)
     }
 }
+
 /**
  * @desc gets validated request from services,performs database operations needed
  * @param req request contains http request
@@ -162,9 +163,9 @@ exports.find = (req) => {
     try {
         return new Promise((resolve, reject) => {
             userSchema.userRegistration.findOne({
-                "email": req.email
+                "email": req.email !== undefined ? req.email : req.body.email
             }, (err, data) => {
-                if (err || data == null) reject("data not exist")
+                if (err || data === null) reject("data not exist")
                 else resolve(data)
             })
         })

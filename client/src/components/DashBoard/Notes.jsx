@@ -430,6 +430,19 @@ class Notes extends Component {
 
                                                                         />
                                                                         : ''}
+                                                                    {Element.collaborated !== undefined ?
+                                                                        Element.collaborated.map(ele =>
+
+                                                                            <Chip
+                                                                                style={{ margin: '2px' }}
+                                                                                // icon={< />}
+                                                                                label={ele
+                                                                                }
+                                                                                onDelete={event => this.undoReminder(this.props.filterValue ? Element.id : Element._id, event)}
+
+                                                                            />
+                                                                        )
+                                                                        : ''}
 
 
                                                                     <div className="label-div">

@@ -8,6 +8,7 @@ let upload = require('../middleware/medialFile')
 router.route('/register').post(controller.register)
 router.route('/login').post(controller.login)
 router.route('/forgotPassword').post(controller.forgotPassword)
+router.route('/userCheck').post(controller.userCheck)
 router.route('/resetPassword/:token').post(auth.verify, controller.resetPassword)
 router.route('/upload').post(auth.verifyUser, upload.single('image'), controller.fileUpload)
 

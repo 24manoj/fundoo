@@ -30,8 +30,13 @@ const note = new mongoose.Schema({
         type: String
     },
     index: {
-        type:Number
-    }
+        type: Number
+    },
+    collaborated: [
+        {
+            type: String
+        }
+    ]
 }, {
     timestamps: true
 })

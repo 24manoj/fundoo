@@ -9,6 +9,7 @@
  *******************************************************************************************************************/
 import React, { Component } from "react";
 import { messageService } from '../../minddleware/middleWareServices'
+import { Collaborator } from "./Collaborator";
 
 import {
   TextField,
@@ -16,15 +17,16 @@ import {
   MuiThemeProvider,
   InputBase,
   IconButton,
-  
+
   ClickAwayListener,
   Button,
   Popper,
   Paper,
-  
+
   Chip,
   Checkbox,
-  createMuiTheme
+  createMuiTheme,
+  Avatar
 } from "@material-ui/core";
 import "../../App.scss";
 import {
@@ -33,13 +35,9 @@ import {
   CheckBoxOutlined,
   ImageOutlined,
   NotificationImportantOutlined,
-  PersonAddOutlined,
-  
   ColorLensOutlined,
   ArchiveOutlined,
-  
   MoreVertOutlined,
-  
   AddCircleOutline,
   Done
 } from "@material-ui/icons";
@@ -81,7 +79,8 @@ class Notes extends Component {
       labelListPoper: false,
       filterState: false,
       sideNav: false,
-
+      CollaboratorDailog: false,
+      CollaborateArray: [],
       colorPalette: [
         {
           name: "default",
@@ -162,7 +161,8 @@ class Notes extends Component {
           color: this.state.NoteColor,
           Archive: this.state.Archive,
           reminder: this.state.reminder,
-          label: this.state.noteLabel
+          label: this.state.noteLabel,
+          collaborate: this.state.CollaborateArray
         };
         await this.props.createNote(payload);
         this.setState({
@@ -172,7 +172,8 @@ class Notes extends Component {
           NoteColor: "",
           Archive: false,
           anchorEl: null,
-          reminder: undefined
+          reminder: undefined,
+          CollaborateArray: []
         });
       }
 
@@ -327,6 +328,12 @@ class Notes extends Component {
   /**
   * @description crates a new label
   */
+  CollaboratorDailog = (state) => {
+    this.setState({ CollaboratorDailog: state })
+  }
+  /**
+  * @description crates a new label
+  */
   createLabel = async (event) => {
     await this.props.createLabel(this.state.labelValue)
     this.setState({ labelValue: '', filterState: false, found: true, labelListPoper: false })
@@ -338,6 +345,35 @@ class Notes extends Component {
     this.props.handelDeleteNewLabel()
   }
 
+  CollaboratorAdd = async (collEmail) => {
+    try {
+
+      let array = this.state.CollaborateArray.concat(collEmail)
+      await this.setState({ CollaborateArray: array })
+
+    } catch (err) {
+      console.log(err);
+
+    }
+  }
+  handelDeleteColl = (event) => {
+    try {
+      let array = this.state.CollaborateArray
+      let index = array.map(ele => ele._id).indexOf(event.target.id)
+      let array2 = this.state.CollaborateArray
+      array2.splice(index, 1)
+      this.setState({
+        CollaborateArray: array2
+      })
+
+    } catch (err) {
+      console.log(err);
+
+    }
+  }
+  CollaborateState = async (state) => {
+    await this.setState({ CollaboratorDailog: state })
+  }
   render() {
 
     return (
@@ -357,7 +393,7 @@ class Notes extends Component {
               />
               <div className="createNoteIcons">
                 <CheckBoxOutlined titleAccess="New List" />
-                <BrushOutlined titleAccess=" new Note with Drawing" />
+                <BrushOutlined tiPersonAddOutlinedtleAccess=" new Note with Drawing" />
                 <ImageOutlined titleAccess="new Note with image" />
               </div>
             </Card>
@@ -368,8 +404,9 @@ class Notes extends Component {
                     this.state.reminderPoper |
                     this.state.NoteState
                     | this.state.labelListPoper |
-                    this.state.OptionsPoper
-                    ? ""
+                    this.state.OptionsPoper |
+                    this.state.CollaboratorDailog
+                    ? this.setState({ CollaboratorDailog: false })
                     : this.setState({
                       NoteTake: false
                     })
@@ -377,7 +414,6 @@ class Notes extends Component {
               >
                 <Card
                   className="TakeDetails"
-
                   hidden={!this.state.NoteTake}
                   style={{
                     backgroundColor: this.state.NoteColor
@@ -445,16 +481,36 @@ class Notes extends Component {
                         }
                       />
                     </div>
+
                   ) : (
                       ""
                     )}
+                  {this.state.CollaborateArray !== undefined ?
+                    <div>
+                      {this.state.CollaborateArray.map(ele =>
+
+                        <Chip
+                          id={ele._id}
+                          style={{
+                            width: "auto"
+                          }}
+                          avatar={<Avatar alt="profile" src={ele.url} />}
+                          label={
+                            ele.email
+                          }
+                          onDelete={this.handelDeleteColl
+                          }
+                        />
+                      )}
+                    </div> : ''
+                  }
                   <div className="TakeNoteIcon">
                     <div className="TakeNoteIcon-Icons">
                       <NotificationImportantOutlined
                         titleAccess="Remind me"
                         onClick={this.AddReminder}
                       />
-                      <PersonAddOutlined titleAccess="Collaborate" />
+                      <Collaborator CollaboratorDailog={this.CollaboratorDailog} CollaboratorAdd={this.CollaboratorAdd} CollaborateState={this.CollaborateState} />
                       <ColorLensOutlined
                         titleAccess="change Color"
                         onClick={event =>
@@ -584,7 +640,7 @@ class Notes extends Component {
           </Popper>
 
         </div>
-      </MuiThemeProvider>
+      </MuiThemeProvider >
     );
   }
 }

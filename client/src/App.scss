@@ -437,6 +437,10 @@
    min-width: 200px;
    height: 50%;
    border-radius: 12px !important;
+
+   @media screen and (max-width:425px) {
+     width: 80%
+   }
  }
 
  .TakeDetails {
@@ -452,6 +456,10 @@
    font-weight: 400;
    height: 30%;
    border-radius: 12px !important;
+
+   @media screen and (max-width:425px) {
+     width: 80%
+   }
  }
 
 
@@ -551,16 +559,13 @@
 
  }
 
- //    @media screen and (max-width:574px) {
- //     //  width: 40px !important;   }
- //  }
-
  .createNoteIcons {
    display: flex !important;
    justify-content: space-between;
    width: 120px;
    flex-direction: row;
    opacity: 0.5;
+   align-items: center;
  }
 
  .iconlistCreatenote {
@@ -603,6 +608,67 @@
  .rotate {
    animation: rotate-spin 1s linear;
  }
+
+ .collaborate-div1 {
+   display: flex;
+   align-items: center;
+ }
+
+ .collaborate-div-footer {
+   border: 1px solid rgba(0, 0, 0, 0.07);
+   background-color: rgba(0, 0, 0, 0.07);
+   padding: 10px;
+   margin: -7px;
+   display: flex;
+   flex-direction: row;
+   justify-content: flex-end;
+ }
+
+ .collaborate-button {
+   text-transform: none !important;
+   padding: 10px;
+ }
+
+ .collaborate-div2-span1 {
+   font-size: 19pt;
+   font-variant: all-petite-caps;
+   font-weight: 500;
+   padding: 3px;
+ }
+
+ .collaborate-div2-span2 {
+   font-size: 10pt;
+   opacity: 0.8;
+   font-style: oblique;
+   margin: 5px;
+ }
+
+ .collaborate-div2 {
+   display: flex;
+   flex-direction: column;
+   margin: 10px;
+ }
+
+ .collaborate-div2-icon {
+   border: 2px solid;
+   margin: 7px;
+   border-radius: 30px;
+   padding: 10px;
+   opacity: 0.6;
+ }
+
+
+ .Collaborate-div {
+   display: flex;
+   flex-direction: column;
+   width: 550px;
+   overflow: hidden;
+   margin: 2px;
+   padding: 5px;
+   font-family: Georgia, 'Times New Roman', Times, serif;
+   font-weight: 800;
+ }
+
 
  .ListView,
  %ListView {

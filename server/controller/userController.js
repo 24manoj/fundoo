@@ -281,6 +281,36 @@ exports.resetPassword = (req, res) => {
  * @param res contains response from backend
  * @return return respose sucess or failure
  */
+exports.userCheck = (req, res) => {
+    try {
+        services.find(req)
+            .then(data => {
+                response.data = data
+                response.errors = null
+                response.sucess = true
+                res.status(200).send(response);
+
+            })
+
+            .catch(err => {
+                response.data = null
+                response.errors = err
+                response.sucess = false
+                res.status(404).send(response);
+
+            })
+
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+/**
+ * @desc takes input ,error validation is done,passes request next services
+ * @param req request contains all the requested data
+ * @param res contains response from backend
+ * @return return respose sucess or failure
+ */
 exports.fileUpload = (req, res) => {
     try {
         console.log("file" + req.file.location)
@@ -303,3 +333,5 @@ exports.fileUpload = (req, res) => {
         console.log(e)
     }
 }
+
+

@@ -295,6 +295,29 @@ let undoReminder = (payload) => {
 }
 
 /**
+ * @description makes http request to update collaborate of note
+ */
+let checkMail = (payload) => {
+    try {
+        const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
+        const headers = {
+            "Content-Type": "application/json",
+            token: sessionValue.token
+        }
+        return new Promise((resolve, reject) => {
+            axios.post(`${process.env.REACT_APP_BASE_URL}/userCheck`, payload, { headers: headers })
+                .then(notes => {
+                    resolve(notes)
+                })
+                .catch(err => {
+                    reject(err)
+                })
+        })
+    } catch (err) {
+        console.log(err);
+    }
+}
+/**
  * @description makes http request to update note label
  */
 let removeNoteLabel = (payload) => {
@@ -538,5 +561,6 @@ let updateIndex = (payload) => {
 }
 export {
     getNotes, getLabels, searchText, createNote, updateColor, updateArchive, UndoArchive, updateReminder, undoReminder, updateIndex,
-    removeNoteLabel, addNoteLabel, NoteTrash, undoTrash, createLabel, getArchiveNotes, getTrashNotes, deleteNotes, restoreNotes, updateLabel, deleteLabel
+    removeNoteLabel, addNoteLabel, NoteTrash, undoTrash, createLabel, getArchiveNotes, getTrashNotes, deleteNotes, restoreNotes, updateLabel, deleteLabel,
+    checkMail
 }
