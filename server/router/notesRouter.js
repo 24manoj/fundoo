@@ -22,7 +22,7 @@ noteRouter.post('/deleteLabel', auth.verifyUser, notesController.deleteLabel)
 noteRouter.put('/updateLabel', auth.verifyUser, notesController.updateLabel)
 noteRouter.get('/getLabels', auth.verifyUser, notesController.getLabels)
 noteRouter.post('/addCollaborate', auth.verifyUser, notesController.addCollaborate)
-noteRouter.delete('/removeCollaborate', notesController.removeCollaborate)
+noteRouter.put('/removeCollaborate', auth.verifyUser, notesController.removeCollaborate)
 noteRouter.put('/updateColor', auth.verifyUser, notesController.updateColor)
 noteRouter.put('/updateIndex', auth.verifyUser, services.updateIndex)
 

@@ -180,7 +180,7 @@ class NavBar extends Component {
                                         <div className="Avatar">
                                             <label htmlFor='file'>
 
-                                                <Avatar alt='profile img' src={this.state.profileUrl} titleAccess="change Profile" style={{
+                                                <Avatar alt='profile img' src={this.state.profileUrl} titleaccess="change Profile" style={{
                                                     width: '100px',
                                                     height: '100px',
 

@@ -3,6 +3,7 @@ const collSchema = require('../app/model/collaboraterSchema')
 const noteSchema = require('../app/model/notesSchema')
 let redisCache = require('../middleware/redisService')
 let elastic = require('../middleware/elasticSearch')
+let userSchema = require('../services/userService')
 /**
  * @desc gets validated request from services,performs database operations needed
  * @param req request contains http request
@@ -46,15 +47,29 @@ exports.createNotes = async (req) => {
  * @param req request contains http request
  * @return returns  promise data resolve or reject
  */
-exports.getNotes = (id) => {
+exports.getNotes = async (id) => {
     try {
+        // let data = {}
         return new Promise((resolve, reject) => {
+
             noteSchema.notes.find({
                 "userId": id
             }, (err, notes) => {
-                (err) ? reject(err) : resolve(notes)
+                if (err) {
+                    reject(err)
+                }
+                else {
+
+                    resolve(notes)
+                }
             })
+
+
+
         })
+
+
+
     } catch (e) {
         console.log(e)
     }
@@ -390,40 +405,51 @@ exports.noteReminder = (req) => {
  */
 exports.addCollaborate = (req) => {
     try {
+        console.log("note Id", req);
 
         return new Promise((resolve, reject) => {
-            collSchema.colldata.findOne({
-                noteId: req.body.noteId
-            }, (err, found) => {
-                if (err || found == null) {
-                    let data = new collSchema.colldata({
-                        noteId: req.body.noteId,
-                        userId: req.decoded.id,
-                        collaborateId: req.id
-                    })
-                    data.save((err, store) => {
-                        if (err) reject(err)
-                        else resolve(store)
-                    })
-                } else {
-                    collSchema.colldata.updateOne({
-                        noteId: found.noteId
-                    }, {
-                        $push: {
-                            collaborateId: req.id
-                        }
-                    }, (err, update) => {
-                        if (err) {
-                            reject(err)
-                        }
-                        else {
-                            resolve(update)
-                        }
-
-                    })
-                }
-
+            // collSchema.colldata.findOne({
+            //     noteId: req.noteIdad
+            // }, (err, found) => {
+            //     if (err || found == null) {
+            let data = new collSchema.colldata({
+                noteId: req.noteId,
+                userId: req.userId,
+                collaborateId: req.collId
             })
+
+            console.log("dfdfdfdfdf", data);
+
+            data.save((err, store) => {
+                if (err) {
+                    console.log("ererer", err);
+                    reject(err)
+                }
+                else {
+                    console.log("store", store);
+
+                    resolve(store)
+                }
+            })
+            //     } else {
+            //         collSchema.colldata.updateOne({
+            //             noteId: found.noteId
+            //         }, {
+            //             $push: {
+            //                 collaborateId: req.collId
+            //             }
+            //         }, (err, update) => {
+            //             if (err) {
+            //                 reject(err)
+            //             }
+            //             else {
+            //                 resolve(update)
+            //             }
+
+            //         })
+            //     }
+
+            // })
 
         })
     } catch (e) {
@@ -438,7 +464,6 @@ exports.addCollaborate = (req) => {
  */
 exports.noteUndoLabel = (req) => {
     try {
-        console.log("labelId", req.body.labelId)
         return new Promise((resolve, reject) => {
             noteSchema.notes.updateOne({
                 _id: req.body.noteId
@@ -452,7 +477,7 @@ exports.noteUndoLabel = (req) => {
             }, (err, update) => {
                 if (err) reject(err)
                 else resolve(update)
-                // }
+                // }collId
             })
 
         })
@@ -468,7 +493,6 @@ exports.noteUndoLabel = (req) => {
  */
 exports.noteLabel = (req) => {
     try {
-        console.log("label body", req.body.label.id, req.decoded.id, req.body.noteId)
         return new Promise((resolve, reject) => {
             noteSchema.notes.updateOne({
                 _id: req.body.noteId
@@ -502,12 +526,13 @@ exports.noteLabel = (req) => {
  */
 exports.removeCollaborate = (req) => {
     try {
-        console.log('in module')
+        console.log("body", req.body);
+
         return new Promise((resolve, reject) => {
-            collSchema.colldata.updateOne({
-                noteId: req.body.noteId
+            noteSchema.notes.updateOne({
+                _id: req.body.noteId
             }, {
-                $pull: { collaborateId: req.body.collaborateId }
+                $pull: { collaborated: req.body.collId }
             }, (err, removed) => {
                 console.log(err, removed)
                 if (err) reject(err)

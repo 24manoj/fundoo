@@ -33,6 +33,31 @@ let ProfileUpload = (payload) => {
 }
 
 /**
+ * @description sends http request to backend for pic upload
+ */
+let checkCollaborated = (payload) => {
+    try {
+        const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
+
+        const headers = {
+            "Content-Type": "application/json",
+            token: sessionValue.token
+        }
+        return new Promise((resolve, reject) => {
+            axios.post(`${process.env.REACT_APP_BASE_URL}/checkCollaborated`, payload, { headers: headers })
+                .then(response => {
+                    resolve(response)
+                })
+                .catch(err => {
+                    reject(err)
+                })
+        })
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+/**
  * @description verify users
  */
 let loginControl = (payload) => {
@@ -142,4 +167,4 @@ let Reset = (payload) => {
     }
 
 }
-export { loginControl, SocialLogin, forgotPassword, Register, Reset, ProfileUpload }
+export { loginControl, SocialLogin, forgotPassword, Register, Reset, ProfileUpload, checkCollaborated }

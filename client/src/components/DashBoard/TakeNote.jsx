@@ -347,7 +347,6 @@ class Notes extends Component {
 
   CollaboratorAdd = async (collEmail) => {
     try {
-
       let array = this.state.CollaborateArray.concat(collEmail)
       await this.setState({ CollaborateArray: array })
 
@@ -393,7 +392,7 @@ class Notes extends Component {
               />
               <div className="createNoteIcons">
                 <CheckBoxOutlined titleAccess="New List" />
-                <BrushOutlined tiPersonAddOutlinedtleAccess=" new Note with Drawing" />
+                <BrushOutlined titleAccess=" new Note with Drawing" />
                 <ImageOutlined titleAccess="new Note with image" />
               </div>
             </Card>

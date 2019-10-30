@@ -45,7 +45,6 @@ exports.register = (req, callback) => {
  */
 exports.login = (req, callback) => {
     try {
-        console.log('in schema', req.body.email, req.body.password);
 
         userSchema.userRegistration.findOne({
             "email": req.body.email
@@ -174,6 +173,29 @@ exports.find = (req) => {
         console.log(e)
     }
 }
+/**
+ * @desc gets validated request from services,performs database operations needed
+ * @param req request contains http request
+ * @param callback contains response from backend
+ * @return return respose sucess or failure
+ */
+exports.checkCollaborate = (req) => {
+    try {
+
+        return new Promise((resolve, reject) => {
+            userSchema.userRegistration.findOne({
+                "_id": req.body.id
+            }, (err, data) => {
+                if (err || data === null) reject("data not exist")
+                else resolve(data)
+            })
+        })
+
+    } catch (e) {
+        console.log(e)
+    }
+}
+
 /**
  * @desc gets validated request from services,performs database operations needed
  * @param req request contains http request

@@ -1,13 +1,13 @@
 let mongoose = require('mongoose')
 /**@description schema for collaborate */
 const collaborateData = mongoose.Schema({
-    collaborateId: [{
+    noteId: {
         type: String,
-        required: true,
         unique: true
-    }], noteId: {
+    },
+    collaborateId: [{
         type: String
-    }, userId: {
+    }], userId: {
         type: String
     }
 })

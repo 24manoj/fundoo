@@ -14,16 +14,14 @@ class App extends React.Component {
   render() {
     return (
       <Router>
-        <Switch>
-          <Route path="/" exact component={Login} />
-          <Route path="/register" component={Register} />
-          <Route path="/resetPassword" component={ResetPassword} />
-          <Route path="/Dashboard" component={DashBoard} />
-          <Route path='/reminder' component={reminder} />
-          <Route path='/archive' component={Archive} />
-          <Route path='/trash' component={Trash} />
-          <Route path='/labels' component={Labels} />
-        </Switch>
+        <Route path="/" exact component={Login} />
+        <Route path="/register" component={Register} />
+        <Route path="/resetPassword" component={ResetPassword} />
+        <Route path="/Dashboard" component={DashBoard} />
+        <Route path='/reminder' component={reminder} />
+        <Route path='/archive' component={Archive} />
+        <Route path='/trash' component={Trash} />
+        <Route path='/labels' component={Labels} />
       </Router>
     )
   }

@@ -29,7 +29,6 @@ exports.sendmail = (mailReciver, value, callback) => {
  * @return  callback function with err or data
  */
 exports.sendHtmlMailer = (mail, callback) => {
-    console.log("in mailer", process.env.USEREMAIL, process.env.PASS)
     var transpoter = mailer.createTransport({
         service: "gmail",
         auth: {
@@ -39,10 +38,11 @@ exports.sendHtmlMailer = (mail, callback) => {
     });
     var mailoptions = {
         from: process.env.DOMAIN,
-        to: mail.body.collEmail,
+        to: mail.email,
         subject: "note collaborating",
         html: '<h1>Hi,</h1><h3> Your friend collaborated a note with you click to view</h3><br><a href="http://localhost:3000/"><button style="{color:orange}"> Open Fundoooo</button>'
     }
+
     transpoter.sendMail(mailoptions, (err, mail) => {
         err ? callback(err) : callback(null, mail);
     })

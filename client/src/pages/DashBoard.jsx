@@ -17,12 +17,13 @@ import { Popper, Paper, ClickAwayListener, IconButton, Snackbar, Card, TextField
 import { UndoOutlined, DeleteOutline, AddCircleOutline, Done } from '@material-ui/icons'
 import {
     getLabels, getNotes, updateColor, updateArchive, createNote, UndoArchive, updateReminder, undoReminder,
-    removeNoteLabel, addNoteLabel, NoteTrash, undoTrash, createLabel
+    removeNoteLabel, addNoteLabel, NoteTrash, undoTrash, createLabel, collaborateRemove
 } from '../controller/notesController';
 import '../App.scss'
 import DateFnsUtils from '@date-io/date-fns';
 import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { messageService } from '../minddleware/middleWareServices'
+import { messageService } from '../minddleware/middleWareServices';
+import { checkCollaborated } from '../controller/userController'
 var Alllabels;
 var AllNotes;
 var UndoTakeNote;
@@ -169,8 +170,8 @@ class DashBoard extends Component {
         })
     }
     /** @description loaded after render  */
-    componentDidMount() {
-        getLabels().then(labels => {
+    async componentDidMount() {
+        await getLabels().then(labels => {
             Alllabels = labels.data.data;
             this.setState({
                 labels: Alllabels
@@ -180,11 +181,33 @@ class DashBoard extends Component {
                 console.log((err));
 
             })
-        getNotes().then(notes => {
+        await getNotes().then(notes => {
+            let colldetails = []
             AllNotes = notes.data.data;
+
             AllNotes.sort((a, b) => {
                 return ((a.index < b.index) ? -1 : ((a.index > b.index) ? 1 : 0));
             })
+            AllNotes.map(ele => {
+                if (ele.collaborated.length > 0) {
+
+                    ele.collaborated.map(coll =>
+                        checkCollaborated({ id: coll })
+                            .then(data => {
+                                colldetails.push(data.data.data)
+                                messageService.sendMessage({ key: 'colldetails', value: data.data.data })
+
+                            })
+                            .catch(err => {
+                                console.log(err);
+
+                            })
+                    )
+
+                }
+
+            })
+
             this.setState({
                 notesArray: AllNotes
             })
@@ -221,7 +244,6 @@ class DashBoard extends Component {
                     AllNotes.sort((a, b) => {
                         return ((a.index < b.index) ? -1 : ((a.index > b.index) ? 1 : 0));
                     })
-                    // let newArray = AllNotes.filter(ele => ele.index!==undefined).sort()
                     this.setState({
                         notesArray: AllNotes
                     })
@@ -820,6 +842,26 @@ class DashBoard extends Component {
     setNoteElement = (Element) => {
         this.setState({ NoteColor: Element.color })
     }
+    undoCollaborate = (noteId, collId) => {
+        try {
+            let payload = {
+                noteId: noteId,
+                collId: collId
+            }
+            collaborateRemove(payload)
+                .then(data => {
+                    console.log(data);
+
+                })
+                .catch(err => {
+                    console.log(err);
+                })
+        } catch (err) {
+            console.log(err);
+
+        }
+    }
+
     render() {
         const title = this.props.reminder !== undefined ? this.props.reminder.title :
             (this.props.ArchiveComponent !== undefined ? this.props.ArchiveComponent.title
@@ -846,7 +888,7 @@ class DashBoard extends Component {
                             <Notes notes={this.state.filterState ? this.state.filterArray : this.getReminderNotes()} view={this.state.View}
                                 setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}
                                 LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} filter={this.state.filterState}
-                                setNoteElement={this.setNoteElement}
+                                setNoteElement={this.setNoteElement} undoCollaborate={this.undoCollaborate}
 
                                 title={this.props.ArchiveComponent !== undefined ? arciveTitle : title} />
                             : (stateArchive ?
@@ -855,11 +897,16 @@ class DashBoard extends Component {
                                     setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}
                                     LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} filter={this.state.filterState}
                                     title={this.props.ArchiveComponent !== undefined ? arciveTitle : title} setNoteElement={this.setNoteElement}
+                                    undoCollaborate={this.undoCollaborate}
+
+
                                 />
                                 :
                                 (stateTrash ?
                                     <Notes notes={this.state.filterState ? this.state.filterTrash : this.props.TrashNotes} view={this.state.View} TrashState={stateTrash}
                                         title={this.props.ArchiveComponent !== undefined ? arciveTitle : title}
+
+
                                     />
                                     : (
                                         stateLabel ?
@@ -867,12 +914,18 @@ class DashBoard extends Component {
                                                 setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}
                                                 LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} filter={this.state.filterState}
                                                 title={this.props.ArchiveComponent !== undefined ? arciveTitle : title} setNoteElement={this.setNoteElement}
+                                                undoCollaborate={this.undoCollaborate}
+
+
                                             />
                                             :
                                             <Notes notes={this.state.filterState ? this.state.filterArray : (this.props.updatedArray !== undefined ? this.updateArray : this.state.notesArray)} view={this.state.View}
                                                 setValue={this.setValue} NoteReminder={this.NoteReminder} removeNoteLabel={this.removeNoteLabel}
                                                 LabelPoper={this.LabelPoper} newReminder={this.state.newReminder} filterValue={this.state.filterState}
                                                 title={this.props.ArchiveComponent !== undefined ? arciveTitle : title} setNoteElement={this.setNoteElement}
+                                                undoCollaborate={this.undoCollaborate}
+
+
                                             />)))
                         }
                     </div>

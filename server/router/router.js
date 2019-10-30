@@ -11,5 +11,6 @@ router.route('/forgotPassword').post(controller.forgotPassword)
 router.route('/userCheck').post(controller.userCheck)
 router.route('/resetPassword/:token').post(auth.verify, controller.resetPassword)
 router.route('/upload').post(auth.verifyUser, upload.single('image'), controller.fileUpload)
+router.post('/checkCollaborated', auth.verifyUser, controller.checkCollaborated)
 
 module.exports = router;

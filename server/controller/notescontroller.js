@@ -1,5 +1,6 @@
 let noteService = require('../services/notesService')
 let status = require('../middleware/httpStatusCode')
+let userService = require('../services/userService')
 let redisCache = require('../middleware/redisService')
 let elastic = require('../middleware/elasticSearch')
 let model = require('../services/userService')
@@ -29,7 +30,24 @@ exports.createNotes = (req, res) => {
             })
             noteService.createNotes(req)
                 .then(data => {
-                    scheduler.scheduleReminder(req)
+                    if (req.body.collaborate.length > 0) {
+                        let payload = {
+                            userId: req.decoded.id,
+                            noteId: data._id,
+                            collaborate: req.body.collaborate
+                        }
+                        this.addCollaborate(payload, res)
+                            .then(coldata => {
+                                console.log(coldata)
+                            })
+                            .catch(err => {
+                                console.log(err);
+
+                            })
+                    }
+                    if (req.body.reminder !== undefined) {
+                        scheduler.scheduleReminder(req)
+                    }
                     response.sucess = true,
                         response.data = data,
                         response.errors = null
@@ -39,7 +57,6 @@ exports.createNotes = (req, res) => {
                     response.sucess = false,
                         response.data = null,
                         response.errors = err
-                    console.log(err)
                     res.status(status.notfound).send(response)
                 })
         }
@@ -198,18 +215,19 @@ exports.getNotes = (req, res) => {
                                 res.status(status.sucess).send(response)
                             }
                         })
-
-
                     })
+
                     .catch(err => {
                         response.sucess = false,
                             response.data = null,
                             response.errors = err
                         res.status(status.notfound).send(response)
                     })
-            }
-        })
 
+
+            }
+
+        })
     } catch (e) {
         console.log(e)
     }
@@ -661,7 +679,6 @@ exports.noteLabel = (req, res) => {
                         })
 
                         .catch(err => {
-                            console.log("err", err);
 
                             response.errors = err
                             response.data = null
@@ -882,55 +899,49 @@ exports.getLabels = async (req, res) => {
  */
 exports.addCollaborate = async (req, res) => {
     try {
-        req.check('collEmail', 'Email invlaid').isEmail()
-        req.check('noteId', ' Invalid note ID ').notEmpty()
-        let errors = req.validationErrors()
-        if (errors) {
-            response.errors = errors
-            response.data = null
-            response.sucess = false
-            res.status(status.UnprocessableEntity).send(response)
-        }
-        else {
-            let data = {
-                email: req.body.collEmail
-            }
-            await model.find(data)
-                .then(found => {
-                    req.id = found._id
-                    mailer.sendHtmlMailer(req, (err, sent) => {
-                        if (err) {
-                            response.errors = err
-                            response.data = null
-                            response.sucess = false
-                            res.status(status.UnprocessableEntity).send(response)
-                        } else {
-                            noteService.addCollaborate(req)
-                                .then(data => {
-                                    response.errors = null
-                                    response.data = data
-                                    response.sucess = true
-                                    res.status(status.sucess).send(response)
-                                })
-                                .catch(err => {
-                                    response.errors = err
-                                    response.data = null
-                                    response.sucess = false
-                                    res.status(status.notfound).send(response)
-                                })
+        return new Promise((resolve, reject) => {
 
-                        }
-                    })
+            let details = {}
+            details.id = req.decoded.id
+            redisCache.delRedis(details, (err, data) => {
+                if (err) console.log(err);
+                else console.log(data);
+
+
+            })
+            req.collaborate.map(ele =>
+                mailer.sendHtmlMailer(ele, (err, sent) => {
+                    if (err) {
+                        response.errors = err
+                        response.data = null
+                        response.sucess = false
+                        res.status(status.UnprocessableEntity).send(response)
+                    } else {
+                        req.collId = ele._id
+                        noteService.addCollaborate(req)
+                            .then(data => {
+                                // response.errors = null
+                                // response.data = data
+                                // response.sucess = true
+                                // res.status(status.sucess).send(response)
+                                resolve(data)
+                            })
+                            .catch(err => {
+                                // response.errors = err
+                                // response.data = null
+                                // response.sucess = false
+                                // res.status(status.notfound).send(response)
+                                reject(err)
+                            })
+
+                    }
+
+
 
 
                 })
-                .catch(err => {
-                    response.errors = err
-                    response.data = null
-                    response.sucess = false
-                    res.status(status.notfound).send(response)
-                })
-        }
+            )
+        })
     } catch (e) {
         console.log(e)
     }
@@ -946,10 +957,17 @@ exports.addCollaborate = async (req, res) => {
  */
 
 exports.removeCollaborate = (req, res) => {
-    req.check('userId', 'userId invalid').notEmpty()
+    let details = {}
+    details.id = req.decoded.id
     req.check('noteId', 'noteId invalid').notEmpty()
-    req.check('collaborateId', 'collaborateId in valid').notEmpty()
+    req.check('collId', 'collaborateId in valid').notEmpty()
     let errors = req.validationErrors()
+    redisCache.delRedis(details, (err, data) => {
+        if (err) console.log(err);
+        else console.log(data);
+
+
+    })
     if (errors) {
         response.err = errors
         response.data = null

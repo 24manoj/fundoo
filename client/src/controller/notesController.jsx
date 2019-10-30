@@ -45,6 +45,8 @@ let getNotes = () => {
         return new Promise((resolve, reject) => {
             axios.get(`${process.env.REACT_APP_BASE_URL}/note/getNotes`, { headers: headers })
                 .then(notes => {
+                    console.log("notes", notes);
+
                     resolve(notes)
                 })
                 .catch(err => {
@@ -224,6 +226,31 @@ let getLabels = () => {
         console.log(err);
     }
 }
+
+/**
+ * @description makes http request to update Archive note
+ */
+let collaborateRemove = (payload) => {
+    try {
+        const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
+        const headers = {
+            "Content-Type": "application/json",
+            token: sessionValue.token
+        }
+        return new Promise((resolve, reject) => {
+            axios.put(`${process.env.REACT_APP_BASE_URL}/note/removeCollaborate`, payload, { headers: headers })
+                .then(notes => {
+                    resolve(notes)
+                })
+                .catch(err => {
+                    reject(err)
+                })
+        })
+    } catch (err) {
+        console.log(err);
+    }
+}
+
 /**
  * @description makes http request to update Archive note
  */
@@ -562,5 +589,5 @@ let updateIndex = (payload) => {
 export {
     getNotes, getLabels, searchText, createNote, updateColor, updateArchive, UndoArchive, updateReminder, undoReminder, updateIndex,
     removeNoteLabel, addNoteLabel, NoteTrash, undoTrash, createLabel, getArchiveNotes, getTrashNotes, deleteNotes, restoreNotes, updateLabel, deleteLabel,
-    checkMail
+    checkMail, collaborateRemove
 }

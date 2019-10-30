@@ -10,13 +10,13 @@
  *******************************************************************************************************************/
 import React, { Component } from 'react';
 import {
-    InputBase, Card, Button, Popper, Paper, createMuiTheme, MuiThemeProvider, ClickAwayListener, Chip, Dialog, MenuItem
+    InputBase, Card, Button, Popper, Paper, createMuiTheme, MuiThemeProvider, ClickAwayListener, Chip, Dialog, MenuItem, Avatar
 } from '@material-ui/core';
 import pin from '../../assets/afterPin.svg'
 import { ImageOutlined, Alarm, NotificationImportantOutlined, PersonAddOutlined, ColorLensOutlined, ArchiveOutlined, MoreVertOutlined, UnarchiveOutlined } from "@material-ui/icons";
 import { messageService } from '../../minddleware/middleWareServices'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { updateIndex } from '../../controller/notesController'
+import { updateIndex, collaborateRemove } from '../../controller/notesController'
 let note = require('../../assets/noteEmpty.svg')
 /**
  * @desc overrides theme 
@@ -85,7 +85,8 @@ class Notes extends Component {
             visibleCard: '',
             trashAnchorEl: null,
             trashPoper: false,
-            sideNav: false
+            sideNav: false,
+            colldetails: []
         }
         this.LabelList = this.LabelList.bind(this);
         messageService.getMessage().subscribe(message => {
@@ -110,34 +111,25 @@ class Notes extends Component {
                         sideNav: message.text.value
                     })
                 }
+                if (message.text.key === 'colldetails') {
+                    if (this.state.colldetails.length > 0) {
+                        this.state.colldetails.map(ele => {
+                            if (ele._id !== message.text.value._id)
+                                this.setState({ colldetails: [...this.state.colldetails, message.text.value] })
+                        })
+                    } else {
+                        this.setState({ colldetails: [...this.state.colldetails, message.text.value] })
+
+                    }
+                }
             } catch (err) {
                 console.log(err);
 
             }
         })
     }
-    // componentWillMount() {
-    //     const mediaQuery = window.matchMedia("(max-width:500px)");
-
-    //     if (mediaQuery.matches) {
-    //         messageService.sendMessage({ key: 'changeView', value: true })
-    //     } else {
-    //         messageService.sendMessage({ key: 'changeView', value: true })
-
-    //     }
-
-    //     mediaQuery.addListener(mq => {
-    //         if (mq.matches) {
-
-    //             messageService.sendMessage({ key: 'changeView', value: true })
-    //         }
-    //         else {
-    //             messageService.sendMessage({ key: 'changeView', value: true })
 
 
-    //         }
-    //     })
-    // }
 
     /**
      * @description sets note color
@@ -177,7 +169,6 @@ class Notes extends Component {
      */
     undoReminder = (cardId, event) => {
         try {
-
             this.props.NoteReminder(false, null, cardId)
         } catch (err) {
             console.log(err)
@@ -334,8 +325,6 @@ class Notes extends Component {
                     source.index,
                     destination.index
                 )
-
-
                 let payload = {
                     source: { id: this.props.filterValue ? this.props.notes[source.index].id : this.props.notes[source.index]._id, index: destination.index },
                     destination: { id: this.props.filterValue ? this.props.notes[destination.index].id : this.props.notes[destination.index]._id, index: source.index }
@@ -353,13 +342,22 @@ class Notes extends Component {
             console.log(err);
 
         }
-    };
+    }
+    /**
+      * @description handles undo Collaborated
+      */
+    undoCollaborate(cardId, collId) {
+        console.log("cardId", cardId);
+        console.log("collId",collId)
 
+        this.props.undoCollaborate(cardId, collId)
+    }
 
     render() {
         let view = this.props.view ? 'ListView' : 'gridView'
         let cardCss = this.props.view ? 'notesCard' : 'notesCardGrid'
         let notesCss = this.props.view ? 'notes' : 'notes2'
+
         return (
             <MuiThemeProvider theme={theme}>
                 <div className={view} >
@@ -432,16 +430,20 @@ class Notes extends Component {
                                                                         : ''}
                                                                     {Element.collaborated !== undefined ?
                                                                         Element.collaborated.map(ele =>
+                                                                            this.state.colldetails.map(coll =>
+                                                                                coll._id === ele ?
+                                                                                    <Chip
+                                                                                        id={coll._id}
+                                                                                        style={{ margin: '2px' }}
+                                                                                        avatar={<Avatar alt="profile" src={coll.url} />}
+                                                                                        label={coll.email
+                                                                                        }
+                                                                                        onDelete={event => this.undoCollaborate(this.props.filterValue ? Element.id : Element._id, coll._id)}
 
-                                                                            <Chip
-                                                                                style={{ margin: '2px' }}
-                                                                                // icon={< />}
-                                                                                label={ele
-                                                                                }
-                                                                                onDelete={event => this.undoReminder(this.props.filterValue ? Element.id : Element._id, event)}
+                                                                                    />
 
-                                                                            />
-                                                                        )
+                                                                                    : ''
+                                                                            ))
                                                                         : ''}
 
 
@@ -537,7 +539,7 @@ class Notes extends Component {
                                     <Chip
                                         style={{ width: 'auto' }}
                                         icon={<Alarm />}
-                                        label={(this.state.dailogReminder !== null ? new Date(this.state.dailogReminder).toString().slice(0, 15) : null)
+                                        label={(this.state.dailogReminder !== null ? new Date(this.state.dailogReminder).toString().slice(0, 25) : null)
                                         }
                                         onDelete={event => this.undoReminder(this.state.dailogNoteId, event)}
 
