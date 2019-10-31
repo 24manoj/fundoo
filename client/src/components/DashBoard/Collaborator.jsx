@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Dialog, Avatar, Button, TextField, Chip } from '@material-ui/core';
 import { PersonAddOutlined, PersonAdd, Done, } from '@material-ui/icons';
 import { checkMail } from "../../controller/notesController";
+import { addCollaborate } from '../../controller/notesController'
 export class Collaborator extends Component {
     session = JSON.parse(sessionStorage.getItem('UserSession'))
 
@@ -20,16 +21,20 @@ export class Collaborator extends Component {
     handleClick = async (e) => {
         e.preventDefault()
         await this.setState({ dailog: !this.state.dailog })
-        this.props.CollaboratorDailog(this.state.dailog)
+        if (this.props.notes === undefined)
+            this.props.CollaboratorDailog(this.state.dailog)
     }
 
     handleClose = async () => {
         await this.setState({ dailog: false })
-        this.props.CollaboratorDailog(this.state.dailog)
+        if (this.props.notes === undefined)
+
+            this.props.CollaboratorDailog(this.state.dailog)
     }
     checkMail = () => {
         try {
-            this.props.CollaborateState(true)
+            if (this.props.notes === undefined)
+                this.props.CollaborateState(true)
             let exist = false;
             let EmailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
             if (!EmailRegex.test(this.state.email)) {
@@ -75,7 +80,30 @@ export class Collaborator extends Component {
             this.setState({
                 collaborateEmail: array2
             })
-            this.props.CollaborateState(true)
+            if (this.props.notes === undefined)
+                this.props.CollaborateState(true)
+
+        } catch (err) {
+            console.log(err);
+
+        }
+    }
+
+    addCollaborated = () => {
+        try {
+            let payload = {
+                noteId: this.props.cardId,
+                collId: this.state.collaborateEmail
+            }
+            addCollaborate(payload)
+                .then(data => {
+                    console.log(data);
+
+                })
+                .catch(err => {
+                    console.log(err);
+
+                })
 
         } catch (err) {
             console.log(err);
@@ -84,8 +112,13 @@ export class Collaborator extends Component {
     }
     saveCollaborate = async () => {
         try {
-            await this.props.CollaboratorAdd(this.state.collaborateEmail)
-            this.props.CollaborateState(true)
+            this.props.cardId !== undefined ?
+                this.addCollaborated()
+                :
+                this.props.CollaboratorAdd(this.state.collaborateEmail, undefined)
+            if (this.props.notes === undefined) {
+                this.props.CollaborateState(true)
+            }
             this.setState({ dailog: false, email: '', emailErr: false, collaborateEmail: [] })
 
 
@@ -95,7 +128,8 @@ export class Collaborator extends Component {
         }
     }
     handleCloseColl = () => {
-        this.props.CollaborateState(true)
+        if (this.props.notes === undefined)
+            this.props.CollaborateState(true)
         this.setState({ collaborateEmail: [], email: '', emailErr: '', dailog: false })
 
     }
@@ -143,6 +177,8 @@ export class Collaborator extends Component {
                                 onKeyPress={event => this.setState({ doneState: true })}
                                 onChange={event => this.setState({ email: event.currentTarget.value })}
                                 helperText={this.state.emailErr ? <span style={{ color: 'red' }}> Email invalid</span> : ''}
+                                onClick={event => this.props.notes === undefined ? this.props.CollaborateState(true) : ''
+                                }
                             />
                             {this.state.doneState ? <Done onClick={this.checkMail} /> : ''}
                         </div>
@@ -157,7 +193,7 @@ export class Collaborator extends Component {
                         </div>
                     </div>
                 </Dialog>
-            </div >
+            </div>
         )
     }
 }

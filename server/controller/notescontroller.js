@@ -34,13 +34,26 @@ exports.createNotes = (req, res) => {
                         let payload = {
                             userId: req.decoded.id,
                             noteId: data._id,
-                            collaborate: req.body.collaborate
+                            collaborate: req.body.collaborate,
+                            id: req.decoded.id
                         }
                         this.addCollaborate(payload, res)
                             .then(coldata => {
-                                console.log(coldata)
+                                let payload = {
+                                    noteId: data._id,
+                                    collId: coldata._id
+                                }
+                                noteService.addCollId(payload)
+                                    .then(updated => {
+                                        console.log("updated");
+
+                                    })
+                                    .catch(err => {
+                                        console.log(err);
+
+                                    })
                             })
-                            .catch(err => {
+                            .catch(er => {
                                 console.log(err);
 
                             })
@@ -53,6 +66,8 @@ exports.createNotes = (req, res) => {
                         response.errors = null
                     res.status(status.sucess).send(response)
                 })
+
+
                 .catch((err) => {
                     response.sucess = false,
                         response.data = null,
@@ -118,28 +133,15 @@ exports.updateColor = async (req, res) => {
 
 exports.getTrashNotes = (req, res) => {
     try {
-        // details.id = req.decoded.id
-        // details.value = []
-        // redisCache.getRedis(details, (err, data) => {
-        //     if (data) {
-        //         response.sucess = true,
-        //             response.data = data,
-        //             response.errors = null
-        //         res.status(status.sucess).send(response)
-        //     } else {
+       
         noteService.getTrashNotes(req.decoded.id)
             .then(notes => {
-                // elastic.addDocument(notes)
-                // details.id = req.decoded.id
-                // details.value = notes
-                // redisCache.setRedis(details, (err, data) => {
-                //     if (data) {
+                
                 response.sucess = true,
                     response.data = notes,
                     response.errors = null
                 res.status(status.sucess).send(response)
-                //     }
-                // })
+             
             })
             .catch(err => {
                 response.sucess = false,
@@ -902,12 +904,10 @@ exports.addCollaborate = async (req, res) => {
         return new Promise((resolve, reject) => {
 
             let details = {}
-            details.id = req.decoded.id
+            details.id = req.id
             redisCache.delRedis(details, (err, data) => {
                 if (err) console.log(err);
                 else console.log(data);
-
-
             })
             req.collaborate.map(ele =>
                 mailer.sendHtmlMailer(ele, (err, sent) => {

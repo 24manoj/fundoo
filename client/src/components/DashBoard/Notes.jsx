@@ -16,7 +16,9 @@ import pin from '../../assets/afterPin.svg'
 import { ImageOutlined, Alarm, NotificationImportantOutlined, PersonAddOutlined, ColorLensOutlined, ArchiveOutlined, MoreVertOutlined, UnarchiveOutlined } from "@material-ui/icons";
 import { messageService } from '../../minddleware/middleWareServices'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { updateIndex, collaborateRemove } from '../../controller/notesController'
+import { updateIndex, collaborateRemove } from '../../controller/notesController';
+import { Collaborator } from "../DashBoard/Collaborator";
+
 let note = require('../../assets/noteEmpty.svg')
 /**
  * @desc overrides theme 
@@ -86,7 +88,8 @@ class Notes extends Component {
             trashAnchorEl: null,
             trashPoper: false,
             sideNav: false,
-            colldetails: []
+            colldetails: [],
+            collId: []
         }
         this.LabelList = this.LabelList.bind(this);
         messageService.getMessage().subscribe(message => {
@@ -112,15 +115,10 @@ class Notes extends Component {
                     })
                 }
                 if (message.text.key === 'colldetails') {
-                    if (this.state.colldetails.length > 0) {
-                        this.state.colldetails.map(ele => {
-                            if (ele._id !== message.text.value._id)
-                                this.setState({ colldetails: [...this.state.colldetails, message.text.value] })
-                        })
-                    } else {
-                        this.setState({ colldetails: [...this.state.colldetails, message.text.value] })
 
-                    }
+                    this.setState({ colldetails: [...this.state.colldetails, message.text.value] })
+
+
                 }
             } catch (err) {
                 console.log(err);
@@ -347,12 +345,8 @@ class Notes extends Component {
       * @description handles undo Collaborated
       */
     undoCollaborate(cardId, collId) {
-        console.log("cardId", cardId);
-        console.log("collId",collId)
-
         this.props.undoCollaborate(cardId, collId)
     }
-
     render() {
         let view = this.props.view ? 'ListView' : 'gridView'
         let cardCss = this.props.view ? 'notesCard' : 'notesCardGrid'
@@ -428,22 +422,27 @@ class Notes extends Component {
 
                                                                         />
                                                                         : ''}
+
                                                                     {Element.collaborated !== undefined ?
-                                                                        Element.collaborated.map(ele =>
-                                                                            this.state.colldetails.map(coll =>
-                                                                                coll._id === ele ?
+                                                                        this.state.colldetails.map(coll =>
+
+
+                                                                            coll.map(c =>
+
+                                                                                coll.idCol === Element.collaborated[0] ?
                                                                                     <Chip
-                                                                                        id={coll._id}
+                                                                                        id={c._id === undefined ? coll._id : c._id}
                                                                                         style={{ margin: '2px' }}
-                                                                                        avatar={<Avatar alt="profile" src={coll.url} />}
-                                                                                        label={coll.email
+                                                                                        avatar={<Avatar alt="profile" src={c.url === undefined ? coll.url : c.url} />}
+                                                                                        label={c.email === undefined ? coll.email : c.email
                                                                                         }
-                                                                                        onDelete={event => this.undoCollaborate(this.props.filterValue ? Element.id : Element._id, coll._id)}
+                                                                                        onDelete={event => this.undoCollaborate(this.props.filterValue ? Element.id : Element._id, c._id)}
 
                                                                                     />
-
                                                                                     : ''
+                                                                                //         : ''
                                                                             ))
+                                                                        // )
                                                                         : ''}
 
 
@@ -465,7 +464,8 @@ class Notes extends Component {
                                                                     <div className={this.state.visibleCard === (this.props.filterValue ? Element.id : Element._id) ? "IconsList" : "IconsList-hide"}>
                                                                         <div className='decsIcon' >
                                                                             <NotificationImportantOutlined titleAccess="Remind me" style={{ zIndex: '999' }} onClick={(event) => this.addReminder(this.props.filterValue ? Element.id : Element._id, event)} />
-                                                                            <PersonAddOutlined titleAccess="Collaborate" />
+                                                                            <Collaborator notes={this.props.notes} cardId={this.props.filterValue ? Element.id : Element._id} />
+
                                                                             <ColorLensOutlined titleAccess="change Color"
                                                                                 onClick={(event) => this.setNoteColor(event, this.props.filterValue ? Element.id : Element._id, Element)} />
                                                                             <ImageOutlined titleAccess=" Add Image" />

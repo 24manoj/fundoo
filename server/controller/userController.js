@@ -311,8 +311,10 @@ exports.userCheck = (req, res) => {
  */
 exports.checkCollaborated = (req, res) => {
     try {
+
         services.checkCollaborate(req)
             .then(data => {
+
                 response.data = data
                 response.errors = null
                 response.sucess = true

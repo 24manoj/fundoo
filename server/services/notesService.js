@@ -4,6 +4,8 @@ const noteSchema = require('../app/model/notesSchema')
 let redisCache = require('../middleware/redisService')
 let elastic = require('../middleware/elasticSearch')
 let userSchema = require('../services/userService')
+let mailer = require('../middleware/userMailer')
+
 /**
  * @desc gets validated request from services,performs database operations needed
  * @param req request contains http request
@@ -26,7 +28,6 @@ exports.createNotes = async (req) => {
                 "labels": req.body.label,
                 "reminder": (req.body.reminder !== undefined ? req.body.reminder + 1 : null),
                 "index": countNotes,
-                "collaborated": req.body.collaborate
             });
             //save data in collection
             noteDetails.save(noteDetails, (err, data) => {
@@ -35,6 +36,51 @@ exports.createNotes = async (req) => {
                     resolve(data)
                 }
             })
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
+/**
+ * @desc gets validated request from services,performs database operations needed
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
+exports.addCollId = async (req) => {
+    try {
+        let countNotes = 0;
+        await noteSchema.notes.find().countDocuments((err, count) => {
+            countNotes = count + 1;
+
+        })
+        return new Promise((resolve, reject) => {
+
+            noteSchema.notes.updateOne({
+                _id: req.noteId
+            }, {
+                $push: { collaborated: req.collId }
+            }
+                , (err, updated) => {
+                    if (err) reject(err)
+                    else resolve(updated)
+                })
+            // let noteDetails = new noteSchema.notes({
+            //     "userId": req.decoded.id,
+            //     "title": req.body.title,
+            //     "content": req.body.content,
+            //     "color": req.body.color,
+            //     "isArchive": req.body.Archive,
+            //     "labels": req.body.label,
+            //     "reminder": (req.body.reminder !== undefined ? req.body.reminder + 1 : null),
+            //     "index": countNotes,
+            // });
+            // //save data in collection
+            // noteDetails.save(noteDetails, (err, data) => {
+            //     if (err) { reject(err) }
+            //     else {
+            //         resolve(data)
+            //     }
+            // })
         })
     } catch (e) {
         console.log(e)
@@ -140,6 +186,64 @@ exports.updateIndex = (req, res) => {
             }
 
         })
+
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+
+/**
+ * @desc gets validated request from services,performs database operations needed
+ * returns notes data present in database,based on conditions given
+ * @param req request contains http request
+ * @return returns  promise data resolve or reject
+ */
+exports.updateCollabarate = (req, res) => {
+    try {
+        let response = {}
+        let details = {}
+        details.id = req.decoded.id
+        redisCache.delRedis(details, (err, data) => {
+            if (err) console.log(err);
+            else console.log(data);
+        })
+        req.body.collId.map(ele =>
+            mailer.sendHtmlMailer(ele, (err, sent) => {
+                if (err) {
+                    response.errors = err
+                    response.data = null
+                    response.sucess = false
+                    res.status(422).send(response)
+                } else {
+                    let payload = {
+                        collId: ele._id,
+                        noteId: req.body.noteId,
+                        userId: req.decoded.id
+
+                    }
+
+                    this.addCollaborate(payload)
+                        .then(data => {
+                            response.errors = null
+                            response.data = data
+                            response.sucess = true
+                            res.status(200).send(response)
+                        })
+                        .catch(err => {
+                            response.errors = err
+                            response.data = null
+                            response.sucess = false
+                            res.status(500).send(response)
+                        })
+
+                }
+
+
+
+
+            })
+        )
 
     } catch (e) {
         console.log(e)
@@ -405,51 +509,48 @@ exports.noteReminder = (req) => {
  */
 exports.addCollaborate = (req) => {
     try {
-        console.log("note Id", req);
 
         return new Promise((resolve, reject) => {
-            // collSchema.colldata.findOne({
-            //     noteId: req.noteIdad
-            // }, (err, found) => {
-            //     if (err || found == null) {
-            let data = new collSchema.colldata({
-                noteId: req.noteId,
-                userId: req.userId,
-                collaborateId: req.collId
-            })
+            collSchema.colldata.findOne({
+                noteId: req.noteId
+            }, (err, found) => {
+                if (err || found == null) {
+                    let data = new collSchema.colldata({
+                        noteId: req.noteId,
+                        userId: req.userId,
+                        collaborateId: req.collId
+                    })
 
-            console.log("dfdfdfdfdf", data);
+                    console.log("dfdfdfdfdf", data);
 
-            data.save((err, store) => {
-                if (err) {
-                    console.log("ererer", err);
-                    reject(err)
+                    data.save((err, store) => {
+                        if (err) {
+                            reject(err)
+                        }
+                        else {
+
+                            resolve(store)
+                        }
+                    })
+                } else {
+                    collSchema.colldata.updateOne({
+                        noteId: found.noteId
+                    }, {
+                        $push: {
+                            collaborateId: req.collId
+                        }
+                    }, (err, update) => {
+                        if (err) {
+                            reject(err)
+                        }
+                        else {
+                            resolve(update)
+                        }
+
+                    })
                 }
-                else {
-                    console.log("store", store);
 
-                    resolve(store)
-                }
             })
-            //     } else {
-            //         collSchema.colldata.updateOne({
-            //             noteId: found.noteId
-            //         }, {
-            //             $push: {
-            //                 collaborateId: req.collId
-            //             }
-            //         }, (err, update) => {
-            //             if (err) {
-            //                 reject(err)
-            //             }
-            //             else {
-            //                 resolve(update)
-            //             }
-
-            //         })
-            //     }
-
-            // })
 
         })
     } catch (e) {

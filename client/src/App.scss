@@ -484,7 +484,6 @@
  .decsIcon {
    display: flex;
    width: 77%;
-   font-size: 12rem;
    justify-content: space-between;
    align-items: center;
    opacity: 0.5;
@@ -797,6 +796,7 @@
  }
 
  .IconsList-hide {
+
    visibility: hidden;
    margin: 2px;
  }
@@ -804,6 +804,9 @@
  .IconsList {
    @extend %style-row;
    visibility: visible;
+   display: flex;
+   flex-direction: row;
+   justify-content: space-between;
    margin: 2px;
    width: 100%;
 

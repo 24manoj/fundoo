@@ -1,5 +1,6 @@
 let userSchema = require('../app/model/userSchema')
 let bcrypt = require('bcrypt');
+let collSchema = require('../app/model/collaboraterSchema')
 /**
  * @desc gets validated request from services,performs database operations needed
  * @param req request contains http request 
@@ -181,13 +182,29 @@ exports.find = (req) => {
  */
 exports.checkCollaborate = (req) => {
     try {
-
+        let count = 0;
         return new Promise((resolve, reject) => {
-            userSchema.userRegistration.findOne({
-                "_id": req.body.id
-            }, (err, data) => {
-                if (err || data === null) reject("data not exist")
-                else resolve(data)
+            collSchema.colldata.findOne({
+                _id: req.body.id
+            }, (err, found) => {
+                if (found) {
+                    let colldata = []
+                    found.collaborateId.map(ele => {
+                        count++;
+                        userSchema.userRegistration.findOne({
+                            "_id": ele
+                        }, (err, data) => {
+                            if (err || data === null) reject("data not exist")
+                            else {
+                                colldata.push(data)
+                                if (found.collaborateId.length === count) {
+                                    resolve(colldata)
+                                }
+                            }
+                        })
+
+                    })
+                }
             })
         })
 

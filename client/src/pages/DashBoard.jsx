@@ -182,27 +182,27 @@ class DashBoard extends Component {
 
             })
         await getNotes().then(notes => {
-            let colldetails = []
-            AllNotes = notes.data.data;
+            // let colldetails = []
 
+            AllNotes = notes.data.data;
             AllNotes.sort((a, b) => {
                 return ((a.index < b.index) ? -1 : ((a.index > b.index) ? 1 : 0));
             })
             AllNotes.map(ele => {
                 if (ele.collaborated.length > 0) {
+                    // console.log("collabroated", ele.collaborated[0]);
 
-                    ele.collaborated.map(coll =>
-                        checkCollaborated({ id: coll })
-                            .then(data => {
-                                colldetails.push(data.data.data)
-                                messageService.sendMessage({ key: 'colldetails', value: data.data.data })
+                    checkCollaborated({ id: ele.collaborated[0] })
+                        .then(data => {
+                            data.data.data.idCol = ele.collaborated[0]
+                            messageService.sendMessage({ key: 'colldetails', value: data.data.data })
 
-                            })
-                            .catch(err => {
-                                console.log(err);
+                        })
+                        .catch(err => {
+                            console.log(err);
 
-                            })
-                    )
+                        })
+
 
                 }
 

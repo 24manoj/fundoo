@@ -43,9 +43,12 @@ let checkCollaborated = (payload) => {
             "Content-Type": "application/json",
             token: sessionValue.token
         }
+
         return new Promise((resolve, reject) => {
             axios.post(`${process.env.REACT_APP_BASE_URL}/checkCollaborated`, payload, { headers: headers })
                 .then(response => {
+                    console.log("response");
+
                     resolve(response)
                 })
                 .catch(err => {
