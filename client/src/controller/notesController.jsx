@@ -113,7 +113,6 @@ let createNote = (payload) => {
  */
 let addCollaborate = (payload) => {
     try {
-
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
         const headers = {
             "Content-Type": "application/json",
@@ -122,8 +121,6 @@ let addCollaborate = (payload) => {
         return new Promise((resolve, reject) => {
             axios.put(`${process.env.REACT_APP_BASE_URL}/note/updateCollabarate`, payload, { headers: headers })
                 .then(notes => {
-                    console.log("ddfdfgdgfdgfdgdgfvdfdfdfdf", notes);
-
                     resolve(notes)
                 })
                 .catch(err => {
@@ -260,6 +257,7 @@ let getLabels = () => {
  */
 let collaborateRemove = (payload) => {
     try {
+
         const sessionValue = JSON.parse(sessionStorage.getItem(process.env.React_APP_STORAGE))
         const headers = {
             "Content-Type": "application/json",

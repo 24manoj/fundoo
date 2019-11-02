@@ -155,7 +155,6 @@ class DashBoard extends Component {
             if (message.text.key === 'updateIndex') {
 
                 let array = this.state.filterState ? this.state.filterArray : this.state.notesArray
-
                 let index1 = array.map(ele => this.state.filterState ? ele.id : ele._id).indexOf(message.text.value.source.id)
 
                 array[index1].index = message.text.value.source.index
@@ -166,6 +165,22 @@ class DashBoard extends Component {
                 })
                 this.state.filterState ? this.setState({ filterArray: newArray2 }) :
                     this.setState({ notesArray: newArray2 })
+            }
+            if (message.text.key === 'updateCollaborated') {
+                let array = this.state.filterState ? this.state.filterArray : this.state.notesArray
+                let index1 = array.map(ele => this.state.filterState ? ele.id : ele._id).indexOf(message.text.value.cardId)
+                console.log("index", index1);
+
+                array[index1].collaborated.push(message.text.value.cardId)
+                message.text.value.colldetail.map(ele => {
+                    let array = []
+                    array.push(ele)
+                    array.idCol = message.text.value.cardId;
+                    messageService.sendMessage({ key: 'colldetails', value: array })
+
+                })
+
+
             }
         })
     }
@@ -194,16 +209,16 @@ class DashBoard extends Component {
 
                     checkCollaborated({ id: ele.collaborated[0] })
                         .then(data => {
-                            data.data.data.idCol = ele.collaborated[0]
-                            messageService.sendMessage({ key: 'colldetails', value: data.data.data })
+                            if (data.data.data.length > 0) {
+                                data.data.data.idCol = ele.collaborated[0]
+                                messageService.sendMessage({ key: 'colldetails', value: data.data.data })
+                            }
 
                         })
                         .catch(err => {
                             console.log(err);
 
                         })
-
-
                 }
 
             })
@@ -229,11 +244,13 @@ class DashBoard extends Component {
     */
     refresh = (animate) => {
         try {
+            messageService.sendMessage({ key: 'colldetails', value: null })
             if (animate) {
                 getLabels().then(labels => {
                     Alllabels = labels.data.data;
                     this.setState({
-                        labels: Alllabels
+                        labels: Alllabels,
+
                     })
                 })
                     .catch(err => {
@@ -244,6 +261,24 @@ class DashBoard extends Component {
                     AllNotes.sort((a, b) => {
                         return ((a.index < b.index) ? -1 : ((a.index > b.index) ? 1 : 0));
                     })
+                    AllNotes.map(ele => {
+                        if (ele.collaborated.length > 0) {
+                            // console.log("collabroated", ele.collaborated[0]);
+
+                            checkCollaborated({ id: ele.collaborated[0] })
+                                .then(data => {
+                                    data.data.data.idCol = ele.collaborated[0]
+                                    messageService.sendMessage({ key: 'colldetails', value: data.data.data })
+
+                                })
+                                .catch(err => {
+                                    console.log(err);
+
+                                })
+                        }
+
+                    })
+
                     this.setState({
                         notesArray: AllNotes
                     })
@@ -382,6 +417,12 @@ class DashBoard extends Component {
                             stackBarMessage: 'Note Archived'
                         })
                     }
+                    let arr = []
+                    arr.push(note.data.data)
+                    arr.idCol = note.data.data.collaborated
+                    console.log("dfdfgdfdfffgf", arr);
+
+                    messageService.sendMessage({ key: 'colldetails', value: arr })
                     UndoTakeNote = note.data.data
                     this.setState({ notesArray: array })
                 })
@@ -848,10 +889,10 @@ class DashBoard extends Component {
                 noteId: noteId,
                 collId: collId
             }
+
             collaborateRemove(payload)
                 .then(data => {
-                    console.log(data);
-
+                    messageService.sendMessage({ key: 'updateDelete', value: collId })
                 })
                 .catch(err => {
                     console.log(err);

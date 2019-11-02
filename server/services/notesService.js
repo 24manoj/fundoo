@@ -48,21 +48,25 @@ exports.createNotes = async (req) => {
  */
 exports.addCollId = async (req) => {
     try {
-        let countNotes = 0;
-        await noteSchema.notes.find().countDocuments((err, count) => {
-            countNotes = count + 1;
+        // let countNotes = 0;
+        // await noteSchema.notes.find().countDocuments((err, count) => {
+        //     countNotes = count + 1;
 
-        })
+        // })
+
         return new Promise((resolve, reject) => {
 
             noteSchema.notes.updateOne({
                 _id: req.noteId
             }, {
-                $push: { collaborated: req.collId }
+                collaborated: req.collId
             }
                 , (err, updated) => {
                     if (err) reject(err)
-                    else resolve(updated)
+                    else {
+                        console.log("note Updated", updated)
+                        resolve(updated)
+                    }
                 })
             // let noteDetails = new noteSchema.notes({
             //     "userId": req.decoded.id,
@@ -199,7 +203,7 @@ exports.updateIndex = (req, res) => {
  * @param req request contains http request
  * @return returns  promise data resolve or reject
  */
-exports.updateCollabarate = (req, res) => {
+exports.updateCollaborate = (req, res) => {
     try {
         let response = {}
         let details = {}
@@ -222,13 +226,33 @@ exports.updateCollabarate = (req, res) => {
                         userId: req.decoded.id
 
                     }
-
                     this.addCollaborate(payload)
                         .then(data => {
-                            response.errors = null
-                            response.data = data
-                            response.sucess = true
-                            res.status(200).send(response)
+                            collSchema.colldata.findOne({
+                                noteId: req.body.noteId
+                            }, (err, found) => {
+                                if (found) {
+                                    let payload = {
+                                        noteId: req.body.noteId,
+                                        collId: found._id
+                                    }
+                                    this.addCollId(payload)
+                                        .then(sucess => {
+                                            response.errors = null
+                                            response.data = sucess
+                                            response.sucess = true
+                                            res.status(200).send(response)
+
+                                        })
+                                        .catch(err => {
+                                            response.errors = err
+                                            response.data = null
+                                            response.sucess = false
+                                            res.status(500).send(response)
+                                        })
+                                }
+                            })
+
                         })
                         .catch(err => {
                             response.errors = err
@@ -509,7 +533,6 @@ exports.noteReminder = (req) => {
  */
 exports.addCollaborate = (req) => {
     try {
-
         return new Promise((resolve, reject) => {
             collSchema.colldata.findOne({
                 noteId: req.noteId
@@ -520,9 +543,6 @@ exports.addCollaborate = (req) => {
                         userId: req.userId,
                         collaborateId: req.collId
                     })
-
-                    console.log("dfdfdfdfdf", data);
-
                     data.save((err, store) => {
                         if (err) {
                             reject(err)
@@ -627,11 +647,10 @@ exports.noteLabel = (req) => {
  */
 exports.removeCollaborate = (req) => {
     try {
-        console.log("body", req.body);
 
         return new Promise((resolve, reject) => {
             noteSchema.notes.updateOne({
-                _id: req.body.noteId
+                _id: req.bodybody.noteId
             }, {
                 $pull: { collaborated: req.body.collId }
             }, (err, removed) => {
@@ -673,7 +692,6 @@ exports.createLabel = async (req, callback) => {
  */
 exports.updateLabel = (req) => {
     try {
-        console.log("body", req.body);
 
         return new Promise((resolve, reject) => {
             labelSchema.labels.updateOne({

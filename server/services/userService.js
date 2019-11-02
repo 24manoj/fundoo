@@ -191,6 +191,7 @@ exports.checkCollaborate = (req) => {
                     let colldata = []
                     found.collaborateId.map(ele => {
                         count++;
+
                         userSchema.userRegistration.findOne({
                             "_id": ele
                         }, (err, data) => {
@@ -204,6 +205,9 @@ exports.checkCollaborate = (req) => {
                         })
 
                     })
+                    setTimeout(() => {
+                        resolve(colldata)
+                    }, (3000))
                 }
             })
         })
@@ -213,6 +217,28 @@ exports.checkCollaborate = (req) => {
     }
 }
 
+exports.removeCollaborate = (req) => {
+    try {
+        console.log("body", req);
+
+        return new Promise((resolve, reject) => {
+
+            collSchema.colldata.updateOne({
+                _id: req.collaborateId
+            }, {
+                $pull: {
+                    collaborateId: req.collId
+                }
+            }, (err, removed) => {
+                if (err) reject(err)
+                else resolve(removed)
+
+            })
+        })
+    } catch (err) {
+        console.log(err)
+    }
+}
 /**
  * @desc gets validated request from services,performs database operations needed
  * @param req request contains http request

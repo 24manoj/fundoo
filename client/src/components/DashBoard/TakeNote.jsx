@@ -639,7 +639,7 @@ class Notes extends Component {
           </Popper>
 
         </div>
-      </MuiThemeProvider >
+      </MuiThemeProvider>
     );
   }
 }

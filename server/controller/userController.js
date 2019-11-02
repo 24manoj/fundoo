@@ -314,7 +314,6 @@ exports.checkCollaborated = (req, res) => {
 
         services.checkCollaborate(req)
             .then(data => {
-
                 response.data = data
                 response.errors = null
                 response.sucess = true

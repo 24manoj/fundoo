@@ -16,8 +16,9 @@ import pin from '../../assets/afterPin.svg'
 import { ImageOutlined, Alarm, NotificationImportantOutlined, PersonAddOutlined, ColorLensOutlined, ArchiveOutlined, MoreVertOutlined, UnarchiveOutlined } from "@material-ui/icons";
 import { messageService } from '../../minddleware/middleWareServices'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { updateIndex, collaborateRemove } from '../../controller/notesController';
+import { updateIndex } from '../../controller/notesController';
 import { Collaborator } from "../DashBoard/Collaborator";
+import { isThisSecond } from 'date-fns/esm';
 
 let note = require('../../assets/noteEmpty.svg')
 /**
@@ -89,7 +90,8 @@ class Notes extends Component {
             trashPoper: false,
             sideNav: false,
             colldetails: [],
-            collId: []
+            collId: [],
+            dailogCollaborate: {}
         }
         this.LabelList = this.LabelList.bind(this);
         messageService.getMessage().subscribe(message => {
@@ -115,10 +117,41 @@ class Notes extends Component {
                     })
                 }
                 if (message.text.key === 'colldetails') {
+                    let exist = false;
+                    this.state.colldetails.map(ele => {
 
-                    this.setState({ colldetails: [...this.state.colldetails, message.text.value] })
+                        ele.map(e => {
+                            if (e._id === message.text.value[0]._id && ele.idcol === message.text.value.idCol)
+                                exist = true
 
+                        })
+                    })
+                    if (!exist) {
+                        this.setState({ colldetails: [...this.state.colldetails, message.text.value] })
+                    }
+                }
 
+                if (message.text.key === 'updateDelete') {
+                    let idArray = []
+                    let array = this.state.colldetails
+                    let index;
+                    idArray = array.map((ele, ind) => {
+                        ele.map(e => {
+                            if (e._id === message.text.value) {
+                                index = ind
+                            }
+                        })
+                    })
+
+                    let array2 = this.state.colldetails
+
+                    let value = array2.splice(index, 1)
+
+                    this.setState({
+                        colldetails: array2,
+                        dailogCollaborate: undefined
+
+                    })
                 }
             } catch (err) {
                 console.log(err);
@@ -214,7 +247,7 @@ class Notes extends Component {
     /**
      * @description handels dailogopen
      */
-    handleDailog = async (Element, event) => {
+    handleDailog = async (Element, event, coll) => {
         await this.setState({
             dailogNoteId: this.props.filterValue ? Element.id : Element._id,
             dailogTitleValue: Element.title,
@@ -222,7 +255,8 @@ class Notes extends Component {
             cardDailog: !this.state.cardDailog,
             dailogReminder: Element.reminder,
             dailogLabels: Element.labels,
-            dailogColor: Element.color
+            dailogColor: Element.color,
+            dailogCollaborate: coll
         })
 
     }
@@ -238,7 +272,8 @@ class Notes extends Component {
             dailogReminder: '',
             dailogLabels: '',
             dailogColor: '',
-            visibleCard: ''
+            visibleCard: '',
+            dailogCollaborate: {}
         })
     }
 
@@ -345,6 +380,7 @@ class Notes extends Component {
       * @description handles undo Collaborated
       */
     undoCollaborate(cardId, collId) {
+
         this.props.undoCollaborate(cardId, collId)
     }
     render() {
@@ -425,23 +461,17 @@ class Notes extends Component {
 
                                                                     {Element.collaborated !== undefined ?
                                                                         this.state.colldetails.map(coll =>
-
-
                                                                             coll.map(c =>
 
-                                                                                coll.idCol === Element.collaborated[0] ?
-                                                                                    <Chip
-                                                                                        id={c._id === undefined ? coll._id : c._id}
-                                                                                        style={{ margin: '2px' }}
-                                                                                        avatar={<Avatar alt="profile" src={c.url === undefined ? coll.url : c.url} />}
-                                                                                        label={c.email === undefined ? coll.email : c.email
-                                                                                        }
-                                                                                        onDelete={event => this.undoCollaborate(this.props.filterValue ? Element.id : Element._id, c._id)}
+                                                                                Element.collaborated.map(e =>
+                                                                                    coll.idCol === e ?
 
-                                                                                    />
-                                                                                    : ''
-                                                                                //         : ''
-                                                                            ))
+                                                                                        <Avatar alt="profile" src={c.url === undefined ? coll.url : c.url} onClick={(event) => this.handleDailog(Element, event, c)}
+                                                                                        />
+
+                                                                                        : ''
+                                                                                    //         : ''
+                                                                                )))
                                                                         // )
                                                                         : ''}
 
@@ -554,11 +584,19 @@ class Notes extends Component {
                                     onDelete={() => this.removeNoteLabel(this.state.dailogNoteId, labelvalue.id)}
                                 />
                             ) : ''}
+                            {this.state.dailogCollaborate !== undefined ?
+                                <Chip
+                                    key={this.state._id}
+                                    avatar={<Avatar alt="profile" src={this.state.dailogCollaborate.url} />}
+                                    label={this.state.dailogCollaborate.email
+                                    }
+                                    onDelete={event => this.undoCollaborate(this.state.dailogNoteId, this.state.dailogCollaborate._id)} />
+                                : ''}
                         </div>
                         <div className="IconsList">
                             <div className="decsIcon">
                                 <NotificationImportantOutlined titleAccess="Remind me" onClick={(event) => this.addReminder(this.state.dailogNoteId, event)} />
-                                <PersonAddOutlined titleAccess="Collaborate" />
+                                <Collaborator notes={this.props.notes} cardId={this.state.dailogNoteId} />
                                 <ColorLensOutlined titleAccess="change Color"
                                     onClick={(event) => this.setNoteColor(event, this.state.dailogNoteId)} />
                                 <ImageOutlined titleAccess=" Add Image" />

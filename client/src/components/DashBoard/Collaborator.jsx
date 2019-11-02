@@ -3,6 +3,7 @@ import { Dialog, Avatar, Button, TextField, Chip } from '@material-ui/core';
 import { PersonAddOutlined, PersonAdd, Done, } from '@material-ui/icons';
 import { checkMail } from "../../controller/notesController";
 import { addCollaborate } from '../../controller/notesController'
+import { messageService } from '../../minddleware/middleWareServices';
 export class Collaborator extends Component {
     session = JSON.parse(sessionStorage.getItem('UserSession'))
 
@@ -97,8 +98,8 @@ export class Collaborator extends Component {
             }
             addCollaborate(payload)
                 .then(data => {
-                    console.log(data);
 
+                    messageService.sendMessage({ key: 'updateCollaborated', value: { colldetail: this.state.collaborateEmail, cardId: this.props.cardId } })
                 })
                 .catch(err => {
                     console.log(err);
@@ -119,7 +120,7 @@ export class Collaborator extends Component {
             if (this.props.notes === undefined) {
                 this.props.CollaborateState(true)
             }
-            this.setState({ dailog: false, email: '', emailErr: false, collaborateEmail: [] })
+            this.setState({ dailog: false, email: '', emailErr: false })
 
 
         } catch (err) {
@@ -141,7 +142,7 @@ export class Collaborator extends Component {
                 <Dialog open={this.state.dailog}
                     onClose={this.handleClose}>
                     <div className="Collaborate-div">
-                        <h4> Collaborators</h4>
+                        <label> Collaborators</label>
                         <hr style={{ width: '100%' }} />
                         <div className="collaborate-div1">
                             <Avatar src={this.session.data.url} />
@@ -179,6 +180,7 @@ export class Collaborator extends Component {
                                 helperText={this.state.emailErr ? <span style={{ color: 'red' }}> Email invalid</span> : ''}
                                 onClick={event => this.props.notes === undefined ? this.props.CollaborateState(true) : ''
                                 }
+                                fullWidth
                             />
                             {this.state.doneState ? <Done onClick={this.checkMail} /> : ''}
                         </div>

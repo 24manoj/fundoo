@@ -133,15 +133,15 @@ exports.updateColor = async (req, res) => {
 
 exports.getTrashNotes = (req, res) => {
     try {
-       
+
         noteService.getTrashNotes(req.decoded.id)
             .then(notes => {
-                
+
                 response.sucess = true,
                     response.data = notes,
                     response.errors = null
                 res.status(status.sucess).send(response)
-             
+
             })
             .catch(err => {
                 response.sucess = false,
@@ -957,6 +957,7 @@ exports.addCollaborate = async (req, res) => {
  */
 
 exports.removeCollaborate = (req, res) => {
+
     let details = {}
     details.id = req.decoded.id
     req.check('noteId', 'noteId invalid').notEmpty()
@@ -966,7 +967,6 @@ exports.removeCollaborate = (req, res) => {
         if (err) console.log(err);
         else console.log(data);
 
-
     })
     if (errors) {
         response.err = errors
@@ -974,17 +974,42 @@ exports.removeCollaborate = (req, res) => {
         response.sucess = false
         res.status(status.UnprocessableEntity).send(response)
     } else {
-        noteService.removeCollaborate(req)
-            .then(removed => {
-                response.err = null
-                response.data = removed
-                response.sucess = true
-                res.status(status.sucess).send(response)
-            }).catch(err => {
-                response.err = err
-                response.data = null
-                response.sucess = false
-                res.status(status.notfound).send(response)
+        console.log("body", req.body);
+
+        noteService.findNote(req)
+            .then(found => {
+                let payload = {
+                    collaborateId: found.collaborated[0],
+                    collId: req.body.collId
+                }
+                userService.removeCollaborate(payload)
+                    .then(removed => {
+
+                        response.err = null
+                        response.data = removed
+                        response.sucess = true
+                        res.status(status.sucess).send(response)
+                    })
+                    .catch(err => {
+
+                        response.err = err
+                        response.data = null
+                        response.sucess = false
+                        res.status(status.notfound).send(response)
+                    })
             })
+
+        // noteService.removeCollaborate(req)
+        //     .then(removed => {
+        //         response.err = null
+        //         response.data = removed
+        //         response.sucess = true
+        //         res.status(status.sucess).send(response)
+        //     }).catch(err => {
+        //         response.err = err
+        //         response.data = null
+        //         response.sucess = false
+        //         res.status(status.notfound).send(response)
+        //     })
     }
 }

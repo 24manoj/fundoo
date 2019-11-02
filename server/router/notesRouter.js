@@ -25,6 +25,6 @@ noteRouter.post('/addCollaborate', auth.verifyUser, notesController.addCollabora
 noteRouter.put('/removeCollaborate', auth.verifyUser, notesController.removeCollaborate)
 noteRouter.put('/updateColor', auth.verifyUser, notesController.updateColor)
 noteRouter.put('/updateIndex', auth.verifyUser, services.updateIndex)
-noteRouter.put('/updateCollabarate', auth.verifyUser, services.updateCollabarate)
+noteRouter.put('/updateCollabarate', auth.verifyUser, services.updateCollaborate)
 
 module.exports = noteRouter
